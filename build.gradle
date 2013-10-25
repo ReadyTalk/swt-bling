@@ -3,19 +3,29 @@ apply plugin: 'java'
 
 defaultTasks 'build'
 
-public String adjustArch(String arch) {
-  switch(arch) {
-    case ~/.*64.*/: return 'x86_64'
-    default:        return 'i386'
+public String getSWTWindowingLibrary(String platform) {
+  switch (platform.replaceAll(' ', '').toLowerCase()) {
+    case ~/.*linux.*/:  return 'gtk'
+    case ~/.*darwin.*/: return 'cocoa'
+    case ~/.*osx.*/:    return 'cocoa'
+    case ~/.*win.*/:    return 'win32'
+    default:            return null
   }
 }
 
-public String adjustPlatform(String platform) {
+public String getSWTArch(String arch) {
+  switch(arch) {
+    case ~/.*64.*/: return 'x86_64'
+    default:        return 'x86'
+  }
+}
+
+public String getSWTPlatform(String platform) {
   switch(platform.replaceAll(' ', '').toLowerCase()) {
     case ~/.*linux.*/:  return 'linux'
-    case ~/.*darwin.*/: return 'darwin'
-    case ~/.*osx.*/:    return 'darwin'
-    case ~/.*win.*/:    return 'windows'
+    case ~/.*darwin.*/: return 'macosx'
+    case ~/.*osx.*/:    return 'macosx'
+    case ~/.*win.*/:    return 'win32'
     default:            return platform
   }
 }
@@ -23,19 +33,10 @@ public String adjustPlatform(String platform) {
 ext {
   swtVersion = '4.3'
 
-  systemPlatform = adjustPlatform(System.properties['os.name'])
-  systemArch = adjustArch(System.properties['os.arch'])
-  systemPlatformArch = "${systemPlatform}-${systemArch}"
-  config = "${systemPlatformArch}"
-}
-
-configurations {
-  add 'darwin-i386'
-  add 'darwin-x86_64'
-  add 'linux-i386'
-  add 'linux-x86_64'
-  add 'windows-i386'
-  add 'windows-x86_64'
+  swtWindowingLibrary = getSWTWindowingLibrary(System.properties['os.name'])
+  swtArch = getSWTArch(System.properties['os.arch'])
+  swtPlatform = getSWTPlatform(System.properties['os.name'])
+  swtArtifactName = "org.eclipse.swt.${swtWindowingLibrary}.${swtPlatform}.${swtArch}"
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -48,30 +49,7 @@ repositories {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-  // The production code uses the SLF4J logging API at compile time
   compile 'org.slf4j:slf4j-api:1.7.5'
-
-  // SWT
-  'darwin-i386' "org.eclipse.swt:org.eclipse.swt.cocoa.macosx:${swtVersion}"
-  'darwin-x86_64' "org.eclipse.swt:org.eclipse.swt.cocoa.macosx.x86_64:${swtVersion}"
-  'linux-i386' "org.eclipse.swt:org.eclipse.swt.gtk.linux.x86:${swtVersion}"
-  'linux-x86_64' "org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64:${swtVersion}"
-  'windows-i386' "org.eclipse.swt:org.eclipse.swt.win32.win32.x86:${swtVersion}"
-  'windows-x86_64' "org.eclipse.swt:org.eclipse.swt.win32.win32.x86-64:${swtVersion}"
-
-  // Declare the dependency for your favourite test framework you want to use in your tests.
-  // TestNG is also supported by the Gradle Test task. Just change the
-  // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
-  // 'test.useTestNG()' to your build script.
+  compile "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
   testCompile "junit:junit:4.11"
-}
-
-compileJava {
-  classpath += configurations."${config}"
-}
-
-jar {
-  from {
-    zipTree(configurations."${config}".singleFile)
-  }
 }
