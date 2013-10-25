@@ -8,6 +8,9 @@ build/
 *.war
 *.ear
 
+# Gradle
+.gradle/
+
 # IntelliJ #
 *.iml
 *.ipr
