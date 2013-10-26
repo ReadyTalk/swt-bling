@@ -1,15 +1,6 @@
-build/
-
-# Java #
-*.class
-
-# Package Files
-*.jar
-*.war
-*.ear
-
 # Gradle
 .gradle/
+build/
 
 # IntelliJ #
 *.iml
