@@ -13,7 +13,11 @@ allprojects { Project proj ->
     }
 
     task integTest(type: Test, group: 'Verification') {
-      jvmArgs '-XstartOnFirstThread'
+      doFirst {
+        if(platform == "darwin") {
+          jvmArgs '-XstartOnFirstThread'
+        }
+      }
 
       reports {
         html.destination = "${proj.testReportDir}/integTest"
