@@ -1,0 +1,34 @@
+public String getSWTWindowingLibrary(String platform) {
+  switch (platform.replaceAll(' ', '').toLowerCase()) {
+    case ~/.*linux.*/:  return 'gtk'
+    case ~/.*darwin.*/: return 'cocoa'
+    case ~/.*osx.*/:    return 'cocoa'
+    case ~/.*win.*/:    return 'win32'
+    default:            return null
+  }
+}
+
+public String getSWTArch(String arch) {
+  switch(arch) {
+    case ~/.*64.*/: return 'x86_64'
+    default:        return 'x86'
+  }
+}
+
+public String getSWTPlatform(String platform) {
+  switch(platform.replaceAll(' ', '').toLowerCase()) {
+    case ~/.*linux.*/:  return 'linux'
+    case ~/.*darwin.*/: return 'macosx'
+    case ~/.*osx.*/:    return 'macosx'
+    case ~/.*win.*/:    return 'win32'
+    default:            return platform
+  }
+}
+
+ext {
+  swtWindowingLibrary = getSWTWindowingLibrary(System.properties['os.name'])
+  swtArch = getSWTArch(System.properties['os.arch'])
+  swtPlatform = getSWTPlatform(System.properties['os.name'])
+}
+
+
