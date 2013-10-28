@@ -1,4 +1,5 @@
 #swt-bling
+Perhaps you have stumbled upon this project because you're bad at spelling and it's so largely popular that it was the first in your search for "sweet bling".  In that event, may we direct you to some [truly sweet bling](http://bit.ly/1ho6tNM).  If, on the other hand, you've been saddled with SWT or have chosen such a life, but are disappointed in the rather... er... pedestrian look feel, and general "sweetness" of the standard complement of widgets (and yes, we know, not all UI elements in SWT inherit from Wiget) then you've come to the right place.  In an attempt to make your life better (studies show that 90% of the users of swt-bling will live longer, but don't ask us for a reference), we offer you the "sweetness" that is swt-bling.  Feel free to reduce, reuse, and recycle (and maybe even contribute) as needed.
 
 ##Build Status
 [![Build Status](https://drone.io/github.com/ReadyTalk/swt-custom-widgets/status.png)](https://drone.io/github.com/ReadyTalk/swt-custom-widgets/latest)
