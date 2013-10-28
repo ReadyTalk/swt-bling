@@ -1,6 +1,7 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply from: 'gradle/swt.gradle'
+apply from: 'gradle/integTest.gradle'
 
 defaultTasks 'build'
 

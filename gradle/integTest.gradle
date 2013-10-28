@@ -1,0 +1,61 @@
+allprojects { Project proj ->
+  proj.plugins.withType(org.gradle.api.plugins.JavaPlugin) {
+    proj.sourceSets {
+      integTest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+      }
+    }
+
+    proj.configurations {
+      integTestCompile.extendsFrom testCompile
+      integTestRuntime.extendsFrom testRuntime
+    }
+
+    task integTest(type: Test, group: 'Verification') {
+      jvmArgs '-XstartOnFirstThread'
+
+      reports {
+        html.destination = "${proj.testReportDir}/integTest"
+        junitXml.destination = "${proj.testResultsDir}/integTest"
+      }
+      classpath = sourceSets.integTest.runtimeClasspath
+      testClassesDir = sourceSets.integTest.output.classesDir
+
+      beforeTest { testName ->
+        logger.info("Running test: ${testName}")
+      }
+
+      doFirst {
+        if(proj.files(sourceSets.integTest.getAllSource()).isEmpty()) {
+          logger.lifecycle("${proj.name} does not contain any integration tests")
+        }
+      }
+    }
+
+    proj.test {
+      dependsOn compileIntegTestJava
+    }
+
+    proj.plugins.withType(org.gradle.plugins.ide.idea.IdeaPlugin) {
+      proj.afterEvaluate {
+        idea {
+          module {
+            testSourceDirs += sourceSets.integTest.java.srcDirs
+            scopes.TEST.plus.add(configurations.integTestRuntime)
+            scopes.TEST.plus.add(configurations.integTestCompile)
+          }
+        }
+      }
+    }
+
+    proj.plugins.withType(org.gradle.plugins.ide.eclipse.EclipsePlugin) {
+      eclipse {
+        classpath {
+          plusConfigurations.add(configurations.integTestCompile)
+          plusConfigurations.add(configurations.integTestRuntime)
+        }
+      }
+    }
+  }
+}
