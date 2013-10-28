@@ -2,12 +2,25 @@
 apply plugin: 'java'
 apply from: 'gradle/swt.gradle'
 apply from: 'gradle/integTest.gradle'
+apply from: 'gradle/example.gradle'
 
 defaultTasks 'build'
+
+public String getPlatform(String platform) {
+  switch (platform.replaceAll(' ', '').toLowerCase()) {
+    case ~/.*linux.*/:  return 'linux'
+    case ~/.*darwin.*/: return 'darwin'
+    case ~/.*osx.*/:    return 'darwin'
+    case ~/.*win.*/:    return 'windows'
+    default:            return null
+  }
+}
 
 ext {
   swtVersion = '4.3'
   swtArtifactName = "org.eclipse.swt.${swtWindowingLibrary}.${swtPlatform}.${swtArch}"
+
+  platform = getPlatform(System.properties['os.name'])
 }
 
 // In this section you declare where to find the dependencies of your project

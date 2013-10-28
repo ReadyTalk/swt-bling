@@ -1,0 +1,26 @@
+sourceSets {
+  examples {
+    compileClasspath += main.output
+    runtimeClasspath += main.output
+  }
+}
+
+configurations {
+  examplesCompile.extendsFrom compile
+  examplesRuntime.extendsFrom runtime
+}
+
+tasks.addRule("Pattern: runExample<WidgetName>") { String taskName ->
+  if (taskName.startsWith("runExample")) {
+    task(taskName, type: JavaExec) {
+      ext.widgetName = taskName - "runExample"
+
+      classpath = sourceSets.examples.runtimeClasspath
+      main = "com.readytalk.swt.widgets.buttons.${widgetName}Example"
+
+      if (platform == 'darwin') {
+        jvmArgs '-XstartOnFirstThread'
+      }
+    }
+  }
+}
