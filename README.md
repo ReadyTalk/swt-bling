@@ -18,5 +18,5 @@ gradlew runExampleSquareButton
 
 ##IDE Setup
 ### IntelliJ
-Most active contributors use [http://www.jetbrains.com/idea/](IntelliJ) as their primary IDE. Simply import the project
+Most active contributors use [IntelliJ](http://www.jetbrains.com/idea/) as their primary IDE. Simply import the project
 by pointing IntelliJ at the build.gradle file at the root of the project.
