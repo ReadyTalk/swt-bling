@@ -4,7 +4,7 @@ Behold, swt-bling!  A project that will help you enhance your mundane [swt](http
 Don't fret, fellow SWT-user for swt-bling is surely the answer to ~~all of~~ *some of* your problems.
 
 ##Build Status
-[![Build Status](https://drone.io/github.com/ReadyTalk/swt-custom-widgets/status.png)](https://drone.io/github.com/ReadyTalk/swt-custom-widgets/latest)
+[![Build Status](https://drone.io/github.com/ReadyTalk/swt-bling/status.png)](https://drone.io/github.com/ReadyTalk/swt-bling/latest)
 
 ##Building
 Building swt-bling is simple. Just open a terminal and run
