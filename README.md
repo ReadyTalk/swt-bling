@@ -9,14 +9,20 @@ Don't fret, fellow SWT-user for swt-bling is surely the answer to ~~all of~~ *so
 ##Building
 Building swt-bling is simple. Just open a terminal and run
 ```
-gradlew build
+./gradlew build
 ```
 from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.
 
-##Examples
-Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a 'runExample<WidgetName>'. For instance:
+##GUI Tests
+In addition to standard unit tests, swt-bling has gui-based tests located in `src/integTest/java`. To run them:
 ```
-gradlew runExampleSquareButton
+./gradlew integTest
+```
+
+##Examples
+Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a `runExample<WidgetName>`. For instance:
+```
+./gradlew runExampleSquareButton
 ```
 
 ##IDE Setup
