@@ -24,18 +24,16 @@ public class Bubble extends Widget {
 
     listener = new Listener() {
       public void handleEvent(Event event) {
-        public void handleEvent(Event event) {
-          switch (event.type) {
-            case SWT.Dispose:
-              onDispose(event);
-              break;
-            case SWT.Paint:
-              onPaint(event);
-              break;
-            case SWT.MouseDown:
-              onMouseDown(event);
-              break;
-          }
+        switch (event.type) {
+          case SWT.Dispose:
+            onDispose(event);
+            break;
+          case SWT.Paint:
+            onPaint(event);
+            break;
+          case SWT.MouseDown:
+            onMouseDown(event);
+            break;
         }
       }
     };
