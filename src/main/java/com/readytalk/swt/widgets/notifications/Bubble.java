@@ -39,8 +39,8 @@ public class Bubble extends Widget {
     parentShell.layout();
 
     tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
-    tooltip.setBackground(new Color(parent.getDisplay(), BACKGROUND_COLOR)); // TODO: we need to manage our colors onDispose
-    textColor = new Color(parent.getDisplay(), TEXT_COLOR);
+    tooltip.setBackground(new Color(getDisplay(), BACKGROUND_COLOR)); // TODO: we need to manage our colors onDispose
+    textColor = new Color(getDisplay(), TEXT_COLOR);
 
     listener = new Listener() {
       public void handleEvent(Event event) {
@@ -69,10 +69,8 @@ public class Bubble extends Widget {
     rectangle = calculateRectangleRegion(location.x, location.y, textExtent);
     toolTipRegion.add(rectangle);
     tooltip.setRegion(toolTipRegion);
-    Rectangle regionBounds = toolTipRegion.getBounds();
-//    tooltip.setSize(regionBounds.width, regionBounds.height);
     tooltip.setLocation(location);
-    tooltip.open();
+    tooltip.setVisible(true);
   }
 
   private Rectangle calculateRectangleRegion(int parentLocationX, int parentLocationY, Point textExtent) {
@@ -126,7 +124,7 @@ public class Bubble extends Widget {
   }
 
   private Point getTextSize(String text) {
-    GC gc = new GC(parent.getDisplay());
+    GC gc = new GC(getDisplay());
     Point textExtent = gc.textExtent(text);
     gc.dispose();
     return textExtent;
