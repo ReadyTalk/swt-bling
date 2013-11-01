@@ -65,11 +65,13 @@ public class Bubble extends Widget {
   public void show() {
     Region toolTipRegion = new Region();
     Point location = parent.getLocation();
+    Rectangle bounds = parent.getBounds();
+    Rectangle realBounds = getDisplay().map(parent, null, bounds);
     Point textExtent = getTextSize(tooltipText);
-    rectangle = calculateRectangleRegion(location.x, location.y, textExtent);
+    rectangle = calculateRectangleRegion(realBounds.x, realBounds.y, textExtent);
     toolTipRegion.add(rectangle);
     tooltip.setRegion(toolTipRegion);
-    tooltip.setLocation(location);
+    tooltip.setLocation(new Point(realBounds.x, realBounds.y));
     tooltip.setVisible(true);
   }
 
