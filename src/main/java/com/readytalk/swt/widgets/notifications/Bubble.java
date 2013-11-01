@@ -25,8 +25,12 @@ public class Bubble extends Widget {
   private Control parent;
   private Shell parentShell, tooltip;
 
+  private Region tooltipRegion;
   private Rectangle rectangle;
   private Color textColor;
+  private Color backgroundColor;
+
+  private Listener parentListener;
 
   public Bubble(Control parent, String tooltipText) {
     super(parent, SWT.NONE);
@@ -35,9 +39,12 @@ public class Bubble extends Widget {
     this.tooltipText = tooltipText;
     parentShell = AncestryHelper.getShellFromControl(parent);
 
-    tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
-    tooltip.setBackground(new Color(getDisplay(), BACKGROUND_COLOR)); // TODO: we need to manage our colors onDispose
+    // Remember to clean up after yourself onDispose.
+    backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
     textColor = new Color(getDisplay(), TEXT_COLOR);
+
+    tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
+    tooltip.setBackground(backgroundColor);
 
     listener = new Listener() {
       public void handleEvent(Event event) {
@@ -57,18 +64,25 @@ public class Bubble extends Widget {
     addListener(SWT.Dispose, listener);
     tooltip.addListener(SWT.Paint, listener);
     tooltip.addListener(SWT.MouseDown, listener);
+
+    parentListener = new Listener() {
+      public void handleEvent(Event event) {
+        dispose();
+      }
+    };
+    parent.addListener(SWT.Dispose, parentListener);
   }
 
   public void show() {
-    Region toolTipRegion = new Region();
+    tooltipRegion = new Region();
     Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
     Point textExtent = getTextSize(tooltipText);
 
     rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
 
-    toolTipRegion.add(rectangle);
+    tooltipRegion.add(rectangle);
 
-    tooltip.setRegion(toolTipRegion);
+    tooltip.setRegion(tooltipRegion);
     tooltip.setLocation(location);
     tooltip.setVisible(true);
   }
@@ -87,8 +101,18 @@ public class Bubble extends Widget {
     //no-op
   }
 
+  // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
   private void onDispose(Event event) {
-    // TODO: dispose all the things here
+    parent.removeListener(SWT.Dispose, parentListener);
+    removeListener(SWT.Dispose, listener);
+    notifyListeners(SWT.Dispose, event);
+    event.type = SWT.None;
+
+    tooltip.dispose();
+    tooltip = null;
+    if (tooltipRegion != null) {
+      tooltipRegion.dispose();
+    }
   }
 
   private void onPaint(Event event) {
