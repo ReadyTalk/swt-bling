@@ -19,9 +19,7 @@ public class Bubble extends Widget {
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
-  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 10; //pixels
-  private static final int TRIANGLE_SIDE = 10; //pixels
-  private static final int TRIANGLE_HEIGHT = (int) Math.round(Math.sqrt(3) / 2 * TRIANGLE_SIDE); //pixels (equilateral triangle)
+  private static final int BORDER_THICKNESS = 1; //pixels
 
   private Listener listener;
   private String tooltipText;
@@ -30,8 +28,11 @@ public class Bubble extends Widget {
 
   private Region tooltipRegion;
   private Rectangle rectangle;
+  private Rectangle borderRectangle;
+  
   private Color textColor;
   private Color backgroundColor;
+  private Color borderColor;
 
   private Listener parentListener;
 
@@ -45,6 +46,7 @@ public class Bubble extends Widget {
     // Remember to clean up after yourself onDispose.
     backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
     textColor = new Color(getDisplay(), TEXT_COLOR);
+    borderColor = textColor;
 
     tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     tooltip.setBackground(backgroundColor);
@@ -82,6 +84,7 @@ public class Bubble extends Widget {
     Point textExtent = getTextSize(tooltipText);
 
     rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
+    borderRectangle = calculateBorderRectangle(rectangle);
 
     tooltipRegion.add(rectangle);
 
@@ -98,6 +101,13 @@ public class Bubble extends Widget {
     return new Rectangle(componentSize.x / 2, componentSize.y,
             textExtent.x + TEXT_WIDTH_PADDING,
             textExtent.y + TEXT_HEIGHT_PADDING);
+  }
+
+  private Rectangle calculateBorderRectangle(Rectangle containingRectangle) {
+    return new Rectangle(containingRectangle.x,
+            containingRectangle.y,
+            containingRectangle.width - BORDER_THICKNESS,
+            containingRectangle.height - BORDER_THICKNESS);
   }
 
   public void checkSubclass() {
@@ -120,6 +130,10 @@ public class Bubble extends Widget {
 
   private void onPaint(Event event) {
     GC gc = event.gc;
+
+    gc.setForeground(borderColor);
+    gc.setLineWidth(BORDER_THICKNESS);
+    gc.drawRectangle(borderRectangle);
 
     gc.setForeground(textColor);
     gc.drawText(tooltipText, rectangle.x + (TEXT_WIDTH_PADDING / 2), rectangle.y + (TEXT_HEIGHT_PADDING / 2));
