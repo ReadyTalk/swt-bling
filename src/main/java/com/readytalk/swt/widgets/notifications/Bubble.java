@@ -99,7 +99,7 @@ public class Bubble extends Widget {
   }
 
   private void onMouseDown(Event event) {
-    // TODO: dismiss the tooltip if they click it
+    hide();
   }
 
   private Point getTextSize(String text) {
