@@ -65,15 +65,17 @@ public class Bubble extends Widget {
     Region toolTipRegion = new Region();
     Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
     Point textExtent = getTextSize(tooltipText);
-    rectangle = calculateRectangleRegion(textExtent);
+
+    rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
     toolTipRegion.add(rectangle);
+
     tooltip.setRegion(toolTipRegion);
     tooltip.setLocation(location);
     tooltip.setVisible(true);
   }
 
-  private Rectangle calculateRectangleRegion(Point textExtent) {
-    return new Rectangle(0, 0,
+  private Rectangle calculateRectangleRegion(Point componentSize, Point textExtent) {
+    return new Rectangle(componentSize.x / 2, componentSize.y,
             textExtent.x + TEXT_WIDTH_PADDING,
             textExtent.y + TEXT_HEIGHT_PADDING);
   }
