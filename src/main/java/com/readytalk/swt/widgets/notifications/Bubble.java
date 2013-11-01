@@ -36,7 +36,6 @@ public class Bubble extends Widget {
     this.parent = parent;
     this.tooltipText = tooltipText;
     parentShell = AncestryHelper.getShellFromControl(parent);
-    parentShell.layout();
 
     tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     tooltip.setBackground(new Color(getDisplay(), BACKGROUND_COLOR)); // TODO: we need to manage our colors onDispose
@@ -64,18 +63,17 @@ public class Bubble extends Widget {
 
   public void show() {
     Region toolTipRegion = new Region();
-    Point location = parent.getLocation();
+    Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
     Point textExtent = getTextSize(tooltipText);
-    rectangle = calculateRectangleRegion(location.x, location.y, textExtent);
+    rectangle = calculateRectangleRegion(textExtent);
     toolTipRegion.add(rectangle);
     tooltip.setRegion(toolTipRegion);
     tooltip.setLocation(location);
     tooltip.setVisible(true);
   }
 
-  private Rectangle calculateRectangleRegion(int parentLocationX, int parentLocationY, Point textExtent) {
-    return new Rectangle(parentLocationX,
-            parentLocationY,
+  private Rectangle calculateRectangleRegion(Point textExtent) {
+    return new Rectangle(0, 0,
             textExtent.x + TEXT_WIDTH_PADDING,
             textExtent.y + TEXT_HEIGHT_PADDING);
   }
