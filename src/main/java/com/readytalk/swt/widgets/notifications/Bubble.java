@@ -19,9 +19,6 @@ public class Bubble extends Widget {
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
-  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 10; //pixels
-  private static final int TRIANGLE_SIDE = 10; //pixels
-  private static final int TRIANGLE_HEIGHT = (int) Math.round(Math.sqrt(3) / 2 * TRIANGLE_SIDE); //pixels (equilateral triangle)
 
   private Listener listener;
   private String tooltipText;
@@ -68,10 +65,8 @@ public class Bubble extends Widget {
     Point textExtent = getTextSize(tooltipText);
 
     rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
-    int[] triangle = calculateTriangleRegion(rectangle);
 
     toolTipRegion.add(rectangle);
-    toolTipRegion.add(triangle);
 
     tooltip.setRegion(toolTipRegion);
     tooltip.setLocation(location);
@@ -86,16 +81,6 @@ public class Bubble extends Widget {
     return new Rectangle(componentSize.x / 2, componentSize.y,
             textExtent.x + TEXT_WIDTH_PADDING,
             textExtent.y + TEXT_HEIGHT_PADDING);
-  }
-
-  private int[] calculateTriangleRegion(Rectangle tooltipRectangle) {
-    int[] triangle = {
-      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT, tooltipRectangle.y,
-      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT + (TRIANGLE_SIDE / 2), tooltipRectangle.y - TRIANGLE_HEIGHT,
-      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT + TRIANGLE_SIDE, tooltipRectangle.y
-    };
-
-    return triangle;
   }
 
   public void checkSubclass() {
