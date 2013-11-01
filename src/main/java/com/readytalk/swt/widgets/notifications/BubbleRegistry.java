@@ -14,8 +14,8 @@ public class BubbleRegistry {
 
   private static final Logger log = Logger.getLogger(BubbleRegistry.class.getName());
 
-  private Map<String, List<BubbleRegistrant>> tagMap;
-  private List<BubbleRegistrant> registrants;
+  final Map<String, List<BubbleRegistrant>> tagMap;
+  final List<BubbleRegistrant> registrants;
 
   static final BubbleRegistry instance = new BubbleRegistry();
 
@@ -36,35 +36,9 @@ public class BubbleRegistry {
       registrants.add(registrant);
     }
 
-    updateTags(registrant);
+    addTags(composite, tags);
   }
 
-  /**
-   * In the event that a target attempts to register twice or needs to add more
-   * tags, this method is called.
-   * @param registrant
-   */
-  void updateTags(BubbleRegistrant registrant) {
-    updateTags(registrant, null);
-  }
-
-  void updateTags(BubbleRegistrant registrant, BubbleTag ... tagsToBeRemoved) {
-    for(BubbleTag tag : registrant.getTags()) {
-      List<BubbleRegistrant> tagList = getTagList(tag);
-      if(!tagList.contains(registrant)) {
-        tagList.add(registrant);
-      }
-    }
-    if(tagsToBeRemoved != null) {
-      registrant.removeTags(tagsToBeRemoved);
-      for(BubbleTag tag : tagsToBeRemoved) {
-        List<BubbleRegistrant> tagList = getTagList(tag);
-        if(tagList.contains(registrant)) {
-          tagList.remove(registrant);
-        }
-      }
-    }
-  }
 
   public void addTags(Object target, BubbleTag ... tags) {
     BubbleRegistrant registrant = findRegistrant(target);
@@ -72,12 +46,23 @@ public class BubbleRegistry {
       log.warning("Instance of " + target.getClass() + " has not been registered.");
     } else {
       registrant.addTags(tags);
-      updateTags(registrant);
+      for(BubbleTag tag : registrant.getTags()) {
+        List<BubbleRegistrant> tagList = getTagList(tag);
+        if(!tagList.contains(registrant)) {
+          tagList.add(registrant);
+        }
+      }
     }
   }
 
   public void removeTags(BubbleRegistrant registrant, BubbleTag ... tagsToBeRemoved) {
-    updateTags(registrant, tagsToBeRemoved);
+    registrant.removeTags(tagsToBeRemoved);
+    for(BubbleTag tag : tagsToBeRemoved) {
+      List<BubbleRegistrant> tagList = getTagList(tag);
+      if(tagList.contains(registrant)) {
+        tagList.remove(registrant);
+      }
+    }
   }
 
   /**
@@ -142,13 +127,13 @@ public class BubbleRegistry {
   public void unregister(Object target) {
     BubbleRegistrant registrant = findRegistrant(target);
     if(registrant != null) {
-      updateTags(registrant,
+      removeTags(registrant,
         registrant.getTags().toArray(new BubbleTag[registrant.getTags().size()]));
       registrants.remove(registrant);
     }
   }
 
-  abstract class BubbleRegistrant {
+  static abstract class BubbleRegistrant {
     List<BubbleTag> tags;
     Bubble bubble;
 
@@ -184,7 +169,7 @@ public class BubbleRegistry {
     abstract void dismissBubble();
   }
 
-  class CompositeBubbleRegistrant extends BubbleRegistrant {
+  static class CompositeBubbleRegistrant extends BubbleRegistrant {
     final Composite composite;
 
     CompositeBubbleRegistrant(Composite composite, Bubble bubble, BubbleTag ... tags) {
