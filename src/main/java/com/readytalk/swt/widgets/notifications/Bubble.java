@@ -70,7 +70,7 @@ public class Bubble extends Widget {
     toolTipRegion.add(rectangle);
 
     tooltip.setRegion(toolTipRegion);
-    tooltip.setLocation(new Point(location.x, location.y));
+    tooltip.setLocation(location);
     tooltip.setVisible(true);
   }
 
