@@ -19,8 +19,9 @@ public class Bubble extends Widget {
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
-  private static final int TRIANGLE_WIDTH = 3; //pixels
-  private static final int TRIANGLE_HEIGHT = 3; //pixels
+  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 10; //pixels
+  private static final int TRIANGLE_SIDE = 10; //pixels
+  private static final int TRIANGLE_HEIGHT = (int) Math.round(Math.sqrt(3) / 2 * TRIANGLE_SIDE); //pixels (equilateral triangle)
 
   private Listener listener;
   private String tooltipText;
@@ -67,7 +68,10 @@ public class Bubble extends Widget {
     Point textExtent = getTextSize(tooltipText);
 
     rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
+    int[] triangle = calculateTriangleRegion(rectangle);
+
     toolTipRegion.add(rectangle);
+    toolTipRegion.add(triangle);
 
     tooltip.setRegion(toolTipRegion);
     tooltip.setLocation(location);
@@ -80,29 +84,15 @@ public class Bubble extends Widget {
             textExtent.y + TEXT_HEIGHT_PADDING);
   }
 
-//  private int[] calculateTooltipRegion() {
-//    // Find bottom centered point
-//    // TODO: This won't always work, we might need to draw above the control sometimes
-//    Rectangle controlBounds = parent.getBounds();
-//    int centerPointX = (controlBounds.x + controlBounds.width) / 2;
-//    int centerPointY = (controlBounds.y + controlBounds.height) / 2;
-//
-//    Point textExtent = getTextSize(tooltipText);
-//
-//    // Find the center point, then just create the polygon without Point objects for performance
-//    int[] polygon = {
-//      centerPointX, centerPointY,
-//      centerPointX + TRIANGLE_WIDTH, centerPointY + TRIANGLE_HEIGHT,
-//      centerPointX + (textExtent.x / 2), centerPointY + TRIANGLE_HEIGHT,
-//      centerPointX + (textExtent.x / 2), centerPointY + TRIANGLE_HEIGHT + textExtent.y,
-//      centerPointX - (textExtent.x / 2), centerPointY + TRIANGLE_HEIGHT + textExtent.y,
-//      centerPointX - (textExtent.x / 2), centerPointY + TRIANGLE_HEIGHT,
-//      centerPointX - TRIANGLE_WIDTH, centerPointY - TRIANGLE_HEIGHT,
-//      centerPointX, centerPointY
-//    };
-//
-//    return polygon;
-//  }
+  private int[] calculateTriangleRegion(Rectangle tooltipRectangle) {
+    int[] triangle = {
+      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT, tooltipRectangle.y,
+      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT + (TRIANGLE_SIDE / 2), tooltipRectangle.y - TRIANGLE_HEIGHT,
+      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT + TRIANGLE_SIDE, tooltipRectangle.y
+    };
+
+    return triangle;
+  }
 
   public void checkSubclass() {
     //no-op
