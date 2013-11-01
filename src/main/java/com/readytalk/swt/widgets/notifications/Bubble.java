@@ -19,8 +19,8 @@ public class Bubble extends Widget {
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
-  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 10; //pixels
-  private static final int TRIANGLE_SIDE = 10; //pixels
+  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 50; //pixels
+  private static final int TRIANGLE_SIDE = 20; //pixels
   private static final int TRIANGLE_HEIGHT = (int) Math.round(Math.sqrt(3) / 2 * TRIANGLE_SIDE); //pixels (equilateral triangle)
 
   private Listener listener;

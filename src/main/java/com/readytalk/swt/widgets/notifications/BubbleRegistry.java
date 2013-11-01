@@ -108,7 +108,7 @@ public class BubbleRegistry {
 
   BubbleRegistrant findRegistrant(Object target) {
     for(BubbleRegistrant br : registrants) {
-      if(br.getTarget().equals(target)) {
+      if(br.getTarget() == target) {
         return br;
       }
     }
