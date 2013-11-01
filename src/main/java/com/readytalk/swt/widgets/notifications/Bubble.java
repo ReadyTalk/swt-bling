@@ -19,8 +19,8 @@ public class Bubble extends Widget {
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
-  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 50; //pixels
-  private static final int TRIANGLE_SIDE = 20; //pixels
+  private static final int TRIANGLE_PADDING_FROM_COMPONENT = 10; //pixels
+  private static final int TRIANGLE_SIDE = 10; //pixels
   private static final int TRIANGLE_HEIGHT = (int) Math.round(Math.sqrt(3) / 2 * TRIANGLE_SIDE); //pixels (equilateral triangle)
 
   private Listener listener;
@@ -28,8 +28,12 @@ public class Bubble extends Widget {
   private Control parent;
   private Shell parentShell, tooltip;
 
+  private Region tooltipRegion;
   private Rectangle rectangle;
   private Color textColor;
+  private Color backgroundColor;
+
+  private Listener parentListener;
 
   public Bubble(Control parent, String tooltipText) {
     super(parent, SWT.NONE);
@@ -38,9 +42,12 @@ public class Bubble extends Widget {
     this.tooltipText = tooltipText;
     parentShell = AncestryHelper.getShellFromControl(parent);
 
-    tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
-    tooltip.setBackground(new Color(getDisplay(), BACKGROUND_COLOR)); // TODO: we need to manage our colors onDispose
+    // Remember to clean up after yourself onDispose.
+    backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
     textColor = new Color(getDisplay(), TEXT_COLOR);
+
+    tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
+    tooltip.setBackground(backgroundColor);
 
     listener = new Listener() {
       public void handleEvent(Event event) {
@@ -60,20 +67,25 @@ public class Bubble extends Widget {
     addListener(SWT.Dispose, listener);
     tooltip.addListener(SWT.Paint, listener);
     tooltip.addListener(SWT.MouseDown, listener);
+
+    parentListener = new Listener() {
+      public void handleEvent(Event event) {
+        dispose();
+      }
+    };
+    parent.addListener(SWT.Dispose, parentListener);
   }
 
   public void show() {
-    Region toolTipRegion = new Region();
+    tooltipRegion = new Region();
     Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
     Point textExtent = getTextSize(tooltipText);
 
     rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
-    int[] triangle = calculateTriangleRegion(rectangle);
 
-    toolTipRegion.add(rectangle);
-    toolTipRegion.add(triangle);
+    tooltipRegion.add(rectangle);
 
-    tooltip.setRegion(toolTipRegion);
+    tooltip.setRegion(tooltipRegion);
     tooltip.setLocation(location);
     tooltip.setVisible(true);
   }
@@ -88,22 +100,22 @@ public class Bubble extends Widget {
             textExtent.y + TEXT_HEIGHT_PADDING);
   }
 
-  private int[] calculateTriangleRegion(Rectangle tooltipRectangle) {
-    int[] triangle = {
-      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT, tooltipRectangle.y,
-      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT + (TRIANGLE_SIDE / 2), tooltipRectangle.y - TRIANGLE_HEIGHT,
-      tooltipRectangle.x + TRIANGLE_PADDING_FROM_COMPONENT + TRIANGLE_SIDE, tooltipRectangle.y
-    };
-
-    return triangle;
-  }
-
   public void checkSubclass() {
     //no-op
   }
 
+  // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
   private void onDispose(Event event) {
-    // TODO: dispose all the things here
+    parent.removeListener(SWT.Dispose, parentListener);
+    removeListener(SWT.Dispose, listener);
+    notifyListeners(SWT.Dispose, event);
+    event.type = SWT.None;
+
+    tooltip.dispose();
+    tooltip = null;
+    if (tooltipRegion != null) {
+      tooltipRegion.dispose();
+    }
   }
 
   private void onPaint(Event event) {
@@ -114,7 +126,7 @@ public class Bubble extends Widget {
   }
 
   private void onMouseDown(Event event) {
-    // TODO: dismiss the tooltip if they click it
+    hide();
   }
 
   private Point getTextSize(String text) {
