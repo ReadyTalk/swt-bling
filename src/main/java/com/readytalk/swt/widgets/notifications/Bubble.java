@@ -157,7 +157,7 @@ public class Bubble extends Widget {
 
   private Point getTextSize(String text) {
     GC gc = new GC(getDisplay());
-    Point textExtent = gc.textExtent(text);
+    Point textExtent = gc.textExtent(text, SWT.DRAW_DELIMITER);
     gc.dispose();
     return textExtent;
   }
