@@ -51,7 +51,7 @@ public class BubbleTest {
   @Test
   public void bubble_anyParameters_hasDefaultBubbleDisplayLocationBelowAndCenteredOnParent() {
     assertEquals(bubble.bubbleDisplayLocation, Bubble.BubbleDisplayLocation.BELOW_PARENT);
-    assertEquals(bubble.bubbleTopLeftCornerLocation, Bubble.BubbleTopLeftCornerLocation.CENTER_OF_PARENT);
+    assertEquals(bubble.bubbleTopLeftCornerLocation, Bubble.BubblePointCenteredOnParent.TOP_LEFT_CORNER);
   }
 
   @Test
@@ -69,7 +69,7 @@ public class BubbleTest {
 
     shell.open();
 
-    assertEquals(bubble.bubbleTopLeftCornerLocation, Bubble.BubbleTopLeftCornerLocation.LEFT_OF_PARENT);
+    assertEquals(bubble.bubbleTopLeftCornerLocation, Bubble.BubblePointCenteredOnParent.TOP_RIGHT_CORNER);
   }
 
   private enum BubbleTextCutoffPosition { BOTTOM, RIGHT }

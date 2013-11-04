@@ -21,19 +21,19 @@ public class Bubble extends Widget {
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
   private static final int BORDER_THICKNESS = 1; //pixels
 
-  public enum BubbleDisplayLocation {BELOW_PARENT, ABOVE_PARENT}
-  public enum BubbleTopLeftCornerLocation { LEFT_OF_PARENT, CENTER_OF_PARENT }
+  public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
+  public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
   protected BubbleDisplayLocation bubbleDisplayLocation = BubbleDisplayLocation.BELOW_PARENT;
-  protected BubbleTopLeftCornerLocation bubbleTopLeftCornerLocation = BubbleTopLeftCornerLocation.CENTER_OF_PARENT;
+  protected BubblePointCenteredOnParent bubbleTopLeftCornerLocation = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
   private Listener listener;
   private String tooltipText;
-  private Control parent;
+  private Control parentControl;
   private Shell parentShell, tooltip;
 
   private Region tooltipRegion;
-  private Rectangle rectangle;
+  private Rectangle containingRectangle;
   private Rectangle borderRectangle;
   
   private Color textColor;
@@ -42,12 +42,12 @@ public class Bubble extends Widget {
 
   private Listener parentListener;
 
-  public Bubble(Control parent, String tooltipText) {
-    super(parent, SWT.NONE);
+  public Bubble(Control parentControl, String tooltipText) {
+    super(parentControl, SWT.NONE);
 
-    this.parent = parent;
+    this.parentControl = parentControl;
     this.tooltipText = tooltipText;
-    parentShell = AncestryHelper.getShellFromControl(parent);
+    parentShell = AncestryHelper.getShellFromControl(parentControl);
 
     // Remember to clean up after yourself onDispose.
     backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
@@ -81,20 +81,19 @@ public class Bubble extends Widget {
         dispose();
       }
     };
-    parent.addListener(SWT.Dispose, parentListener);
+    parentControl.addListener(SWT.Dispose, parentListener);
   }
 
   public void show() {
-//    bubbleDisplayLocation = determineBubbleDisplayLocation(parentShell.getDisplay().getBounds())
+    Point textExtent = getTextSize(tooltipText);
+    containingRectangle = calculateContainingRectangleRegion(textExtent);
+    borderRectangle = calculateBorderRectangle(containingRectangle);
 
     tooltipRegion = new Region();
-    Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
-    Point textExtent = getTextSize(tooltipText);
+    Point location = getShellDisplayLocation(parentShell, parentControl, bubbleDisplayLocation,
+            bubbleTopLeftCornerLocation, containingRectangle);
 
-    rectangle = calculateRectangleRegion(parent.getSize(), textExtent);
-    borderRectangle = calculateBorderRectangle(rectangle);
-
-    tooltipRegion.add(rectangle);
+    tooltipRegion.add(containingRectangle);
 
     tooltip.setRegion(tooltipRegion);
     tooltip.setLocation(location);
@@ -109,8 +108,35 @@ public class Bubble extends Widget {
     return tooltip.isVisible();
   }
 
-  private Rectangle calculateRectangleRegion(Point componentSize, Point textExtent) {
-    return new Rectangle(componentSize.x / 2, componentSize.y,
+  private Point getShellDisplayLocation(Shell parentShell, Control parentControl, BubbleDisplayLocation aboveOrBelow,
+                                        BubblePointCenteredOnParent topLeftCorner, Rectangle bubbleRectangle) {
+    Point parentControlSize = parentControl.getSize();
+    Point parentLocationRelativeToDisplay = parentShell.getDisplay().map(parentShell, null, parentControl.getLocation());
+    Point appropriateDisplayLocation = new Point(0, 0);
+
+    switch (aboveOrBelow) {
+      case ABOVE_PARENT:
+        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y - bubbleRectangle.height;
+        break;
+      case BELOW_PARENT:
+        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y + parentControlSize.y;
+        break;
+    }
+
+    switch(topLeftCorner) {
+      case TOP_LEFT_CORNER:
+        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x + (parentControlSize.x / 2);
+        break;
+      case TOP_RIGHT_CORNER:
+        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x - bubbleRectangle.width + (parentControlSize.x / 2);
+        break;
+    }
+
+    return appropriateDisplayLocation;
+  }
+
+  private Rectangle calculateContainingRectangleRegion(Point textExtent) {
+    return new Rectangle(0, 0,
             textExtent.x + TEXT_WIDTH_PADDING,
             textExtent.y + TEXT_HEIGHT_PADDING);
   }
@@ -126,13 +152,9 @@ public class Bubble extends Widget {
     //no-op
   }
 
-//  protected BubbleDisplayLocation determineBubbleDisplayLocation(Rectangle displayBounds, Point defaultLocationToAppear) {
-//
-//  }
-
   // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
   private void onDispose(Event event) {
-    parent.removeListener(SWT.Dispose, parentListener);
+    parentControl.removeListener(SWT.Dispose, parentListener);
     removeListener(SWT.Dispose, listener);
     notifyListeners(SWT.Dispose, event);
     event.type = SWT.None;
@@ -152,7 +174,7 @@ public class Bubble extends Widget {
     gc.drawRectangle(borderRectangle);
 
     gc.setForeground(textColor);
-    gc.drawText(tooltipText, rectangle.x + (TEXT_WIDTH_PADDING / 2), rectangle.y + (TEXT_HEIGHT_PADDING / 2));
+    gc.drawText(tooltipText, containingRectangle.x + (TEXT_WIDTH_PADDING / 2), containingRectangle.y + (TEXT_HEIGHT_PADDING / 2));
   }
 
   private void onMouseDown(Event event) {
