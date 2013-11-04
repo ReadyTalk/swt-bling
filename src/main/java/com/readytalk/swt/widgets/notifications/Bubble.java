@@ -85,7 +85,7 @@ public class Bubble extends Widget {
   }
 
   public void show() {
-    bubbleDisplayLocation = determineBubbleDisplayLocation(parentShell.getDisplay().getBounds())
+//    bubbleDisplayLocation = determineBubbleDisplayLocation(parentShell.getDisplay().getBounds())
 
     tooltipRegion = new Region();
     Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
@@ -122,9 +122,9 @@ public class Bubble extends Widget {
     //no-op
   }
 
-  protected BubbleDisplayLocation determineBubbleDisplayLocation(Rectangle displayBounds, Point defaultLocationToAppear) {
-
-  }
+//  protected BubbleDisplayLocation determineBubbleDisplayLocation(Rectangle displayBounds, Point defaultLocationToAppear) {
+//
+//  }
 
   // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
   private void onDispose(Event event) {
