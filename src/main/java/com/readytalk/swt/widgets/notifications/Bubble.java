@@ -21,6 +21,12 @@ public class Bubble extends Widget {
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
   private static final int BORDER_THICKNESS = 1; //pixels
 
+  public enum BubbleDisplayLocation {BELOW_PARENT, ABOVE_PARENT}
+  public enum BubbleTopLeftCornerLocation { LEFT_OF_PARENT, CENTER_OF_PARENT }
+
+  protected BubbleDisplayLocation bubbleDisplayLocation = BubbleDisplayLocation.BELOW_PARENT;
+  protected BubbleTopLeftCornerLocation bubbleTopLeftCornerLocation = BubbleTopLeftCornerLocation.CENTER_OF_PARENT;
+
   private Listener listener;
   private String tooltipText;
   private Control parent;
@@ -79,6 +85,8 @@ public class Bubble extends Widget {
   }
 
   public void show() {
+    bubbleDisplayLocation = determineBubbleDisplayLocation(parentShell.getDisplay().getBounds())
+
     tooltipRegion = new Region();
     Point location = parentShell.getDisplay().map(parentShell, null, parent.getLocation());
     Point textExtent = getTextSize(tooltipText);
@@ -112,6 +120,10 @@ public class Bubble extends Widget {
 
   public void checkSubclass() {
     //no-op
+  }
+
+  protected BubbleDisplayLocation determineBubbleDisplayLocation(Rectangle displayBounds, Point defaultLocationToAppear) {
+
   }
 
   // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
