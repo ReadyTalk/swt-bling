@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.eclipse.swt.widgets.Composite;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
