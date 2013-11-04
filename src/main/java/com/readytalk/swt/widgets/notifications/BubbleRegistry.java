@@ -1,6 +1,7 @@
 package com.readytalk.swt.widgets.notifications;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Widget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,15 +29,15 @@ public class BubbleRegistry {
     return instance;
   }
 
-  public void register(Composite composite, Bubble bubble,BubbleTag ... tags) {
-    BubbleRegistrant registrant = findRegistrant(composite);
+  public void register(Widget widget, Bubble bubble, BubbleTag ... tags) {
+    BubbleRegistrant registrant = findRegistrant(widget);
 
     if(registrant == null) {
-      registrant = new CompositeBubbleRegistrant(composite, bubble, tags);
+      registrant = new WidgetBubbleRegistrant(widget, bubble, tags);
       registrants.add(registrant);
     }
 
-    addTags(composite, tags);
+    addTags(widget, tags);
   }
 
 
@@ -165,28 +166,25 @@ public class BubbleRegistry {
     }
 
     abstract Object getTarget();
-    abstract void showBubble();
-    abstract void dismissBubble();
-  }
-
-  static class CompositeBubbleRegistrant extends BubbleRegistrant {
-    final Composite composite;
-
-    CompositeBubbleRegistrant(Composite composite, Bubble bubble, BubbleTag ... tags) {
-      super(bubble, tags);
-      this.composite = composite;
-    }
-
-    Object getTarget() {
-      return composite;
-    }
-
     void showBubble() {
-
+      bubble.show();             // i may pull these out again
     }
 
     void dismissBubble() {
+      bubble.hide();
+    }
+  }
 
+  static class WidgetBubbleRegistrant extends BubbleRegistrant {
+    final Widget widget;
+
+    WidgetBubbleRegistrant(Widget widget, Bubble bubble, BubbleTag ... tags) {
+      super(bubble, tags);
+      this.widget = widget;
+    }
+
+    Object getTarget() {
+      return widget;
     }
   }
 }

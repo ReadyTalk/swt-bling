@@ -105,6 +105,10 @@ public class Bubble extends Widget {
     tooltip.setVisible(false);
   }
 
+  public boolean isVisible() {
+    return tooltip.isVisible();
+  }
+
   private Rectangle calculateRectangleRegion(Point componentSize, Point textExtent) {
     return new Rectangle(componentSize.x / 2, componentSize.y,
             textExtent.x + TEXT_WIDTH_PADDING,
