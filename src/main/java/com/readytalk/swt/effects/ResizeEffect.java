@@ -10,10 +10,7 @@ import java.util.logging.Logger;
  * A roll-your-own resize.  Basically, you can resize any SWT component over time.  A default time and
  * interval will be provided, if you do not wish to provide one, though your mileage may vary.
  *
- * Because we might want to run this standalone, you will need to provide some type of mechanism to
- * actually execute this procedure.  We wrap this in a Executor instance.
- *
- * If need be, you can make an anonymous inner version of a Executor like so:
+ * Depending on your systems threading model, you can provide your own LinkableEffect.Executor like so:
  *
  *  new Executor() {
  *    void timerExec(final int time, final Runnable runnable) {
@@ -27,10 +24,8 @@ import java.util.logging.Logger;
  *   }
  *  }
  *
- *  This example will work, but would do so directly on the Display... which you don't want to do
- *  in NativeClient.
- *
- *  As com.ecovate.nat.gui.GUIHelper currently implements the aforementioned interface, that will do nicely.
+ *  This example is unnecessary though, as the default behavior for LinkableEffect is to use the Display.getCurrentDisplay()
+ *  to execute.
  *
  *  The other part to consider is setting your destination rectangle.  This will be what we draw to.  It can be in
  *  a different location, if you choose to specify it.
@@ -86,7 +81,7 @@ public class ResizeEffect extends LinkableEffect {
                       LinkableEffect ... linkableEffects) throws InvalidEffectArgumentException {
 
 
-    super(parent, null, timeInterval, linkableEffects);
+    super(parent, executor, timeInterval, linkableEffects);
 
     // origin data
     this.currentX = currentX;
