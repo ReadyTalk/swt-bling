@@ -97,8 +97,6 @@ public class BubbleIntegTest {
       }
 
       Rectangle displayBounds = display.getClientArea();
-      System.out.println("Display bounds are " + displayBounds);
-
       Rectangle buttonSize = button.getBounds();
       switch (cutoffPosition) {
         case BOTTOM:
