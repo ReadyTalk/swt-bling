@@ -75,16 +75,12 @@ public class BubbleIntegTest {
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
-
-      System.out.println("****************");
-      System.out.println("ShellPoint is " + shellPoint);
-      System.out.println("ExpectedDisplayLocation " + expectedDisplayLocation);
-      System.out.println("ExpectedCenteredLocaiton " + expectedCenteredOnParent);
     }
 
     @Test
     public void configureBubbleIfWouldBeCutOff_differingParameters_bubbleHasCorrectParams() {
       shell.setLocation(shellPoint);
+      shell.open();
       bubble.show();
 
       assertEquals(bubble.bubbleDisplayLocation, expectedDisplayLocation);
