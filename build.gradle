@@ -1,5 +1,6 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
+apply plugin: 'findbugs'
 apply from: 'gradle/swt.gradle'
 apply from: 'gradle/integTest.gradle'
 apply from: 'gradle/example.gradle'
@@ -23,7 +24,6 @@ ext {
   platform = getPlatform(System.properties['os.name'])
 }
 
-// In this section you declare where to find the dependencies of your project
 repositories {
   mavenCentral()
   maven {
@@ -31,10 +31,20 @@ repositories {
   }
 }
 
-// In this section you declare the dependencies for your production and test code
 dependencies {
   compile 'org.slf4j:slf4j-api:1.7.5'
   compile "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
   testCompile "junit:junit:4.11"
   testCompile "org.mockito:mockito-all:1.9.5"
+}
+
+findbugs {
+  reportLevel = "high"
+}
+
+tasks.withType(FindBugs) {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
 }

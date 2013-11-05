@@ -72,6 +72,8 @@ public class Bubble extends Widget {
           case SWT.MouseDown:
             onMouseDown(event);
             break;
+          default:
+            break;
         }
       }
     };

@@ -58,16 +58,12 @@ public class BubbleIntegTest {
       });
     }
 
-    boolean bottomIsCutOff;
-    boolean rightIsCutOff;
     Point shellPoint;
     Bubble.BubbleDisplayLocation expectedDisplayLocation;
     Bubble.BubblePointCenteredOnParent expectedCenteredOnParent;
 
     public BubblePlacementTests(boolean bottomIsCutOff, boolean rightIsCutOff, Point shellPoint,
                                 Bubble.BubbleDisplayLocation expectedDisplayLocation, Bubble.BubblePointCenteredOnParent expectedCenteredOnParent) {
-      this.bottomIsCutOff = bottomIsCutOff;
-      this.rightIsCutOff = rightIsCutOff;
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
