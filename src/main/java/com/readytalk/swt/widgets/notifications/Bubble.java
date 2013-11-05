@@ -15,17 +15,19 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
 public class Bubble extends Widget {
+  public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
+  public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
+
   private static final RGB BACKGROUND_COLOR = new RGB(74, 74, 74);
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
   private static final int BORDER_THICKNESS = 1; //pixels
+  protected static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
+  protected static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
-  public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
-  public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
-
-  protected BubbleDisplayLocation bubbleDisplayLocation = BubbleDisplayLocation.BELOW_PARENT;
-  protected BubblePointCenteredOnParent bubbleTopLeftCornerLocation = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
+  protected BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
+  protected BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
 
   private Listener listener;
   private String tooltipText;
@@ -41,6 +43,7 @@ public class Bubble extends Widget {
   private Color borderColor;
 
   private Listener parentListener;
+  private boolean bubbleIsFullyConfigured = false;
 
   public Bubble(Control parentControl, String tooltipText) {
     super(parentControl, SWT.NONE);
@@ -86,14 +89,22 @@ public class Bubble extends Widget {
 
   public void show() {
     Point textExtent = getTextSize(tooltipText);
-    containingRectangle = calculateContainingRectangleRegion(textExtent);
-    borderRectangle = calculateBorderRectangle(containingRectangle);
 
     tooltipRegion = new Region();
-    Point location = getShellDisplayLocation(parentShell, parentControl, bubbleDisplayLocation,
-            bubbleTopLeftCornerLocation, containingRectangle);
-
+    containingRectangle = calculateContainingRectangleRegion(textExtent);
     tooltipRegion.add(containingRectangle);
+
+    borderRectangle = calculateBorderRectangle(containingRectangle);
+
+    Point location = getShellDisplayLocation(parentShell, parentControl, bubbleDisplayLocation,
+            bubblePointCenteredOnParent, containingRectangle);
+
+    while (!bubbleIsFullyConfigured) {
+      bubbleIsFullyConfigured = configureBubbleIfWouldBeCutOff(parentShell.getDisplay().getClientArea(),
+              location, containingRectangle);
+      location = getShellDisplayLocation(parentShell, parentControl, bubbleDisplayLocation,
+              bubblePointCenteredOnParent, containingRectangle);
+    }
 
     tooltip.setRegion(tooltipRegion);
     tooltip.setLocation(location);
@@ -102,14 +113,47 @@ public class Bubble extends Widget {
 
   public void hide() {
     tooltip.setVisible(false);
+    resetState();
   }
 
   public boolean isVisible() {
     return tooltip.isVisible();
   }
 
+  protected boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+    if (configureBubbleIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
+      return false;
+    } else if  (configureBubbleIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  protected boolean configureBubbleIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+    Point lowestYPosition = new Point(locationRelativeToDisplay.x, locationRelativeToDisplay.y + containingRectangle.height);
+
+    if (!displayBounds.contains(lowestYPosition)) {
+      bubbleDisplayLocation = BubbleDisplayLocation.ABOVE_PARENT;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  protected boolean configureBubbleIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+    Point farthestXPosition = new Point(locationRelativeToDisplay.x + containingRectangle.width, locationRelativeToDisplay.y);
+
+    if (!displayBounds.contains(farthestXPosition)) {
+      bubblePointCenteredOnParent = BubblePointCenteredOnParent.TOP_RIGHT_CORNER;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   private Point getShellDisplayLocation(Shell parentShell, Control parentControl, BubbleDisplayLocation aboveOrBelow,
-                                        BubblePointCenteredOnParent topLeftCorner, Rectangle bubbleRectangle) {
+                                        BubblePointCenteredOnParent bubblePointCenteredOnParent, Rectangle bubbleRectangle) {
     Point parentControlSize = parentControl.getSize();
     Point parentLocationRelativeToDisplay = parentShell.getDisplay().map(parentShell, null, parentControl.getLocation());
     Point appropriateDisplayLocation = new Point(0, 0);
@@ -123,7 +167,7 @@ public class Bubble extends Widget {
         break;
     }
 
-    switch(topLeftCorner) {
+    switch(bubblePointCenteredOnParent) {
       case TOP_LEFT_CORNER:
         appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x + (parentControlSize.x / 2);
         break;
@@ -146,6 +190,12 @@ public class Bubble extends Widget {
             containingRectangle.y,
             containingRectangle.width - BORDER_THICKNESS,
             containingRectangle.height - BORDER_THICKNESS);
+  }
+
+  private void resetState() {
+    bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
+    bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
+    bubbleIsFullyConfigured = false;
   }
 
   public void checkSubclass() {
