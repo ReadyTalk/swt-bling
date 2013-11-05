@@ -109,6 +109,7 @@ public class Bubble extends Widget {
     }
 
     tooltip.setRegion(tooltipRegion);
+    tooltip.setSize(containingRectangle.width, containingRectangle.height);
     tooltip.setLocation(location);
     tooltip.setVisible(true);
   }
