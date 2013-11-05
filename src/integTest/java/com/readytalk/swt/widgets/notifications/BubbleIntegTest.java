@@ -37,8 +37,16 @@ public class BubbleIntegTest {
 
     @Before
     public void setUp() {
-      if (!initialized || shell.isDisposed()) {
+      if (needsInitialization()) {
         initialize();
+      }
+    }
+
+    private static boolean needsInitialization() {
+      if (!initialized || display.isDisposed() || shell.isDisposed()) {
+        return true;
+      } else {
+        return false;
       }
     }
 
@@ -67,6 +75,11 @@ public class BubbleIntegTest {
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
+
+      System.out.println("****************");
+      System.out.println("ShellPoint is " + shellPoint);
+      System.out.println("ExpectedDisplayLocation " + expectedDisplayLocation);
+      System.out.println("ExpectedCenteredLocaiton " + expectedCenteredOnParent);
     }
 
     @Test
@@ -83,11 +96,13 @@ public class BubbleIntegTest {
     private static Point getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition cutoffPosition) {
       Point appropriateShellLocation = null;
 
-      if (!initialized) {
+      if (needsInitialization()) {
         initialize();
       }
 
       Rectangle displayBounds = display.getClientArea();
+      System.out.println("Display bounds are " + displayBounds);
+
       Rectangle buttonSize = button.getBounds();
       switch (cutoffPosition) {
         case BOTTOM:
@@ -112,7 +127,7 @@ public class BubbleIntegTest {
     }
 
     private static void initialize() {
-      display = new Display();
+      display = Display.getDefault();
       shell = new Shell(display);
       shell.setLayout(new FillLayout());
       Composite composite = new Composite(shell, SWT.NONE);

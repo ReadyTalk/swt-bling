@@ -13,7 +13,7 @@ public class SquareButtonTest {
 
   @Test
   public void testTextSetting() {
-    Display display = new Display();
+    Display display = Display.getDefault();
     Shell shell = new Shell(display);
 
     shell.open();

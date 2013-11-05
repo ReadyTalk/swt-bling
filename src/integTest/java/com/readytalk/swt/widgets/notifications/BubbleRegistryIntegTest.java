@@ -26,7 +26,7 @@ public class BubbleRegistryIntegTest {
   BubbleRegistry bubbleRegistry;
 
   private void setupShell() {
-    display = new Display();
+    display = Display.getDefault();
     shell = new Shell(display);
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);

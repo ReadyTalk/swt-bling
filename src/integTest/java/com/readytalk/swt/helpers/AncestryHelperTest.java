@@ -15,7 +15,7 @@ public class AncestryHelperTest {
 
   @Before
   public void setUp() {
-    display = Display.getCurrent();
+    display = Display.getDefault();
   }
 
   @Test
