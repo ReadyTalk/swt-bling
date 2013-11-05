@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AncestryHelperTest {
+public class AncestryHelperIntegTest {
   Display display;
 
   @Before

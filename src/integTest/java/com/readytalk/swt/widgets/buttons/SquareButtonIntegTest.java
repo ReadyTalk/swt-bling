@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SquareButtonTest {
+public class SquareButtonIntegTest {
 
   private String buttonText = "Text";
 
