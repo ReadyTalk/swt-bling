@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.readytalk.swt.helpers.DebugHelper;
+import org.eclipse.swt.widgets.Display;
 
 public abstract class LinkableEffect implements Runnable {
   private static final Logger log = Logger.getLogger(LinkableEffect.class.getName());
@@ -23,17 +24,31 @@ public abstract class LinkableEffect implements Runnable {
   private int effectCompleteCount;
 
   public LinkableEffect(LinkableEffect parent, Executor executor, int timeInterval, LinkableEffect ... linkableEffects) throws InvalidEffectArgumentException {
+
     if(parent != null) {
       parent.linkEffect(this);
-    } else if(executor != null) {
+    } else {
       this.timeInterval = (timeInterval == 0) ? DEFAULT_TIME_INTERVAL : timeInterval;
+
+      if(executor == null) {
+        executor = new Executor() {
+          @Override
+          public void timerExec(int time, Runnable runnable) {
+            Display.getCurrent().timerExec(time, runnable);
+          }
+
+          @Override
+          public void asyncExec(Runnable runnable) {
+            Display.getCurrent().asyncExec(runnable);
+          }
+        };
+      }
+
       this.executor = executor;
       getEffectList().add(this);
       if(linkableEffects != null) {
         getEffectList().addAll(Arrays.asList(linkableEffects));
       }
-    } else {
-      throw new InvalidEffectArgumentException("You must either specify a parent effect or an Executor for your effect");
     }
   }
 
@@ -180,5 +195,10 @@ public abstract class LinkableEffect implements Runnable {
      * @return Indicate if you want effectCompleteCalled after the effect is aborterd
      */
     public abstract boolean abortEffect();
+  }
+
+  public interface Executor {
+    public void timerExec(final int time, final Runnable runnable);
+    public void asyncExec(Runnable runnable);
   }
 }

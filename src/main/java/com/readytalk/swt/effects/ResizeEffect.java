@@ -1,7 +1,5 @@
 package com.readytalk.swt.effects;
 
-import com.ecovate.nat.util.Executor;
-
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
@@ -44,7 +42,7 @@ import java.util.logging.Logger;
  *    left is origin at 0,0 and x grows to the right, y grows down.  
  */
 public class ResizeEffect extends LinkableEffect {
-  private static final Logger LOG = Logger.getLogger(this.getClass().getName());
+  private static final Logger LOG = Logger.getLogger(ResizeEffect.class.getName());
 
   private static final int DEFAULT_PIXEL_INCREMENT = 10;
   private static final int DEFAULT_TIME_INTERVAL = 10;
@@ -88,7 +86,7 @@ public class ResizeEffect extends LinkableEffect {
                       LinkableEffect ... linkableEffects) throws InvalidEffectArgumentException {
 
 
-    super(parent, executor, timeInterval, linkableEffects);
+    super(parent, null, timeInterval, linkableEffects);
 
     // origin data
     this.currentX = currentX;
