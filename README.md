@@ -30,7 +30,7 @@ Want to see a widget in action? We provide simple example apps for each of our w
 Most active contributors use [IntelliJ](http://www.jetbrains.com/idea/) as their primary IDE. Simply import the project
 by pointing IntelliJ at the build.gradle file at the root of the project.
 
-You'll need to inform Gradle about our examples and integTest directory. Do so by right clicking the swt-bling project and choosing "Open Module Settings (F4)".
+You'll need to inform IntelliJ about our examples and integTest directory. Do so by right clicking the swt-bling project and choosing "Open Module Settings (F4)".
 * Mark src/examples/java as "Sources"
 * Mark src/integTest/java as "Test Sources"
 
