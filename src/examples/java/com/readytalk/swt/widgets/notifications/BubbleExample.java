@@ -24,13 +24,7 @@ public class BubbleExample {
     button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
 
     final Bubble bubble = new Bubble(button, "This text explains what's going to happen when you click the button.");
-    // This will be eventually be handled by a controller of some sort
-    button.addMouseTrackListener(new MouseTrackAdapter() {
-      public void mouseHover(MouseEvent e) {
-        super.mouseHover(e);
-        bubble.show();
-      }
-    });
+    BubbleRegistry.getInstance().register(button, bubble);
 
     shell.setSize(200, 200);
     shell.open();
