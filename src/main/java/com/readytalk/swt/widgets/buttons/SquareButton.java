@@ -95,10 +95,10 @@ public class SquareButton extends Canvas {
 
   protected int lastWidth, lastHeight;
 
-  public static int BG_IMAGE_STRETCH = 1;
-  public static int BG_IMAGE_TILE = 2;
-  public static int BG_IMAGE_CENTER = 3;
-  public static int BG_IMAGE_FIT = 4;
+  public static final int BG_IMAGE_STRETCH = 1;
+  public static final int BG_IMAGE_TILE = 2;
+  public static final int BG_IMAGE_CENTER = 3;
+  public static final int BG_IMAGE_FIT = 4;
   protected int backgroundImageStyle = 0;
 
   public enum ImagePosition {
@@ -197,6 +197,8 @@ public class SquareButton extends Canvas {
           case SWT.TRAVERSE_PAGE_PREVIOUS:
             e.doit = true;
             break;
+          default:
+            break;
         }
       }
     });
@@ -232,6 +234,8 @@ public class SquareButton extends Canvas {
             SquareButton.this.setClickedColor();
             redraw();
             doButtonClicked();
+            break;
+          default:
             break;
         }
       }

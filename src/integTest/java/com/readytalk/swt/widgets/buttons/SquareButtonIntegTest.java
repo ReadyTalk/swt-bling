@@ -6,14 +6,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SquareButtonTest {
+public class SquareButtonIntegTest {
 
   private String buttonText = "Text";
 
 
   @Test
   public void testTextSetting() {
-    Display display = new Display();
+    Display display = Display.getDefault();
     Shell shell = new Shell(display);
 
     shell.open();
