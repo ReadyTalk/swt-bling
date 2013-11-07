@@ -1,5 +1,9 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.effects.FadeEffect;
+import com.readytalk.swt.effects.FadeEffect.Fadeable;
+import com.readytalk.swt.effects.FadeEffect.FadeEffectBuilder;
+import com.readytalk.swt.effects.InvalidEffectArgumentException;
 import com.readytalk.swt.helpers.AncestryHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -14,7 +18,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-public class Bubble extends Widget {
+import java.util.logging.Logger;
+
+public class Bubble extends Widget implements Fadeable {
+  private static final Logger LOG = Logger.getLogger(Bubble.class.getName());
+
   public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
   public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
@@ -23,6 +31,9 @@ public class Bubble extends Widget {
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
   private static final int TEXT_WIDTH_PADDING = 10; //pixels
   private static final int BORDER_THICKNESS = 1; //pixels
+  private static final int FADE_OUT_TIME = 200; //milliseconds
+  private static final int FULLY_VISIBLE_ALPHA = 255; //fully opaque
+  private static final int FULLY_HIDDEN_ALPHA = 0; //fully transparent
   protected static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
   protected static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
@@ -111,16 +122,31 @@ public class Bubble extends Widget {
     tooltip.setRegion(tooltipRegion);
     tooltip.setSize(containingRectangle.width, containingRectangle.height);
     tooltip.setLocation(location);
+    tooltip.setAlpha(FULLY_VISIBLE_ALPHA);
     tooltip.setVisible(true);
   }
 
-  public void hide() {
-    tooltip.setVisible(false);
-    resetState();
+  public void fadeOut() {
+    try {
+      FadeEffect fade = new FadeEffectBuilder().
+                            setFadeable(this).
+                            setFadeCallback(new BubbleFadeCallback()).
+                            setFadeTimeInMilliseconds(FADE_OUT_TIME).
+                            setCurrentAlpha(tooltip.getAlpha()).
+                            setTargetAlpha(FULLY_HIDDEN_ALPHA).build();
+      fade.startEffect();
+    } catch (InvalidEffectArgumentException e) {
+      LOG.warning("Invalid argument provided to FadeEffect.");
+    }
   }
 
   public boolean isVisible() {
     return tooltip.isVisible();
+  }
+
+  private void hide() {
+    tooltip.setVisible(false);
+    resetState();
   }
 
   protected boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
@@ -239,5 +265,23 @@ public class Bubble extends Widget {
     Point textExtent = gc.textExtent(text, SWT.DRAW_DELIMITER);
     gc.dispose();
     return textExtent;
+  }
+
+  public boolean fadeComplete(int targetAlpha) {
+    if (tooltip.getAlpha() == targetAlpha) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public void fade(int alpha) {
+    tooltip.setAlpha(alpha);
+  }
+
+  private class BubbleFadeCallback implements FadeEffect.FadeCallback {
+    public void fadeComplete() {
+      hide();
+    }
   }
 }

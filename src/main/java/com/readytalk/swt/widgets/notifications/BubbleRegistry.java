@@ -171,7 +171,7 @@ public class BubbleRegistry {
     }
 
     void dismissBubble() {
-      bubble.hide();
+      bubble.fadeOut();
     }
   }
 
