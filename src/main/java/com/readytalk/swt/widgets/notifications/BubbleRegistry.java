@@ -1,6 +1,9 @@
 package com.readytalk.swt.widgets.notifications;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
 
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ public class BubbleRegistry {
 
     if(registrant == null) {
       registrant = new WidgetBubbleRegistrant(widget, bubble, tags);
+      registrant.addMouseListener();
       registrants.add(registrant);
     }
 
@@ -130,6 +134,7 @@ public class BubbleRegistry {
     if(registrant != null) {
       removeTags(registrant,
         registrant.getTags().toArray(new BubbleTag[registrant.getTags().size()]));
+      registrant.removeMouseListener();
       registrants.remove(registrant);
     }
   }
@@ -166,6 +171,8 @@ public class BubbleRegistry {
     }
 
     abstract Object getTarget();
+    abstract void addMouseListener();
+    abstract void removeMouseListener();
     void showBubble() {
       bubble.show();             // i may pull these out again
     }
@@ -177,6 +184,8 @@ public class BubbleRegistry {
 
   static class WidgetBubbleRegistrant extends BubbleRegistrant {
     final Widget widget;
+    Listener mouseHoverListener;
+    Listener mouseOutListener;
 
     WidgetBubbleRegistrant(Widget widget, Bubble bubble, BubbleTag ... tags) {
       super(bubble, tags);
@@ -185,6 +194,30 @@ public class BubbleRegistry {
 
     Object getTarget() {
       return widget;
+    }
+
+    public void addMouseListener() {
+      if (mouseHoverListener == null) {
+        mouseHoverListener = new Listener() {
+          public void handleEvent(Event event) {
+            bubble.show();
+          }
+        };
+      }
+      if (mouseOutListener == null) {
+        mouseOutListener = new Listener() {
+          public void handleEvent(Event event) {
+            bubble.fadeOut();
+          }
+        };
+      }
+      widget.addListener(SWT.MouseHover, mouseHoverListener);
+      widget.addListener(SWT.MouseExit, mouseOutListener);
+    }
+
+    public void removeMouseListener() {
+      widget.removeListener(SWT.MouseHover, mouseHoverListener);
+      widget.removeListener(SWT.MouseExit, mouseOutListener);
     }
   }
 }
