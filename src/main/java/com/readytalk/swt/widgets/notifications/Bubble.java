@@ -40,6 +40,7 @@ public class Bubble extends Widget implements Fadeable {
   protected BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
   protected BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
 
+  private Object fadeLock = new Object();
   private Listener listener;
   private String tooltipText;
   private Control parentControl;
@@ -55,6 +56,7 @@ public class Bubble extends Widget implements Fadeable {
 
   private Listener parentListener;
   private boolean bubbleIsFullyConfigured = false;
+  private boolean fadeEffectInProgress = false;
 
   public Bubble(Control parentControl, String tooltipText) {
     super(parentControl, SWT.NONE);
@@ -132,9 +134,11 @@ public class Bubble extends Widget implements Fadeable {
                             setFadeable(this).
                             setFadeCallback(new BubbleFadeCallback()).
                             setFadeTimeInMilliseconds(FADE_OUT_TIME).
-                            setCurrentAlpha(tooltip.getAlpha()).
+                            setCurrentAlpha(FULLY_VISIBLE_ALPHA).
                             setTargetAlpha(FULLY_HIDDEN_ALPHA).build();
+
       fade.startEffect();
+      fadeEffectInProgress = true;
     } catch (InvalidEffectArgumentException e) {
       LOG.warning("Invalid argument provided to FadeEffect.");
     }
@@ -225,6 +229,7 @@ public class Bubble extends Widget implements Fadeable {
     bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
     bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
     bubbleIsFullyConfigured = false;
+    fadeEffectInProgress = false;
   }
 
   public void checkSubclass() {
@@ -268,15 +273,19 @@ public class Bubble extends Widget implements Fadeable {
   }
 
   public boolean fadeComplete(int targetAlpha) {
-    if (tooltip.getAlpha() == targetAlpha) {
-      return true;
-    } else {
-      return false;
+    synchronized (fadeLock) {
+      if (tooltip.getAlpha() == targetAlpha) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
   public void fade(int alpha) {
-    tooltip.setAlpha(alpha);
+    synchronized (fadeLock) {
+      tooltip.setAlpha(alpha);
+    }
   }
 
   private class BubbleFadeCallback implements FadeEffect.FadeCallback {
