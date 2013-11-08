@@ -11,6 +11,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
 public class BubbleExample {
@@ -53,12 +55,20 @@ public class BubbleExample {
       }
     });
 
-    Button button = new Button(composite, SWT.PUSH);
-    button.setText("I Have a Bubble Tooltip");
-    button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+    Button newFeatureButton = new Button(composite, SWT.PUSH);
+    newFeatureButton.setText("A New Feature");
+    Bubble newFeatureButtonBubble = new Bubble(newFeatureButton, "This text explains a new, exciting feature!");
+    bubbleRegistry.register(newFeatureButton, newFeatureButtonBubble, BubbleTag.NEW);
 
-    Bubble bubble = new Bubble(button, "This text explains a new, exciting feature!");
-    BubbleRegistry.getInstance().register(button, bubble, BubbleTag.NEW);
+    Label labelExample = new Label(composite, SWT.NONE);
+    labelExample.setText("A Short Label");
+    Bubble labelBubble = new Bubble(labelExample, "This is a longer description of what the short label explains");
+    bubbleRegistry.register(labelExample, labelBubble);
+
+    ProgressBar progress = new ProgressBar(composite, SWT.INDETERMINATE);
+    Bubble progressBubble = new Bubble(progress, "This is a really long description where no line breaks are provided. " +
+            "We will automatically break these lines for you, so that users aren't overwhelmed by a long single line.");
+    bubbleRegistry.register(progress, progressBubble);
 
     shell.pack();
     shell.open();
