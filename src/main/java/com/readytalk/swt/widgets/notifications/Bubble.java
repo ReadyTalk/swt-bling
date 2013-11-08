@@ -297,8 +297,8 @@ public class Bubble extends Widget implements Fadeable {
       for (String word : words) {
         int wordPixelWidth = gc.textExtent(word).x;
         if (currentPixelCount + wordPixelWidth + spaceInPixels < MAX_STRING_LENGTH) {
-          sb.append(" ");
           sb.append(word);
+          sb.append(" ");
           currentPixelCount += wordPixelWidth + spaceInPixels;
         } else {
           sb.append("\n");
