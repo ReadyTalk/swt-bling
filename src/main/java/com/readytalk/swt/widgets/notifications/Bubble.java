@@ -24,6 +24,18 @@ import org.eclipse.swt.widgets.Widget;
 
 import java.util.logging.Logger;
 
+/**
+ * Instances of this class represent contextual information about a UI element.
+ *
+ * Bubble will attempt to always be visible on screen.
+ * If the default Bubble would appear off-screen, we will calculate a suitable location to appear.
+ *
+ * Bubble utilizes the system font, and provides a constructor to indicate use of a bolded font.
+ *
+ * Bubble will also break up lines that would be longer than 400 pixels when drawn.
+ * You can short-circuit this logic by providing your own line-breaks with <code>\n</code> characters in the text.
+ * We will never format your text if your provide your own formatting.
+ */
 public class Bubble extends Widget implements Fadeable {
   private static final Logger LOG = Logger.getLogger(Bubble.class.getName());
 
@@ -42,33 +54,52 @@ public class Bubble extends Widget implements Fadeable {
   protected static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
   protected static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
-  protected BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
-  protected BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
-
   private Object fadeLock = new Object();
+
   private Listener listener;
   private String tooltipText;
   private Control parentControl;
   private Shell parentShell, tooltip;
-
   private Region tooltipRegion;
+
   private Rectangle containingRectangle;
   private Rectangle borderRectangle;
-  
   private Color textColor;
+
   private Color backgroundColor;
   private Color borderColor;
   private Font boldFont;
 
   private Listener parentListener;
+  protected BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
+  protected BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
   private boolean bubbleIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
-  public Bubble(Control parentControl, String text) {
+  /**
+   * Constructs a new instance of the class. The Bubble does not appear until you call
+   * <code>show()</code> or apply it to a component via the <code>BubbleRegistry</code>.
+   * This is a convenience constructor which assumes you do not want the Bubble text to appear
+   * in a Bold font.
+   *
+   * @param parentControl The parent element that the Bubble provides contextual help about
+   * @param text The text you want to appear in the Bubble
+   * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
+   */
+  public Bubble(Control parentControl, String text) throws IllegalArgumentException {
     this(parentControl, text, false);
   }
 
-  public Bubble(Control parentControl, String text, boolean useBoldFont) {
+  /**
+   * Constructs a new instance of the class. The Bubble does not appear until you call
+   * <code>show()</code> or apply it to a component via the <code>BubbleRegistry</code>.
+   *
+   * @param parentControl The parent element that the Bubble provides contextual help about
+   * @param text The text you want to appear in the Bubble
+   * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
+   * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
+   */
+  public Bubble(Control parentControl, String text, boolean useBoldFont) throws IllegalArgumentException {
     super(parentControl, SWT.NONE);
 
     if (text == null) {
@@ -122,6 +153,9 @@ public class Bubble extends Widget implements Fadeable {
     addAccessibilityHooks(parentControl);
   }
 
+  /**
+   * Shows the Bubble in a suitable location relative to the parent component.
+   */
   public void show() {
     Point textExtent = getTextSize(tooltipText);
 
@@ -148,6 +182,9 @@ public class Bubble extends Widget implements Fadeable {
     tooltip.setVisible(true);
   }
 
+  /**
+   * Fades the Bubble off the screen.
+   */
   public void fadeOut() {
     if (fadeEffectInProgress) {
       return;
@@ -168,10 +205,21 @@ public class Bubble extends Widget implements Fadeable {
     }
   }
 
+  /**
+   * Returns whether the Bubble is currently fading from the screen.
+   * Calls to <code>Bubble.isVisible()</code> will return true while the Bubble is dismissing.
+   * @return Whether or not the Bubble is currently fading from the screen
+   */
   public boolean getIsFadeEffectInProgress() {
     return fadeEffectInProgress;
   }
 
+  /**
+   * Returns whether the Bubble is currently visible on screen.
+   * Note: If you utilize <code>Bubble.fadeOut()</code>, this method will return true while it's fading.
+   * To determine if it's fading out, call <code>Bubble.getIsFadeEffectInProgress</code>
+   * @return Visibility state of the Bubble
+   */
   public boolean isVisible() {
     return tooltip.isVisible();
   }
