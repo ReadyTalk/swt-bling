@@ -70,6 +70,11 @@ public class BubbleExample {
             "We will automatically break these lines for you, so that users aren't overwhelmed by a long single line.");
     bubbleRegistry.register(progress, progressBubble);
 
+    Label boldLabel = new Label(composite, SWT.NONE);
+    boldLabel.setText("This is a label with a bold Bubble");
+    Bubble boldBubble = new Bubble(boldLabel, "This is a bold Bubble tooltip text", true);
+    bubbleRegistry.register(boldLabel, boldBubble);
+
     shell.pack();
     shell.open();
     while (!shell.isDisposed()) {

@@ -9,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -56,12 +58,17 @@ public class Bubble extends Widget implements Fadeable {
   private Color textColor;
   private Color backgroundColor;
   private Color borderColor;
+  private Font boldFont;
 
   private Listener parentListener;
   private boolean bubbleIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
   public Bubble(Control parentControl, String text) {
+    this(parentControl, text, false);
+  }
+
+  public Bubble(Control parentControl, String text, boolean useBoldFont) {
     super(parentControl, SWT.NONE);
 
     if (text == null) {
@@ -76,6 +83,11 @@ public class Bubble extends Widget implements Fadeable {
     backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
     textColor = new Color(getDisplay(), TEXT_COLOR);
     borderColor = textColor;
+    if (useBoldFont) {
+      Font font = getDisplay().getSystemFont();
+      FontData fontData = font.getFontData()[0];
+      boldFont = new Font(getDisplay(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+    }
 
     tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     tooltip.setBackground(backgroundColor);
@@ -264,6 +276,11 @@ public class Bubble extends Widget implements Fadeable {
     if (tooltipRegion != null) {
       tooltipRegion.dispose();
     }
+    tooltipRegion = null;
+    if (boldFont != null) {
+      boldFont.dispose();
+    }
+    boldFont = null;
   }
 
   private void onPaint(Event event) {
@@ -272,6 +289,10 @@ public class Bubble extends Widget implements Fadeable {
     gc.setForeground(borderColor);
     gc.setLineWidth(BORDER_THICKNESS);
     gc.drawRectangle(borderRectangle);
+
+    if (boldFont != null) {
+      gc.setFont(boldFont);
+    }
 
     gc.setForeground(textColor);
     gc.drawText(tooltipText, containingRectangle.x + (TEXT_WIDTH_PADDING / 2), containingRectangle.y + (TEXT_HEIGHT_PADDING / 2));
@@ -291,6 +312,10 @@ public class Bubble extends Widget implements Fadeable {
 
   protected String maybeBreakLines(String rawString) {
     GC gc = new GC(getDisplay());
+    if (boldFont != null) {
+      gc.setFont(boldFont);
+    }
+
     Point textExtent = gc.textExtent(rawString, SWT.DRAW_DELIMITER);
     if (textExtent.x > MAX_STRING_LENGTH && !rawString.contains("\n")) {
       StringBuilder sb = new StringBuilder();
@@ -320,6 +345,10 @@ public class Bubble extends Widget implements Fadeable {
 
   private Point getTextSize(String text) {
     GC gc = new GC(getDisplay());
+    if (boldFont != null) {
+      gc.setFont(boldFont);
+    }
+
     Point textExtent = gc.textExtent(text, SWT.DRAW_DELIMITER);
     gc.dispose();
     return textExtent;

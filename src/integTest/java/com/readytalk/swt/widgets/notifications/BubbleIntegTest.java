@@ -203,7 +203,7 @@ public class BubbleIntegTest {
     @Test(expected=IllegalArgumentException.class)
     public void bubble_textIsNull_throwsIllegalArgumentException() {
       Shell shell = new Shell();
-      Bubble bubble = new Bubble(shell, null);
+      new Bubble(shell, null);
     }
 
     @Test

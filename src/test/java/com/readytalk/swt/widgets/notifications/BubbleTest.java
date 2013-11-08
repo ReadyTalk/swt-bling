@@ -104,12 +104,12 @@ public class BubbleTest {
   public static class BubbleConstructionTest {
     @Test(expected=IllegalArgumentException.class)
     public void bubble_parentIsNull_throwsIllegalArgumentException() {
-      Bubble bubble = new Bubble(null, "Here's some text");
+      new Bubble(null, "Here's some text");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void bubble_parentAndTextAreNull_throwsIllegalArgumentException() {
-      Bubble bubble = new Bubble(null, null);
+      new Bubble(null, null);
     }
   }
 
