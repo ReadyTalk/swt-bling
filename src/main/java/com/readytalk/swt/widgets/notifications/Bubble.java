@@ -6,6 +6,8 @@ import com.readytalk.swt.effects.FadeEffect.FadeEffectBuilder;
 import com.readytalk.swt.effects.InvalidEffectArgumentException;
 import com.readytalk.swt.helpers.AncestryHelper;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -100,6 +102,7 @@ public class Bubble extends Widget implements Fadeable {
       }
     };
     parentControl.addListener(SWT.Dispose, parentListener);
+    addAccessibilityHooks(parentControl);
   }
 
   public void show() {
@@ -271,6 +274,14 @@ public class Bubble extends Widget implements Fadeable {
 
   private void onMouseDown(Event event) {
     hide();
+  }
+
+  private void addAccessibilityHooks(Control parentControl) {
+    parentControl.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+      public void getHelp(AccessibleEvent e) {
+        e.result = tooltipText;
+      }
+    });
   }
 
   private Point getTextSize(String text) {
