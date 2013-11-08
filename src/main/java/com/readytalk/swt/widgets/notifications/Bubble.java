@@ -129,6 +129,10 @@ public class Bubble extends Widget implements Fadeable {
   }
 
   public void fadeOut() {
+    if (fadeEffectInProgress) {
+      return;
+    }
+
     try {
       FadeEffect fade = new FadeEffectBuilder().
                             setFadeable(this).
@@ -142,6 +146,10 @@ public class Bubble extends Widget implements Fadeable {
     } catch (InvalidEffectArgumentException e) {
       LOG.warning("Invalid argument provided to FadeEffect.");
     }
+  }
+
+  public boolean getIsFadeEffectInProgress() {
+    return fadeEffectInProgress;
   }
 
   public boolean isVisible() {

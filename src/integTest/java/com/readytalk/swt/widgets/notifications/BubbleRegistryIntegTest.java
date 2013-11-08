@@ -111,9 +111,9 @@ public class BubbleRegistryIntegTest {
     bubbleRegistry.dismissBubblesByTag(BubbleTag.NEW);
     bubbleRegistry.showBubblesByTags(BubbleTag.FREE_FORM);
 
-    Assert.assertFalse(topBubble.isVisible());
+    Assert.assertTrue(topBubble.getIsFadeEffectInProgress());
     Assert.assertTrue(middleBubble.isVisible());
-    Assert.assertFalse(bottomBubble.isVisible());
+    Assert.assertTrue(bottomBubble.getIsFadeEffectInProgress());
 
     closeShell();
   }
@@ -148,9 +148,9 @@ public class BubbleRegistryIntegTest {
 
     bubbleRegistry.dismissAllBubbles();
 
-    Assert.assertFalse(topBubble.isVisible());
-    Assert.assertFalse(middleBubble.isVisible());
-    Assert.assertFalse(bottomBubble.isVisible());
+    Assert.assertTrue(topBubble.getIsFadeEffectInProgress());
+    Assert.assertTrue(middleBubble.getIsFadeEffectInProgress());
+    Assert.assertTrue(bottomBubble.getIsFadeEffectInProgress());
     closeShell();
   }
 }
