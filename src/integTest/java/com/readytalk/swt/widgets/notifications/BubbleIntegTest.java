@@ -1,6 +1,7 @@
 package com.readytalk.swt.widgets.notifications;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -17,11 +18,16 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(Enclosed.class)
 public class BubbleIntegTest {
@@ -136,6 +142,59 @@ public class BubbleIntegTest {
       shell.layout();
 
       initialized = true;
+    }
+  }
+
+  public static class TextExtentTest {
+    @Mock
+    Bubble bubble;
+
+    GC gc;
+
+    @Before
+    public void setUp() {
+      MockitoAnnotations.initMocks(this);
+
+      gc = new GC(Display.getDefault());
+      when(bubble.maybeBreakLines(any(String.class))).thenCallRealMethod();
+      when(bubble.getDisplay()).thenReturn(Display.getDefault());
+    }
+
+    @After
+    public void tearDown() {
+      gc.dispose();
+    }
+
+    @Test
+    public void maybeBreakLines_stringIsLessThanMaxLength_returnsRawString() {
+      String shorterThanMax = "Short";
+
+      assertTrue(gc.textExtent(shorterThanMax).x < Bubble.MAX_STRING_LENGTH);
+      assertTrue(bubble.maybeBreakLines(shorterThanMax).equals(shorterThanMax));
+    }
+
+    @Test
+    public void maybeBreakLines_stringHasLineBreaksAndLessThanMax_returnsRawString() {
+      String shortWithLineBreaks = "Short\nWith\nLines";
+
+      assertTrue(bubble.maybeBreakLines(shortWithLineBreaks).equals(shortWithLineBreaks));
+    }
+
+    @Test
+    public void maybeBreakLines_stringHasLineBreaksAndIsLongerThanMax_returnsRawString() {
+      String longWithLineBreaks = "This is a very long string, but I've defined my own line\nbreaks, which you " +
+              "should probably pay attention to.\nBecause I know better than you.\nThat is science. And I don\'t see " +
+              "you trying to argue with science, right?";
+
+      assertTrue(bubble.maybeBreakLines(longWithLineBreaks).equals(longWithLineBreaks));
+    }
+
+    @Test
+    public void maybeBreakLines_stringIsLongerThanMax_returnsStringWithLineBreaks() {
+      String longWithoutLineBreaks = "This is a very long string, but I have not defined lined breaks. My clients " +
+              "would appreciate if this Bubble message wasn\'t extraoridinarily long, so please break this up for me.";
+
+      assertTrue(bubble.maybeBreakLines(longWithoutLineBreaks).contains("\n"));
     }
   }
 }

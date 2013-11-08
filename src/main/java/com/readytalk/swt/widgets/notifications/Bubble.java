@@ -28,6 +28,7 @@ public class Bubble extends Widget implements Fadeable {
   public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
   public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
+  protected static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB BACKGROUND_COLOR = new RGB(74, 74, 74);
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
@@ -64,7 +65,7 @@ public class Bubble extends Widget implements Fadeable {
     super(parentControl, SWT.NONE);
 
     this.parentControl = parentControl;
-    this.tooltipText = tooltipText;
+    this.tooltipText = maybeBreakLines(tooltipText);
     parentShell = AncestryHelper.getShellFromControl(parentControl);
 
     // Remember to clean up after yourself onDispose.
@@ -282,6 +283,35 @@ public class Bubble extends Widget implements Fadeable {
         e.result = tooltipText;
       }
     });
+  }
+
+  protected String maybeBreakLines(String rawString) {
+    GC gc = new GC(getDisplay());
+    Point textExtent = gc.textExtent(rawString, SWT.DRAW_DELIMITER);
+    if (textExtent.x > MAX_STRING_LENGTH && !rawString.contains("\n")) {
+      StringBuilder sb = new StringBuilder();
+      String[] words = rawString.split(" ");
+      int spaceInPixels = gc.textExtent(" ").x;
+
+      int currentPixelCount = 0;
+      for (String word : words) {
+        int wordPixelWidth = gc.textExtent(word).x;
+        if (currentPixelCount + wordPixelWidth + spaceInPixels < MAX_STRING_LENGTH) {
+          sb.append(" ");
+          sb.append(word);
+          currentPixelCount += wordPixelWidth + spaceInPixels;
+        } else {
+          sb.append("\n");
+          sb.append(word);
+          sb.append(" ");
+          currentPixelCount = wordPixelWidth + spaceInPixels;
+        }
+      }
+
+      return sb.toString();
+    } else {
+      return rawString;
+    }
   }
 
   private Point getTextSize(String text) {
