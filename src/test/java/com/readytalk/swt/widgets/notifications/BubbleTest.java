@@ -1,7 +1,11 @@
 package com.readytalk.swt.widgets.notifications;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -15,6 +19,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(Enclosed.class)
@@ -92,6 +97,19 @@ public class BubbleTest {
     private static Rectangle getRectangleNotCutOff() {
       return new Rectangle(LOCATION_RELATIVE_TO_DISPLAY.x, LOCATION_RELATIVE_TO_DISPLAY.y,
               DISPLAY_WIDTH - INSIDE_BOUNDS_VALUE, DISPLAY_HEIGHT - INSIDE_BOUNDS_VALUE);
+    }
+  }
+
+  // Note: The positive tests are in BubbleIntegTest because we need a Display
+  public static class BubbleConstructionTest {
+    @Test(expected=IllegalArgumentException.class)
+    public void bubble_parentIsNull_throwsIllegalArgumentException() {
+      Bubble bubble = new Bubble(null, "Here's some text");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void bubble_parentAndTextAreNull_throwsIllegalArgumentException() {
+      Bubble bubble = new Bubble(null, null);
     }
   }
 

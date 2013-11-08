@@ -61,11 +61,15 @@ public class Bubble extends Widget implements Fadeable {
   private boolean bubbleIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
-  public Bubble(Control parentControl, String tooltipText) {
+  public Bubble(Control parentControl, String text) {
     super(parentControl, SWT.NONE);
 
+    if (text == null) {
+      throw new IllegalArgumentException("Bubble text cannot be null.");
+    }
+
     this.parentControl = parentControl;
-    this.tooltipText = maybeBreakLines(tooltipText);
+    this.tooltipText = maybeBreakLines(text);
     parentShell = AncestryHelper.getShellFromControl(parentControl);
 
     // Remember to clean up after yourself onDispose.
