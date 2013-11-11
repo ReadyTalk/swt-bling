@@ -48,9 +48,3 @@ tasks.withType(FindBugs) {
     html.enabled = true
   }
 }
-
-idea {
-  module {
-    sourceDirs += file('src/examples/java')
-  }
-}

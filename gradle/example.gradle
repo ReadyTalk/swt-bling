@@ -5,6 +5,14 @@ sourceSets {
   }
 }
 
+
+idea {
+  module {
+    sourceDirs += file('src/examples/java')
+    scopes.COMPILE.plus += configurations.examplesCompile
+  }
+}
+
 configurations {
   examplesCompile.extendsFrom compile
   examplesRuntime.extendsFrom runtime
