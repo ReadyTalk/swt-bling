@@ -1,5 +1,5 @@
-// Apply the java plugin to add support for Java
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'findbugs'
 apply from: 'gradle/swt.gradle'
 apply from: 'gradle/integTest.gradle'
@@ -46,5 +46,11 @@ tasks.withType(FindBugs) {
   reports {
     xml.enabled = false
     html.enabled = true
+  }
+}
+
+idea {
+  module {
+    sourceDirs += file('src/examples/java')
   }
 }
