@@ -27,11 +27,10 @@ Want to see a widget in action? We provide simple example apps for each of our w
 
 ##IDE Setup
 ### IntelliJ
-Most active contributors use [IntelliJ](http://www.jetbrains.com/idea/) as their primary IDE. Simply import the project
-by pointing IntelliJ at the build.gradle file at the root of the project.
-
-You'll need to inform IntelliJ about our examples and integTest directory. Do so by right clicking the swt-bling project and choosing "Open Module Settings (F4)".
-* Mark src/examples/java as "Sources"
-* Mark src/integTest/java as "Test Sources"
+Most active contributors use [IntelliJ](http://www.jetbrains.com/idea/) as their primary IDE. Run
+```
+./gradlew idea
+```
+at the root of the project to create an IntelliJ project file. When you start IntelliJ, simply point at the ```.imr``` file to get started.
 
 Note: On OS X, if you receive a ```Invalid Thread Access``` message, you'll need to open the Run Configuration and add ```-XstartOnFirstThread``` to the VM Options text input box.
