@@ -24,7 +24,8 @@ tasks.addRule("Pattern: runExample<WidgetName>") { String taskName ->
       ext.widgetName = taskName - "runExample"
 
       classpath = sourceSets.examples.runtimeClasspath
-      main = "com.readytalk.swt.widgets.buttons.${widgetName}Example"
+      main = "com.readytalk.examples.swt.Examples"
+      args "${widgetName}"
 
       if (platform == 'darwin') {
         jvmArgs '-XstartOnFirstThread'

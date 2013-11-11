@@ -36,6 +36,7 @@ dependencies {
   compile "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
   testCompile "junit:junit:4.11"
   testCompile "org.mockito:mockito-all:1.9.5"
+  examplesCompile "org.reflections:reflections:0.9.9-RC1"
 }
 
 findbugs {

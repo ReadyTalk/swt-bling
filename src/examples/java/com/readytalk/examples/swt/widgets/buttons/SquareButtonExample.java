@@ -1,5 +1,7 @@
-package com.readytalk.swt.widgets.buttons;
+package com.readytalk.examples.swt.widgets.buttons;
 
+import com.readytalk.examples.swt.RunnableExample;
+import com.readytalk.swt.widgets.buttons.SquareButton;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -30,7 +32,8 @@ public class SquareButtonExample {
   public static final SquareButton.SquareButtonColorGroup BUTTON_DEFAULT_COLOR_GROUP =
           new SquareButton.SquareButtonColorGroup(WHITE, WHITE, WHITE, OFF_BLACK);
 
-  public static void main(String[] args) {
+  @RunnableExample(name="SquareButton")
+  public static void run() {
     Shell shell = new Shell(DISPLAY);
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);

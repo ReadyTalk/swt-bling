@@ -1,5 +1,9 @@
-package com.readytalk.swt.widgets.notifications;
+package com.readytalk.examples.swt.widgets.notifications;
 
+import com.readytalk.examples.swt.RunnableExample;
+import com.readytalk.swt.widgets.notifications.Bubble;
+import com.readytalk.swt.widgets.notifications.BubbleRegistry;
+import com.readytalk.swt.widgets.notifications.BubbleTag;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
@@ -16,7 +20,8 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
 public class BubbleExample {
-  public static void main(String[] args) {
+  @RunnableExample(name="Bubble")
+  public static void run() {
     final Display display = new Display();
     final Shell shell = new Shell(display);
     shell.setLayout(new FillLayout());
