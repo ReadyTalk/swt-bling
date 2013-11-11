@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.readytalk.swt.widgets.text.WikiText;
+
 public class BubbleExample {
   public static void main(String[] args) {
     final Display display = new Display();
@@ -27,6 +29,7 @@ public class BubbleExample {
     displayNewBubbles.setText("Display Bubbles Tag NEW");
     Bubble displayNewBubblesBubble = new Bubble(displayNewBubbles, "Click here to display all Bubbles of type \"NEW\"");
     bubbleRegistry.register(displayNewBubbles, displayNewBubblesBubble);
+    
     displayNewBubbles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         bubbleRegistry.showBubblesByTags(BubbleTag.NEW);
