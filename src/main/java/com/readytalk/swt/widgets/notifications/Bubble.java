@@ -54,6 +54,8 @@ public class Bubble extends Widget implements Fadeable {
   protected static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
   protected static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
+  private boolean disableAutoHide;
+
   private Object fadeLock = new Object();
 
   private Listener listener;
@@ -306,6 +308,7 @@ public class Bubble extends Widget implements Fadeable {
     bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
     bubbleIsFullyConfigured = false;
     fadeEffectInProgress = false;
+    disableAutoHide = false;
   }
 
   public void checkSubclass() {
@@ -346,8 +349,18 @@ public class Bubble extends Widget implements Fadeable {
     gc.drawText(tooltipText, containingRectangle.x + (TEXT_WIDTH_PADDING / 2), containingRectangle.y + (TEXT_HEIGHT_PADDING / 2));
   }
 
+  public boolean isDisableAutoHide() {
+    return disableAutoHide;
+  }
+
+  public void setDisableAutoHide(boolean disableAutoHide) {
+    this.disableAutoHide = disableAutoHide;
+  }
+
   private void onMouseDown(Event event) {
-    hide();
+    if(!isDisableAutoHide()) {
+      hide();
+    }
   }
 
   private void addAccessibilityHooks(Control parentControl) {

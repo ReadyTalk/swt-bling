@@ -1,7 +1,6 @@
 package com.readytalk.swt.widgets.notifications;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
@@ -79,6 +78,7 @@ public class BubbleRegistry {
     for(BubbleTag tag : tags) {
       List<BubbleRegistrant> registrants = getTagList(tag);
       for(BubbleRegistrant registrant : registrants) {
+        registrant.bubble.setDisableAutoHide(true);
         registrant.showBubble();
       }
     }
@@ -86,6 +86,7 @@ public class BubbleRegistry {
 
   public void showAllBubbles() {
     for(BubbleRegistrant registrant : registrants) {
+      registrant.bubble.setDisableAutoHide(true);
       registrant.showBubble();
     }
   }
@@ -101,6 +102,7 @@ public class BubbleRegistry {
       List<BubbleRegistrant> registrants = getTagList(tag);
       for(BubbleRegistrant registrant : registrants) {
         registrant.dismissBubble();
+        registrant.bubble.setDisableAutoHide(false);
       }
     }
   }
@@ -108,6 +110,7 @@ public class BubbleRegistry {
   public void dismissAllBubbles() {
     for(BubbleRegistrant registrant : registrants) {
       registrant.dismissBubble();
+      registrant.bubble.setDisableAutoHide(false);
     }
   }
 
@@ -207,7 +210,9 @@ public class BubbleRegistry {
       if (mouseOutListener == null) {
         mouseOutListener = new Listener() {
           public void handleEvent(Event event) {
-            bubble.fadeOut();
+            if(bubble.isDisableAutoHide() != false) {
+              bubble.fadeOut();
+            }
           }
         };
       }
