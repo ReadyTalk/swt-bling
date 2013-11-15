@@ -5,6 +5,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -24,14 +25,18 @@ public class Examples {
     Reflections reflections = new Reflections(new ConfigurationBuilder().
                                                   setUrls(ClasspathHelper.forPackage("com.readytalk.examples")).
                                                   setScanners(new MethodAnnotationsScanner()));
-    Set<Method> methods = reflections.getMethodsAnnotatedWith(RunnableExample.class);
+    Set<Constructor> constructors = reflections.getConstructorsAnnotatedWith(RunnableExample.class);
 
-    for (Method method : methods) {
-      RunnableExample annotation = method.getAnnotation(RunnableExample.class);
+    for (Constructor constructor : constructors) {
+      RunnableExample annotation = (RunnableExample) constructor.getAnnotation(RunnableExample.class);
       if (annotation.name().equals(exampleToRun)) {
         try {
-          method.invoke(null);
+          SwtBlingExample example = (SwtBlingExample) constructor.newInstance();
+          example.run();
           return;
+        } catch (InstantiationException e) {
+          logger.severe("Caught InstantiationException");
+          e.printStackTrace();
         } catch (IllegalAccessException e) {
           logger.severe("Caught IllegalAccessException");
           e.printStackTrace();
@@ -45,8 +50,8 @@ public class Examples {
     logger.severe("Coudn't find requested example " + exampleToRun);
     StringBuilder validChoices = new StringBuilder();
     validChoices.append("Valid choices are:\n");
-    for (Method method : methods) {
-      RunnableExample annotation = method.getAnnotation(RunnableExample.class);
+    for (Constructor constructor : constructors) {
+      RunnableExample annotation = (RunnableExample) constructor.getAnnotation(RunnableExample.class);
       validChoices.append("    * " + annotation.name() + "\n");
     }
     logger.info(validChoices.toString());

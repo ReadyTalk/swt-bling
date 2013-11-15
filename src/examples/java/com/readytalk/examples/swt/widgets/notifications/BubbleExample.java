@@ -1,6 +1,7 @@
 package com.readytalk.examples.swt.widgets.notifications;
 
 import com.readytalk.examples.swt.RunnableExample;
+import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.widgets.notifications.Bubble;
 import com.readytalk.swt.widgets.notifications.BubbleRegistry;
 import com.readytalk.swt.widgets.notifications.BubbleTag;
@@ -19,9 +20,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
-public class BubbleExample {
+public class BubbleExample implements SwtBlingExample {
   @RunnableExample(name="Bubble")
-  public static void run() {
+  public BubbleExample() { }
+
+  public void run() {
     final Display display = new Display();
     final Shell shell = new Shell(display);
     shell.setLayout(new FillLayout());

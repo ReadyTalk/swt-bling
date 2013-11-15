@@ -1,6 +1,7 @@
 package com.readytalk.examples.swt.widgets.buttons;
 
 import com.readytalk.examples.swt.RunnableExample;
+import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.widgets.buttons.SquareButton;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -12,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class SquareButtonExample {
+public class SquareButtonExample implements SwtBlingExample {
   public static final Display DISPLAY = new Display();
 
   /* Colors */
@@ -33,7 +34,9 @@ public class SquareButtonExample {
           new SquareButton.SquareButtonColorGroup(WHITE, WHITE, WHITE, OFF_BLACK);
 
   @RunnableExample(name="SquareButton")
-  public static void run() {
+  public SquareButtonExample() { }
+
+  public void run() {
     Shell shell = new Shell(DISPLAY);
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
