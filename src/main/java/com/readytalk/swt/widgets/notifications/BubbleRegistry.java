@@ -210,7 +210,7 @@ public class BubbleRegistry {
       if (mouseOutListener == null) {
         mouseOutListener = new Listener() {
           public void handleEvent(Event event) {
-            if(bubble.isDisableAutoHide() != false) {
+            if(bubble.isDisableAutoHide() != true) {
               bubble.fadeOut();
             }
           }
