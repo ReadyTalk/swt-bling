@@ -11,6 +11,9 @@ Building swt-bling is simple. Just open a terminal and run
 ```
 from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.
 
+##Documentation
+Javadoc is available for swt-bling [here](http://oss.readytalk.com/swt-bling/javadoc/).
+
 ##GUI Tests
 In addition to standard unit tests, swt-bling has gui-based tests located in `src/integTest/java`. To run them:
 ```
