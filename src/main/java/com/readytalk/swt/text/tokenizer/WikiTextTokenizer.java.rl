@@ -1,4 +1,4 @@
-package com.readytalk.swt.widgets.text.tokenizer;
+package com.readytalk.swt.text.tokenizer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.nio.charset.Charset;
 
+import org.eclipse.swt.SWT;
+
+import com.readytalk.swt.text.painter.TextType;
+
 /*
- * To rebuild this parser, run the following command:
+ * To rebuild this parser by hand, run the following command:
  * ragel -J WikiTextTokenizer.java.rl -o WikiTextTokenizer.java
  */
 public class WikiTextTokenizer implements TextTokenizer {
@@ -15,6 +19,9 @@ public class WikiTextTokenizer implements TextTokenizer {
 	private Charset encoding = Charset.defaultCharset();
 	private List<TextToken> tokens = new ArrayList<TextToken>();
 	
+	private int styleState = 0x00;
+	
+	  
 	public WikiTextTokenizer setEncoding(final Charset encoding) {
 		this.encoding = encoding;
 		return this;
@@ -25,7 +32,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	  return this;
 	}
 	
-    void emit(final TextToken.Type type, final byte[] data, final int start, final int end) {
+    void emit(final TextType type, final byte[] data, final int start, final int end) {
       String text = spliceToString(data, start, end);
       tokens.add(new TextToken(type, text));
     }
@@ -51,28 +58,41 @@ public class WikiTextTokenizer implements TextTokenizer {
       %%{ 
         machine WikiTextScanner;   
     	word              = (any - (space|'\''))+;
-    	url               = ('http'|'https') '://' (any - space)+;
+    	url               = ('http'|'https'|'file') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
-    	boldAndItalicText = '\'\'\'\'\'' (any - '\'')+ '\'\'\'\'\'';
-    	boldText          = '\'\'\'' (any - '\'')+ '\'\'\'';
-    	italicText        = '\'\'' (any - '\'')+ '\'\'';
+    	boldAndItalicText = '\'\'\'\'\'';
+    	boldText          = '\'\'\'';
+    	italicText        = '\'\'';
 
     	main := |*
     	  link              => { scanLink(splice(data, ts, te)); };
     	  url               => { 
     		  String url = spliceToString(data, ts, te);
     		  try {
-    			tokens.add(new TextToken(
-    				TextToken.Type.NAKED_URL, url).setUrl(new URL(url)));
+    			tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
 			  } catch (MalformedURLException exception) {
-				tokens.add(new TextToken(TextToken.Type.TEXT, text));
+				tokens.add(new TextToken(TextType.TEXT, text));
 			  }
     	  };
-    	  word              => { emit(TextToken.Type.TEXT, data, ts, te); };
-    	  boldAndItalicText => { emit(TextToken.Type.BOLD_AND_ITALIC, data, ts+5, te-5); };
-    	  boldText          => { emit(TextToken.Type.BOLD, data, ts+3, te-3); };
-    	  italicText        => { emit(TextToken.Type.ITALIC, data, ts+2, te-2); };
-    	  space             => { emit(TextToken.Type.TEXT, data, ts, te); };
+    	  word              => { 
+    		switch(styleState) {
+    			case SWT.BOLD:
+    				emit(TextType.BOLD, data, ts, te);
+    				break;
+    			case SWT.ITALIC:
+    				emit(TextType.ITALIC, data, ts, te);
+    				break;
+    			case SWT.BOLD|SWT.ITALIC:
+    				emit(TextType.BOLD_AND_ITALIC, data, ts, te);
+    				break;
+    			default:
+    				emit(TextType.TEXT, data, ts, te);
+    		}
+    	  };
+    	  boldAndItalicText => { styleState ^= SWT.BOLD|SWT.ITALIC; };
+    	  boldText          => { styleState ^= SWT.BOLD; };
+    	  italicText        => { styleState ^= SWT.ITALIC; };
+    	  space             => { emit(TextType.WHITESPACE, data, ts, te); };
     	*|;
     	   
     	write init;
@@ -92,7 +112,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	    machine URLParser;
 		lbrace   = '[';
 		rbrace   = ']';
-		url      = (' ')* ('http'|'https') '://' (any - (' '|'\t'))+;
+		url      = (' ')* ('http'|'https'|'file') '://' (any - (' '|'\t'))+;
 		linkText = (any - (' ' | '\n' | '[' | ']'))+;
 	
 		main := |*
@@ -108,10 +128,9 @@ public class WikiTextTokenizer implements TextTokenizer {
 	  }%%
 		
 	  try {
-		tokens.add(new TextToken(
-			TextToken.Type.LINK_AND_NAMED_URL, text).setUrl(new URL(url)));
+		tokens.add(new TextToken(TextType.LINK_AND_NAMED_URL, text).setUrl(new URL(url)));
 	  } catch (MalformedURLException exception) {
-		tokens.add(new TextToken(TextToken.Type.TEXT, text + " (" + url + ") "));
+		tokens.add(new TextToken(TextType.TEXT, text + " (" + url + ") "));
 	  }
     }
     %% write data;

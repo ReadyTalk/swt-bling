@@ -1,4 +1,4 @@
-package com.readytalk.swt.widgets.text;
+package com.readytalk.swt.text.navigation;
 
 public interface NavigationListener {
 	void navigate(NavigationEvent event);

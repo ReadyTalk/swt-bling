@@ -1,4 +1,4 @@
-package com.readytalk.swt.widgets.text.tokenizer;
+package com.readytalk.swt.text.tokenizer;
 
 import java.nio.charset.Charset;
 import java.util.List;

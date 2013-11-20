@@ -1,23 +1,25 @@
-package com.readytalk.swt.widgets.text.tokenizer;
+package com.readytalk.swt.text.tokenizer;
 
 import java.net.URL;
 
+import com.readytalk.swt.text.painter.TextType;
+
 public class TextToken {
+  
+  /*
+   * TODO look into subclassing or compositing the actual TextStyle class
+   */
 
-	public enum Type {
-		TEXT, ITALIC, BOLD, BOLD_AND_ITALIC, HEADER, PLAIN_URL, LINK_URL, LINK_AND_NAMED_URL, NAKED_URL
-	}
-
-	private Type type;
+	private TextType type;
 	private String text;
 	private URL url;
 
-	public TextToken(final Type type, final String text) {
+	public TextToken(final TextType type, final String text) {
 		this.type = type;
 		this.text = text;
 	}
 
-	public TextToken setType(final Type type) {
+	public TextToken setType(final TextType type) {
 		this.type = type;
 		return this;
 	}
@@ -32,7 +34,7 @@ public class TextToken {
 		return this;
 	}
 	
-	public Type getType() {
+	public TextType getType() {
 	  return type;
 	}
 	

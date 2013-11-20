@@ -1,8 +1,10 @@
-package com.readytalk.swt.widgets.text.tokenizer;
+package com.readytalk.swt.text.tokenizer;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.readytalk.swt.text.painter.TextType;
 
 public class PlainTextTokenizer implements TextTokenizer {
   
@@ -22,7 +24,7 @@ public class PlainTextTokenizer implements TextTokenizer {
   }
   
   public List<TextToken> tokenize(String text) {
-    TextToken textToken = new TextToken(TextToken.Type.TEXT, text);
+    TextToken textToken = new TextToken(TextType.TEXT, text);
     tokens.add(textToken);
     return tokens;
   }

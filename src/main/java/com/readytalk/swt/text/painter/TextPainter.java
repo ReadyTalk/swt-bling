@@ -1,4 +1,4 @@
-package com.readytalk.swt.widgets.text;
+package com.readytalk.swt.text.painter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import com.readytalk.swt.widgets.text.tokenizer.PlainTextTokenizer;
-import com.readytalk.swt.widgets.text.tokenizer.TextToken;
-import com.readytalk.swt.widgets.text.tokenizer.TextToken.Type;
-import com.readytalk.swt.widgets.text.tokenizer.TextTokenizer;
+import com.readytalk.swt.text.navigation.Hyperlink;
+import com.readytalk.swt.text.navigation.NavigationEvent;
+import com.readytalk.swt.text.navigation.NavigationListener;
+import com.readytalk.swt.text.tokenizer.PlainTextTokenizer;
+import com.readytalk.swt.text.tokenizer.TextToken;
+import com.readytalk.swt.text.tokenizer.TextTokenizer;
 
-public class TextPaintEventHandler {
+public class TextPainter {
   
   private Color boundaryColor;
   private Color foregroundColor;
@@ -51,7 +53,7 @@ public class TextPaintEventHandler {
   private List<TextToken> tokens;
   private boolean wrapping;
 
-  public TextPaintEventHandler(final Composite parent) {
+  public TextPainter(final Composite parent) {
     this.parent = parent;
     Listener listener = new Listener() {
       public void handleEvent(Event event) {
@@ -75,7 +77,7 @@ public class TextPaintEventHandler {
     FontData fontData = parent.getFont().getFontData()[0];
     setFont(fontData.getName(), fontData.getHeight());
     Point size = parent.getSize();
-    bounds = new Rectangle(0,0, size.x, size.y);
+    bounds = new Rectangle(0, 0, size.x, size.y);
     navigationListeners = new ArrayList<NavigationListener>(); 
     hyperlinks = new ArrayList<Hyperlink>();
   
@@ -123,11 +125,15 @@ public class TextPaintEventHandler {
     handCursor.dispose();
   }
   
+  public List<TextToken> getTokens() {
+    return tokens;
+  }
+  
   private Font buildFont(final String name, final int height, final int style) {
     return new Font(parent.getDisplay(), name, height, style);
   }
   
-  private TextPaintEventHandler setFont(final String name, final int height) {
+  private TextPainter setFont(final String name, final int height) {
     if (font != null) {
       font.dispose();
       boldFont.dispose();
@@ -148,35 +154,35 @@ public class TextPaintEventHandler {
     return new Color(parent.getDisplay(), r, g, b);
   }
   
-  public TextPaintEventHandler setBoundaryColor(final int r, final int g, final int b) {
+  public TextPainter setBoundaryColor(final int r, final int g, final int b) {
     boundaryColor.dispose();
     boundaryColor = buildColor(r, g, b);
     return this;
   }
   
-  public TextPaintEventHandler setForeground(final int r, final int g, final int b) {
+  public TextPainter setForeground(final int r, final int g, final int b) {
     foregroundColor.dispose();
     foregroundColor = buildColor(r, g, b);
     return this;
   }
   
-  public TextPaintEventHandler setHyperlinkColor(final int r, final int g, final int b) {
+  public TextPainter setHyperlinkColor(final int r, final int g, final int b) {
     hyperlinkColor.dispose();
     hyperlinkColor = buildColor(r, g, b);
     return this;
   }
   
-  public TextPaintEventHandler setBounds (final Rectangle bounds) {
+  public TextPainter setBounds (final Rectangle bounds) {
     this.bounds = bounds;
     return this;
   }
   
-  public TextPaintEventHandler setClipping(final boolean clipping) {
+  public TextPainter setClipping(final boolean clipping) {
     this.clipping = clipping;
     return this;
   }
   
-  public TextPaintEventHandler setDrawBounds(boolean drawBounds) {
+  public TextPainter setDrawBounds(boolean drawBounds) {
     this.drawBounds = drawBounds;
     return this;
   }
@@ -185,19 +191,19 @@ public class TextPaintEventHandler {
     tokens = textTokenizer.tokenize(text);
   }
   
-  public TextPaintEventHandler setText(final String text) {
+  public TextPainter setText(final String text) {
     this.text = text;
     tokenizeText();
     return this;
   }
   
-  public TextPaintEventHandler setTokenizer(final TextTokenizer textTokenizer){
+  public TextPainter setTokenizer(final TextTokenizer textTokenizer){
     this.textTokenizer = textTokenizer;
     tokenizeText();
     return this;
   }
   
-  public TextPaintEventHandler setWrapping(final boolean wrapping) {
+  public TextPainter setWrapping(final boolean wrapping) {
     this.wrapping = wrapping;
     return this;
   }
@@ -211,14 +217,14 @@ public class TextPaintEventHandler {
     return false;
   }
   
-  public TextPaintEventHandler addNavigationListener(final NavigationListener listener) {
+  public TextPainter addNavigationListener(final NavigationListener listener) {
     if (!navigationListeners.contains(listener)) {
       navigationListeners.add(listener);
     }
     return this;
   }
 
-  private void notifyNavigationListeners(Hyperlink hyperlink) {
+  void notifyNavigationListeners(Hyperlink hyperlink) {
     NavigationEvent event = new NavigationEvent(hyperlink);
     for (int i = navigationListeners.size() - 1; i >= 0; i--) {
       navigationListeners.get(i).navigate(event);
@@ -229,18 +235,18 @@ public class TextPaintEventHandler {
     navigationListeners.remove(listener);
   }
   
-  private void addHyperlink(TextToken token, Point start, Point end) {
-    if (token.getType().equals(Type.LINK_AND_NAMED_URL) 
-        || token.getType().equals(Type.LINK_URL)
-        || token.getType().equals(Type.NAKED_URL)
-        || token.getType().equals(Type.PLAIN_URL)) {
+  void addHyperlink(TextToken token, Point start, Point end) {
+    if (token.getType().equals(TextType.LINK_AND_NAMED_URL) 
+        || token.getType().equals(TextType.LINK_URL)
+        || token.getType().equals(TextType.NAKED_URL)
+        || token.getType().equals(TextType.PLAIN_URL)) {
       hyperlinks.add(
           new Hyperlink(token, 
               new Rectangle(start.x, start.y, end.x,  end.y)));
     }
   }
   
-  private void configureForStyle(GC gc, TextToken token) {
+  void configureForStyle(GC gc, TextToken token) {
     switch(token.getType()) {
     case BOLD:
       gc.setFont(boldFont);
@@ -284,6 +290,7 @@ public class TextPaintEventHandler {
     Point drawPosition = new Point(bounds.x, bounds.y);
     
     for (TextToken token:tokens) {
+      boolean drawWhitespace = true;
       configureForStyle(gc, token); 
       Point nextPosition = gc.textExtent(token.getText());
       
@@ -291,12 +298,17 @@ public class TextPaintEventHandler {
       if (wrapping && (drawPosition.x + nextPosition.x > bounds.width + bounds.x)) {
         drawPosition.y += nextPosition.y + 5;
         drawPosition.x = bounds.x;
+        drawWhitespace = false;
       }
-      addHyperlink(token, drawPosition, nextPosition);
       
-      gc.drawText(token.getText(), drawPosition.x, drawPosition.y, true);
-      drawPosition.x += nextPosition.x;
-      
+      if (token.getType() != TextType.WHITESPACE) {
+        addHyperlink(token, drawPosition, nextPosition);
+        gc.drawText(token.getText(), drawPosition.x, drawPosition.y, true);
+        drawPosition.x += nextPosition.x;
+      } else if (drawWhitespace) {
+        gc.drawText(token.getText(), drawPosition.x, drawPosition.y, true);
+        drawPosition.x += nextPosition.x;
+      }
     }
     
     if (drawBounds) {

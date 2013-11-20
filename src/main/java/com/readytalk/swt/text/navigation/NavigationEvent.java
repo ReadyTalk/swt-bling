@@ -1,4 +1,4 @@
-package com.readytalk.swt.widgets.text;
+package com.readytalk.swt.text.navigation;
 
 import java.net.URL;
 

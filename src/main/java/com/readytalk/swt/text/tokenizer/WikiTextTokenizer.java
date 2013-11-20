@@ -1,12 +1,16 @@
 
 // line 1 "WikiTextTokenizer.java.rl"
-package com.readytalk.swt.widgets.text.tokenizer;
+package com.readytalk.swt.text.tokenizer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.charset.Charset;
+
+import org.eclipse.swt.SWT;
+
+import com.readytalk.swt.text.painter.TextType;
 
 /*
  * To rebuild this parser, run the following command:
@@ -16,6 +20,9 @@ public class WikiTextTokenizer implements TextTokenizer {
 	
 	private Charset encoding = Charset.defaultCharset();
 	private List<TextToken> tokens = new ArrayList<TextToken>();
+	
+	private int styleState = 0x00;
+	
 	
 	public WikiTextTokenizer setEncoding(final Charset encoding) {
 		this.encoding = encoding;
@@ -27,7 +34,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	  return this;
 	}
 	
-    void emit(final TextToken.Type type, final byte[] data, final int start, final int end) {
+    void emit(final TextType type, final byte[] data, final int start, final int end) {
       String text = spliceToString(data, start, end);
       tokens.add(new TextToken(type, text));
     }
@@ -51,7 +58,7 @@ public class WikiTextTokenizer implements TextTokenizer {
       int p = 0, pe = data.length, te, ts, cs, act;
        
       
-// line 55 "WikiTextTokenizer.java"
+// line 62 "WikiTextTokenizer.java"
 	{
 	cs = WikiTextScanner_start;
 	ts = -1;
@@ -59,7 +66,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	act = 0;
 	}
 
-// line 63 "WikiTextTokenizer.java"
+// line 70 "WikiTextTokenizer.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -88,7 +95,7 @@ case 1:
 // line 1 "NONE"
 	{ts = p;}
 	break;
-// line 92 "WikiTextTokenizer.java"
+// line 99 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -157,54 +164,71 @@ case 3:
 	{te = p+1;}
 	break;
 	case 3:
-// line 61 "WikiTextTokenizer.java.rl"
+// line 68 "WikiTextTokenizer.java.rl"
 	{act = 1;}
 	break;
 	case 4:
-// line 62 "WikiTextTokenizer.java.rl"
+// line 69 "WikiTextTokenizer.java.rl"
 	{act = 2;}
 	break;
 	case 5:
-// line 71 "WikiTextTokenizer.java.rl"
+// line 77 "WikiTextTokenizer.java.rl"
 	{act = 3;}
 	break;
 	case 6:
-// line 72 "WikiTextTokenizer.java.rl"
-	{te = p+1;{ emit(TextToken.Type.BOLD_AND_ITALIC, data, ts+5, te-5); }}
+// line 92 "WikiTextTokenizer.java.rl"
+	{te = p+1;{ styleState ^= SWT.BOLD|SWT.ITALIC; }}
 	break;
 	case 7:
-// line 73 "WikiTextTokenizer.java.rl"
-	{te = p+1;{ emit(TextToken.Type.BOLD, data, ts+3, te-3); }}
+// line 95 "WikiTextTokenizer.java.rl"
+	{te = p+1;{ emit(TextType.WHITESPACE, data, ts, te); }}
 	break;
 	case 8:
-// line 74 "WikiTextTokenizer.java.rl"
-	{te = p+1;{ emit(TextToken.Type.ITALIC, data, ts+2, te-2); }}
-	break;
-	case 9:
-// line 75 "WikiTextTokenizer.java.rl"
-	{te = p+1;{ emit(TextToken.Type.TEXT, data, ts, te); }}
-	break;
-	case 10:
-// line 61 "WikiTextTokenizer.java.rl"
+// line 68 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ scanLink(splice(data, ts, te)); }}
 	break;
-	case 11:
-// line 62 "WikiTextTokenizer.java.rl"
+	case 9:
+// line 69 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ 
     		  String url = spliceToString(data, ts, te);
     		  try {
-    			tokens.add(new TextToken(
-    				TextToken.Type.NAKED_URL, url).setUrl(new URL(url)));
+    			tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
 			  } catch (MalformedURLException exception) {
-				tokens.add(new TextToken(TextToken.Type.TEXT, text));
+				tokens.add(new TextToken(TextType.TEXT, text));
 			  }
     	  }}
 	break;
+	case 10:
+// line 77 "WikiTextTokenizer.java.rl"
+	{te = p;p--;{ 
+    		switch(styleState) {
+    			case SWT.BOLD:
+    				emit(TextType.BOLD, data, ts, te);
+    				break;
+    			case SWT.ITALIC:
+    				emit(TextType.ITALIC, data, ts, te);
+    				break;
+    			case SWT.BOLD|SWT.ITALIC:
+    				emit(TextType.BOLD_AND_ITALIC, data, ts, te);
+    				break;
+    			default:
+    				emit(TextType.TEXT, data, ts, te);
+    		}
+    	  }}
+	break;
+	case 11:
+// line 93 "WikiTextTokenizer.java.rl"
+	{te = p;p--;{ styleState ^= SWT.BOLD; }}
+	break;
 	case 12:
-// line 71 "WikiTextTokenizer.java.rl"
-	{te = p;p--;{ emit(TextToken.Type.TEXT, data, ts, te); }}
+// line 94 "WikiTextTokenizer.java.rl"
+	{te = p;p--;{ styleState ^= SWT.ITALIC; }}
 	break;
 	case 13:
+// line 93 "WikiTextTokenizer.java.rl"
+	{{p = ((te))-1;}{ styleState ^= SWT.BOLD; }}
+	break;
+	case 14:
 // line 1 "NONE"
 	{	switch( act ) {
 	case 1:
@@ -214,20 +238,33 @@ case 3:
 	{{p = ((te))-1;} 
     		  String url = spliceToString(data, ts, te);
     		  try {
-    			tokens.add(new TextToken(
-    				TextToken.Type.NAKED_URL, url).setUrl(new URL(url)));
+    			tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
 			  } catch (MalformedURLException exception) {
-				tokens.add(new TextToken(TextToken.Type.TEXT, text));
+				tokens.add(new TextToken(TextType.TEXT, text));
 			  }
     	  }
 	break;
 	case 3:
-	{{p = ((te))-1;} emit(TextToken.Type.TEXT, data, ts, te); }
+	{{p = ((te))-1;} 
+    		switch(styleState) {
+    			case SWT.BOLD:
+    				emit(TextType.BOLD, data, ts, te);
+    				break;
+    			case SWT.ITALIC:
+    				emit(TextType.ITALIC, data, ts, te);
+    				break;
+    			case SWT.BOLD|SWT.ITALIC:
+    				emit(TextType.BOLD_AND_ITALIC, data, ts, te);
+    				break;
+    			default:
+    				emit(TextType.TEXT, data, ts, te);
+    		}
+    	  }
 	break;
 	}
 	}
 	break;
-// line 231 "WikiTextTokenizer.java"
+// line 268 "WikiTextTokenizer.java"
 			}
 		}
 	}
@@ -241,7 +278,7 @@ case 2:
 // line 1 "NONE"
 	{ts = -1;}
 	break;
-// line 245 "WikiTextTokenizer.java"
+// line 282 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -268,19 +305,19 @@ case 5:
 	break; }
 	}
 
-// line 80 "WikiTextTokenizer.java.rl"
+// line 100 "WikiTextTokenizer.java.rl"
 
       
       return tokens;
     }
     
-// line 278 "WikiTextTokenizer.java"
+// line 315 "WikiTextTokenizer.java"
 private static byte[] init__WikiTextScanner_actions_0()
 {
 	return new byte [] {
-	    0,    1,    0,    1,    1,    1,    6,    1,    7,    1,    8,    1,
-	    9,    1,   10,    1,   11,    1,   12,    1,   13,    2,    2,    3,
-	    2,    2,    4,    2,    2,    5
+	    0,    1,    0,    1,    1,    1,    2,    1,    6,    1,    7,    1,
+	    8,    1,    9,    1,   10,    1,   11,    1,   12,    1,   13,    1,
+	   14,    2,    2,    3,    2,    2,    4,    2,    2,    5
 	};
 }
 
@@ -290,10 +327,10 @@ private static final byte _WikiTextScanner_actions[] = init__WikiTextScanner_act
 private static short[] init__WikiTextScanner_key_offsets_0()
 {
 	return new short [] {
-	    0,    0,    1,    2,    3,    4,    5,    6,    7,    8,    9,   10,
-	   11,   12,   13,   14,   15,   21,   26,   31,   37,   41,   46,   51,
-	   56,   61,   67,   72,   77,   81,   87,   92,   97,  102,  107,  112,
-	  117,  123,  128,  133,  137,  140
+	    0,    0,    1,    2,    8,   13,   18,   25,   29,   30,   31,   37,
+	   42,   47,   52,   57,   62,   67,   71,   77,   82,   87,   92,   97,
+	  102,  108,  113,  118,  123,  128,  133,  138,  142,  145,  150,  155,
+	  160
 	};
 }
 
@@ -303,19 +340,20 @@ private static final short _WikiTextScanner_key_offsets[] = init__WikiTextScanne
 private static char[] init__WikiTextScanner_trans_keys_0()
 {
 	return new char [] {
-	   39,   39,   39,   39,   39,   39,   39,   39,   39,   39,   39,   39,
-	   39,   39,   39,    9,   32,   39,   93,   10,   13,   32,   39,   93,
-	    9,   13,    9,   32,   93,   10,   13,   32,   39,   91,  104,    9,
-	   13,   32,   39,    9,   13,   32,   39,  104,    9,   13,   32,   39,
-	  116,    9,   13,   32,   39,  116,    9,   13,   32,   39,  112,    9,
-	   13,   32,   39,   58,  115,    9,   13,   32,   39,   47,    9,   13,
-	   32,   39,   47,    9,   13,   32,   39,    9,   13,    9,   32,   39,
-	   93,   10,   13,   32,   39,   93,    9,   13,    9,   32,   93,   10,
-	   13,   32,   39,   58,    9,   13,   32,   39,  116,    9,   13,   32,
-	   39,  116,    9,   13,   32,   39,  112,    9,   13,   32,   39,   58,
-	  115,    9,   13,   32,   39,   47,    9,   13,   32,   39,   47,    9,
-	   13,   32,   39,    9,   13,   32,    9,   13,   32,   39,   58,    9,
-	   13,    0
+	   39,   39,    9,   32,   39,   93,   10,   13,   32,   39,   93,    9,
+	   13,    9,   32,   93,   10,   13,   32,   39,   91,  102,  104,    9,
+	   13,   32,   39,    9,   13,   39,   39,   32,   39,  102,  104,    9,
+	   13,   32,   39,  105,    9,   13,   32,   39,  108,    9,   13,   32,
+	   39,  101,    9,   13,   32,   39,   58,    9,   13,   32,   39,   47,
+	    9,   13,   32,   39,   47,    9,   13,   32,   39,    9,   13,    9,
+	   32,   39,   93,   10,   13,   32,   39,   93,    9,   13,    9,   32,
+	   93,   10,   13,   32,   39,  116,    9,   13,   32,   39,  116,    9,
+	   13,   32,   39,  112,    9,   13,   32,   39,   58,  115,    9,   13,
+	   32,   39,  105,    9,   13,   32,   39,  108,    9,   13,   32,   39,
+	  101,    9,   13,   32,   39,   58,    9,   13,   32,   39,   47,    9,
+	   13,   32,   39,   47,    9,   13,   32,   39,    9,   13,   32,    9,
+	   13,   32,   39,  116,    9,   13,   32,   39,  116,    9,   13,   32,
+	   39,  112,    9,   13,   32,   39,   58,  115,    9,   13,    0
 	};
 }
 
@@ -325,10 +363,10 @@ private static final char _WikiTextScanner_trans_keys[] = init__WikiTextScanner_
 private static byte[] init__WikiTextScanner_single_lengths_0()
 {
 	return new byte [] {
-	    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-	    1,    1,    1,    1,    4,    3,    3,    4,    2,    3,    3,    3,
-	    3,    4,    3,    3,    2,    4,    3,    3,    3,    3,    3,    3,
-	    4,    3,    3,    2,    1,    3
+	    0,    1,    1,    4,    3,    3,    5,    2,    1,    1,    4,    3,
+	    3,    3,    3,    3,    3,    2,    4,    3,    3,    3,    3,    3,
+	    4,    3,    3,    3,    3,    3,    3,    2,    1,    3,    3,    3,
+	    4
 	};
 }
 
@@ -338,10 +376,10 @@ private static final byte _WikiTextScanner_single_lengths[] = init__WikiTextScan
 private static byte[] init__WikiTextScanner_range_lengths_0()
 {
 	return new byte [] {
-	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,    1,    1,    1,    1,    1,    1,    1,    1,
+	    0,    0,    0,    1,    1,    1,    1,    1,    0,    0,    1,    1,
 	    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-	    1,    1,    1,    1,    1,    1
+	    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	    1
 	};
 }
 
@@ -351,10 +389,10 @@ private static final byte _WikiTextScanner_range_lengths[] = init__WikiTextScann
 private static short[] init__WikiTextScanner_index_offsets_0()
 {
 	return new short [] {
-	    0,    0,    2,    4,    6,    8,   10,   12,   14,   16,   18,   20,
-	   22,   24,   26,   28,   30,   36,   41,   46,   52,   56,   61,   66,
-	   71,   76,   82,   87,   92,   96,  102,  107,  112,  117,  122,  127,
-	  132,  138,  143,  148,  152,  155
+	    0,    0,    2,    4,   10,   15,   20,   27,   31,   33,   35,   41,
+	   46,   51,   56,   61,   66,   71,   75,   81,   86,   91,   96,  101,
+	  106,  112,  117,  122,  127,  132,  137,  142,  146,  149,  154,  159,
+	  164
 	};
 }
 
@@ -364,20 +402,21 @@ private static final short _WikiTextScanner_index_offsets[] = init__WikiTextScan
 private static byte[] init__WikiTextScanner_indicies_0()
 {
 	return new byte [] {
-	    0,    1,    3,    2,    4,    2,    5,    1,    7,    6,    8,    6,
-	    9,    1,   10,    1,   11,    1,    1,   12,   13,   12,   14,    1,
-	   15,    1,   16,    1,   17,    1,   20,   20,   18,   21,   18,   19,
-	   18,   18,   21,   18,   19,   20,   20,   23,   18,   22,   25,   26,
-	   27,   28,   25,   24,   29,   29,   29,   24,   29,   29,   30,   29,
-	   24,   29,   29,   31,   29,   24,   29,   29,   32,   29,   24,   29,
-	   29,   33,   29,   24,   29,   29,   34,   35,   29,   24,   29,   29,
-	   36,   29,   24,   29,   29,   37,   29,   24,   29,   22,   29,   38,
-	   20,   20,   22,   39,   18,   38,   40,   40,   21,   40,   19,   20,
-	   20,   23,   40,   22,   29,   29,   34,   29,   24,   29,   29,   41,
-	   29,   24,   29,   29,   42,   29,   24,   29,   29,   43,   29,   24,
-	   29,   29,   44,   45,   29,   24,   29,   29,   46,   29,   24,   29,
-	   29,   47,   29,   24,   18,   49,   18,   48,   50,   50,   49,   29,
-	   29,   44,   29,   24,    0
+	    0,    1,    3,    2,    6,    6,    4,    7,    4,    5,    4,    4,
+	    7,    4,    5,    6,    6,    9,    4,    8,   11,   12,   13,   14,
+	   15,   11,   10,   16,   16,   16,   10,   18,   17,   20,   19,   16,
+	   16,   21,   22,   16,   10,   16,   16,   23,   16,   10,   16,   16,
+	   24,   16,   10,   16,   16,   25,   16,   10,   16,   16,   26,   16,
+	   10,   16,   16,   27,   16,   10,   16,   16,   28,   16,   10,   16,
+	    8,   16,   29,    6,    6,    8,   30,    4,   29,   31,   31,    7,
+	   31,    5,    6,    6,    9,   31,    8,   16,   16,   32,   16,   10,
+	   16,   16,   33,   16,   10,   16,   16,   34,   16,   10,   16,   16,
+	   26,   25,   16,   10,   16,   16,   35,   16,   10,   16,   16,   36,
+	   16,   10,   16,   16,   37,   16,   10,   16,   16,   38,   16,   10,
+	   16,   16,   39,   16,   10,   16,   16,   40,   16,   10,    4,   42,
+	    4,   41,   43,   43,   42,   16,   16,   44,   16,   10,   16,   16,
+	   45,   16,   10,   16,   16,   46,   16,   10,   16,   16,   38,   37,
+	   16,   10,    0
 	};
 }
 
@@ -387,11 +426,10 @@ private static final byte _WikiTextScanner_indicies[] = init__WikiTextScanner_in
 private static byte[] init__WikiTextScanner_trans_targs_0()
 {
 	return new byte [] {
-	    2,    0,    3,    5,    4,   19,    6,    9,    7,    8,   19,   10,
-	   11,   12,   13,   14,   15,   19,   19,   17,   16,   30,   18,   31,
-	   20,   19,    1,   21,   33,   19,   22,   23,   24,   25,   26,   32,
-	   27,   28,   29,   29,   19,   34,   35,   36,   37,   41,   38,   39,
-	   39,   40,   19
+	    8,    0,    6,    6,    6,    4,    3,   19,    5,   20,    7,    6,
+	    1,   10,   25,   33,    6,    6,    9,    6,    2,   11,   21,   12,
+	   13,   14,   15,   16,   17,   18,   18,    6,   22,   23,   24,   26,
+	   27,   28,   29,   30,   31,   31,   32,    6,   34,   35,   36
 	};
 }
 
@@ -401,11 +439,10 @@ private static final byte _WikiTextScanner_trans_targs[] = init__WikiTextScanner
 private static byte[] init__WikiTextScanner_trans_actions_0()
 {
 	return new byte [] {
-	    0,    0,    0,    0,    0,    9,    0,    0,    0,    0,    7,    0,
-	    0,    0,    0,    0,    0,    5,   19,    0,    0,   21,    0,   21,
-	    0,   11,    0,    0,    0,   17,    0,    0,    0,    0,    0,    0,
-	    0,   27,   27,   21,   13,    0,    0,    0,    0,    0,    0,   27,
-	   24,    0,   15
+	    0,    0,   21,    7,   23,    0,    0,   25,    0,   25,    0,    9,
+	    0,    0,    0,    0,   15,   19,    5,   17,    0,    0,    0,    0,
+	    0,    0,    0,    0,   31,   31,   25,   11,    0,    0,    0,    0,
+	    0,    0,    0,    0,   31,   28,    0,   13,    0,    0,    0
 	};
 }
 
@@ -415,10 +452,10 @@ private static final byte _WikiTextScanner_trans_actions[] = init__WikiTextScann
 private static byte[] init__WikiTextScanner_to_state_actions_0()
 {
 	return new byte [] {
+	    0,    0,    0,    0,    0,    0,    1,    0,    0,    0,    0,    0,
 	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,    0,    0,    0,    1,    0,    0,    0,    0,
 	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,    0,    0
+	    0
 	};
 }
 
@@ -428,10 +465,10 @@ private static final byte _WikiTextScanner_to_state_actions[] = init__WikiTextSc
 private static byte[] init__WikiTextScanner_from_state_actions_0()
 {
 	return new byte [] {
+	    0,    0,    0,    0,    0,    0,    3,    0,    0,    0,    0,    0,
 	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,    0,    0,    0,    3,    0,    0,    0,    0,
 	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,    0,    0
+	    0
 	};
 }
 
@@ -441,24 +478,24 @@ private static final byte _WikiTextScanner_from_state_actions[] = init__WikiText
 private static short[] init__WikiTextScanner_eof_trans_0()
 {
 	return new short [] {
-	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,   19,   19,   19,    0,   30,   30,   30,   30,
-	   30,   30,   30,   30,   30,   19,   41,   41,   30,   30,   30,   30,
-	   30,   30,   30,   19,   51,   30
+	    0,    0,    3,    5,    5,    5,    0,   17,   18,   20,   17,   17,
+	   17,   17,   17,   17,   17,   17,    5,   32,   32,   17,   17,   17,
+	   17,   17,   17,   17,   17,   17,   17,    5,   44,   17,   17,   17,
+	   17
 	};
 }
 
 private static final short _WikiTextScanner_eof_trans[] = init__WikiTextScanner_eof_trans_0();
 
 
-static final int WikiTextScanner_start = 19;
-static final int WikiTextScanner_first_final = 19;
+static final int WikiTextScanner_start = 6;
+static final int WikiTextScanner_first_final = 6;
 static final int WikiTextScanner_error = 0;
 
-static final int WikiTextScanner_en_main = 19;
+static final int WikiTextScanner_en_main = 6;
 
 
-// line 85 "WikiTextTokenizer.java.rl"
+// line 105 "WikiTextTokenizer.java.rl"
     
     private void scanLink(byte[] data) {
       int eof = data.length;
@@ -466,7 +503,7 @@ static final int WikiTextScanner_en_main = 19;
       String url = "";
       String text = "";
       
-// line 470 "WikiTextTokenizer.java"
+// line 507 "WikiTextTokenizer.java"
 	{
 	cs = URLParser_start;
 	ts = -1;
@@ -474,7 +511,7 @@ static final int WikiTextScanner_en_main = 19;
 	act = 0;
 	}
 
-// line 478 "WikiTextTokenizer.java"
+// line 515 "WikiTextTokenizer.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -499,7 +536,7 @@ case 1:
 // line 1 "NONE"
 	{ts = p;}
 	break;
-// line 503 "WikiTextTokenizer.java"
+// line 540 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -568,39 +605,39 @@ case 3:
 	{te = p+1;}
 	break;
 	case 3:
-// line 101 "WikiTextTokenizer.java.rl"
+// line 121 "WikiTextTokenizer.java.rl"
 	{act = 3;}
 	break;
 	case 4:
-// line 102 "WikiTextTokenizer.java.rl"
+// line 122 "WikiTextTokenizer.java.rl"
 	{act = 4;}
 	break;
 	case 5:
-// line 99 "WikiTextTokenizer.java.rl"
+// line 119 "WikiTextTokenizer.java.rl"
 	{te = p+1;}
 	break;
 	case 6:
-// line 100 "WikiTextTokenizer.java.rl"
+// line 120 "WikiTextTokenizer.java.rl"
 	{te = p+1;}
 	break;
 	case 7:
-// line 103 "WikiTextTokenizer.java.rl"
+// line 123 "WikiTextTokenizer.java.rl"
 	{te = p+1;{ text += spliceToString(data, ts, te); }}
 	break;
 	case 8:
-// line 101 "WikiTextTokenizer.java.rl"
+// line 121 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ url  += spliceToString(data, ts, te); }}
 	break;
 	case 9:
-// line 102 "WikiTextTokenizer.java.rl"
+// line 122 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ text += spliceToString(data, ts, te); }}
 	break;
 	case 10:
-// line 103 "WikiTextTokenizer.java.rl"
+// line 123 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ text += spliceToString(data, ts, te); }}
 	break;
 	case 11:
-// line 103 "WikiTextTokenizer.java.rl"
+// line 123 "WikiTextTokenizer.java.rl"
 	{{p = ((te))-1;}{ text += spliceToString(data, ts, te); }}
 	break;
 	case 12:
@@ -615,7 +652,7 @@ case 3:
 	}
 	}
 	break;
-// line 619 "WikiTextTokenizer.java"
+// line 656 "WikiTextTokenizer.java"
 			}
 		}
 	}
@@ -629,7 +666,7 @@ case 2:
 // line 1 "NONE"
 	{ts = -1;}
 	break;
-// line 633 "WikiTextTokenizer.java"
+// line 670 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -652,18 +689,17 @@ case 5:
 	break; }
 	}
 
-// line 108 "WikiTextTokenizer.java.rl"
+// line 128 "WikiTextTokenizer.java.rl"
 
 		
 	  try {
-		tokens.add(new TextToken(
-			TextToken.Type.LINK_AND_NAMED_URL, text).setUrl(new URL(url)));
+		tokens.add(new TextToken(TextType.LINK_AND_NAMED_URL, text).setUrl(new URL(url)));
 	  } catch (MalformedURLException exception) {
-		tokens.add(new TextToken(TextToken.Type.TEXT, text + " (" + url + ") "));
+		tokens.add(new TextToken(TextType.TEXT, text + " (" + url + ") "));
 	  }
     }
     
-// line 667 "WikiTextTokenizer.java"
+// line 703 "WikiTextTokenizer.java"
 private static byte[] init__URLParser_actions_0()
 {
 	return new byte [] {
@@ -679,8 +715,9 @@ private static final byte _URLParser_actions[] = init__URLParser_actions_0();
 private static byte[] init__URLParser_key_offsets_0()
 {
 	return new byte [] {
-	    0,    2,    3,    4,    5,    7,    8,    9,   11,   12,   17,   21,
-	   23,   25,   30,   35,   40,   46,   51,   56,   61
+	    0,    3,    4,    5,    6,    7,    8,    9,   11,   12,   13,   14,
+	   16,   22,   26,   29,   31,   36,   41,   46,   51,   56,   61,   66,
+	   71,   76,   81
 	};
 }
 
@@ -690,12 +727,14 @@ private static final byte _URLParser_key_offsets[] = init__URLParser_key_offsets
 private static char[] init__URLParser_trans_keys_0()
 {
 	return new char [] {
-	   32,  104,  116,  116,  112,   58,  115,   47,   47,    9,   32,   58,
-	   10,   32,   91,   93,  104,   10,   32,   91,   93,   32,  104,    9,
-	   32,   10,   32,   91,   93,  116,   10,   32,   91,   93,  116,   10,
-	   32,   91,   93,  112,   10,   32,   58,   91,   93,  115,   10,   32,
-	   47,   91,   93,   10,   32,   47,   91,   93,    9,   10,   32,   91,
-	   93,   10,   32,   58,   91,   93,    0
+	   32,  102,  104,  105,  108,  101,   58,   47,   47,    9,   32,  116,
+	  116,  112,   58,  115,   10,   32,   91,   93,  102,  104,   10,   32,
+	   91,   93,   32,  102,  104,    9,   32,   10,   32,   91,   93,  105,
+	   10,   32,   91,   93,  108,   10,   32,   91,   93,  101,   10,   32,
+	   58,   91,   93,   10,   32,   47,   91,   93,   10,   32,   47,   91,
+	   93,    9,   10,   32,   91,   93,   10,   32,   91,   93,  116,   10,
+	   32,   91,   93,  116,   10,   32,   91,   93,  112,   10,   32,   58,
+	   91,   93,  115,    0
 	};
 }
 
@@ -705,8 +744,9 @@ private static final char _URLParser_trans_keys[] = init__URLParser_trans_keys_0
 private static byte[] init__URLParser_single_lengths_0()
 {
 	return new byte [] {
-	    2,    1,    1,    1,    2,    1,    1,    2,    1,    5,    4,    2,
-	    2,    5,    5,    5,    6,    5,    5,    5,    5
+	    3,    1,    1,    1,    1,    1,    1,    2,    1,    1,    1,    2,
+	    6,    4,    3,    2,    5,    5,    5,    5,    5,    5,    5,    5,
+	    5,    5,    6
 	};
 }
 
@@ -717,35 +757,39 @@ private static byte[] init__URLParser_range_lengths_0()
 {
 	return new byte [] {
 	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	    0,    0,    0,    0,    0,    0,    0,    0,    0
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0
 	};
 }
 
 private static final byte _URLParser_range_lengths[] = init__URLParser_range_lengths_0();
 
 
-private static byte[] init__URLParser_index_offsets_0()
+private static short[] init__URLParser_index_offsets_0()
 {
-	return new byte [] {
-	    0,    3,    5,    7,    9,   12,   14,   16,   19,   21,   27,   32,
-	   35,   38,   44,   50,   56,   63,   69,   75,   81
+	return new short [] {
+	    0,    4,    6,    8,   10,   12,   14,   16,   19,   21,   23,   25,
+	   28,   35,   40,   44,   47,   53,   59,   65,   71,   77,   83,   89,
+	   95,  101,  107
 	};
 }
 
-private static final byte _URLParser_index_offsets[] = init__URLParser_index_offsets_0();
+private static final short _URLParser_index_offsets[] = init__URLParser_index_offsets_0();
 
 
 private static byte[] init__URLParser_indicies_0()
 {
 	return new byte [] {
-	    1,    2,    0,    3,    0,    4,    0,    5,    0,    6,    7,    0,
-	    8,    0,    9,    0,    0,    0,   10,    6,    0,   12,   13,   14,
-	   15,   16,   11,   17,   17,   17,   17,   11,    1,    2,   18,   19,
-	   19,   10,   17,   17,   17,   17,   20,   11,   17,   17,   17,   17,
-	   21,   11,   17,   17,   17,   17,   22,   11,   17,   17,   23,   17,
-	   17,   24,   11,   17,   17,   25,   17,   17,   11,   17,   17,   26,
-	   17,   17,   11,   11,   10,   27,   10,   10,   28,   17,   17,   23,
-	   17,   17,   11,    0
+	    1,    2,    3,    0,    4,    0,    5,    0,    6,    0,    7,    0,
+	    8,    0,    9,    0,    0,    0,   10,   11,    0,   12,    0,   13,
+	    0,    7,    6,    0,   15,   16,   17,   18,   19,   20,   14,   21,
+	   21,   21,   21,   14,    1,    2,    3,   22,   23,   23,   10,   21,
+	   21,   21,   21,   24,   14,   21,   21,   21,   21,   25,   14,   21,
+	   21,   21,   21,   26,   14,   21,   21,   27,   21,   21,   14,   21,
+	   21,   28,   21,   21,   14,   21,   21,   29,   21,   21,   14,   14,
+	   10,   30,   10,   10,   31,   21,   21,   21,   21,   32,   14,   21,
+	   21,   21,   21,   33,   14,   21,   21,   21,   21,   34,   14,   21,
+	   21,   27,   21,   21,   26,   14,    0
 	};
 }
 
@@ -755,9 +799,9 @@ private static final byte _URLParser_indicies[] = init__URLParser_indicies_0();
 private static byte[] init__URLParser_trans_targs_0()
 {
 	return new byte [] {
-	    9,    0,    1,    2,    3,    4,    5,    8,    6,    7,   12,   10,
-	    9,   11,    9,    9,   13,    9,    9,    9,   14,   15,   16,   17,
-	   20,   18,   19,    9,   19
+	   12,    0,    1,    8,    2,    3,    4,    5,    6,    7,   15,    9,
+	   10,   11,   13,   12,   14,   12,   12,   16,   23,   12,   12,   12,
+	   17,   18,   19,   20,   21,   22,   12,   22,   24,   25,   26
 	};
 }
 
@@ -768,8 +812,8 @@ private static byte[] init__URLParser_trans_actions_0()
 {
 	return new byte [] {
 	   19,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-	   11,    5,    7,    9,    0,   15,   17,   13,    0,    0,    0,    0,
-	    0,    0,   26,   21,   23
+	    0,    0,    0,   11,    5,    7,    9,    0,    0,   15,   17,   13,
+	    0,    0,    0,    0,    0,   26,   21,   23,    0,    0,    0
 	};
 }
 
@@ -779,8 +823,9 @@ private static final byte _URLParser_trans_actions[] = init__URLParser_trans_act
 private static byte[] init__URLParser_to_state_actions_0()
 {
 	return new byte [] {
-	    0,    0,    0,    0,    0,    0,    0,    0,    0,    1,    0,    0,
-	    0,    0,    0,    0,    0,    0,    0,    0,    0
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    1,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0
 	};
 }
 
@@ -790,31 +835,33 @@ private static final byte _URLParser_to_state_actions[] = init__URLParser_to_sta
 private static byte[] init__URLParser_from_state_actions_0()
 {
 	return new byte [] {
-	    0,    0,    0,    0,    0,    0,    0,    0,    0,    3,    0,    0,
-	    0,    0,    0,    0,    0,    0,    0,    0,    0
+	    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    3,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+	    0,    0,    0
 	};
 }
 
 private static final byte _URLParser_from_state_actions[] = init__URLParser_from_state_actions_0();
 
 
-private static byte[] init__URLParser_eof_trans_0()
+private static short[] init__URLParser_eof_trans_0()
 {
-	return new byte [] {
-	    1,    1,    1,    1,    1,    1,    1,    1,    1,    0,   18,   19,
-	   20,   18,   18,   18,   18,   18,   18,   28,   18
+	return new short [] {
+	    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	    0,   22,   23,   24,   22,   22,   22,   22,   22,   22,   31,   22,
+	   22,   22,   22
 	};
 }
 
-private static final byte _URLParser_eof_trans[] = init__URLParser_eof_trans_0();
+private static final short _URLParser_eof_trans[] = init__URLParser_eof_trans_0();
 
 
-static final int URLParser_start = 9;
-static final int URLParser_first_final = 9;
+static final int URLParser_start = 12;
+static final int URLParser_first_final = 12;
 static final int URLParser_error = -1;
 
-static final int URLParser_en_main = 9;
+static final int URLParser_en_main = 12;
 
 
-// line 118 "WikiTextTokenizer.java.rl"
+// line 137 "WikiTextTokenizer.java.rl"
 }
