@@ -59,7 +59,15 @@ public class WikiTextTokenizer implements TextTokenizer {
 
     	main := |*
     	  link              => { scanLink(splice(data, ts, te)); };
-    	  url               => { emit(TextToken.Type.NAKED_URL, data, ts, te); };
+    	  url               => { 
+    		  String url = spliceToString(data, ts, te);
+    		  try {
+    			tokens.add(new TextToken(
+    				TextToken.Type.NAKED_URL, text).setUrl(new URL(url)));
+			  } catch (MalformedURLException exception) {
+				tokens.add(new TextToken(TextToken.Type.TEXT, text));
+			  }
+    	  };
     	  word              => { emit(TextToken.Type.TEXT, data, ts, te); };
     	  boldAndItalicText => { emit(TextToken.Type.BOLD_AND_ITALIC, data, ts+5, te-5); };
     	  boldText          => { emit(TextToken.Type.BOLD, data, ts+3, te-3); };

@@ -161,23 +161,23 @@ case 3:
 	{act = 2;}
 	break;
 	case 5:
-// line 63 "WikiTextTokenizer.java.rl"
+// line 71 "WikiTextTokenizer.java.rl"
 	{act = 3;}
 	break;
 	case 6:
-// line 64 "WikiTextTokenizer.java.rl"
+// line 72 "WikiTextTokenizer.java.rl"
 	{te = p+1;{ emit(TextToken.Type.BOLD_AND_ITALIC, data, ts+5, te-5); }}
 	break;
 	case 7:
-// line 65 "WikiTextTokenizer.java.rl"
+// line 73 "WikiTextTokenizer.java.rl"
 	{te = p+1;{ emit(TextToken.Type.BOLD, data, ts+3, te-3); }}
 	break;
 	case 8:
-// line 66 "WikiTextTokenizer.java.rl"
+// line 74 "WikiTextTokenizer.java.rl"
 	{te = p+1;{ emit(TextToken.Type.ITALIC, data, ts+2, te-2); }}
 	break;
 	case 9:
-// line 67 "WikiTextTokenizer.java.rl"
+// line 75 "WikiTextTokenizer.java.rl"
 	{te = p+1;{ emit(TextToken.Type.TEXT, data, ts, te); }}
 	break;
 	case 10:
@@ -185,11 +185,11 @@ case 3:
 	{te = p;p--;{ scanLink(splice(data, ts, te)); }}
 	break;
 	case 11:
-// line 63 "WikiTextTokenizer.java.rl"
+// line 71 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ emit(TextToken.Type.TEXT, data, ts, te); }}
 	break;
 	case 12:
-// line 63 "WikiTextTokenizer.java.rl"
+// line 71 "WikiTextTokenizer.java.rl"
 	{{p = ((te))-1;}{ emit(TextToken.Type.TEXT, data, ts, te); }}
 	break;
 	case 13:
@@ -199,7 +199,15 @@ case 3:
 	{{p = ((te))-1;} scanLink(splice(data, ts, te)); }
 	break;
 	case 2:
-	{{p = ((te))-1;} emit(TextToken.Type.NAKED_URL, data, ts, te); }
+	{{p = ((te))-1;} 
+    		  String url = spliceToString(data, ts, te);
+    		  try {
+    			tokens.add(new TextToken(
+    				TextToken.Type.NAKED_URL, text).setUrl(new URL(url)));
+			  } catch (MalformedURLException exception) {
+				tokens.add(new TextToken(TextToken.Type.TEXT, text + " (" + url + ") "));
+			  }
+    	  }
 	break;
 	case 3:
 	{{p = ((te))-1;} emit(TextToken.Type.TEXT, data, ts, te); }
@@ -207,7 +215,7 @@ case 3:
 	}
 	}
 	break;
-// line 211 "WikiTextTokenizer.java"
+// line 219 "WikiTextTokenizer.java"
 			}
 		}
 	}
@@ -221,7 +229,7 @@ case 2:
 // line 1 "NONE"
 	{ts = -1;}
 	break;
-// line 225 "WikiTextTokenizer.java"
+// line 233 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -244,13 +252,13 @@ case 5:
 	break; }
 	}
 
-// line 72 "WikiTextTokenizer.java.rl"
+// line 80 "WikiTextTokenizer.java.rl"
 
       
       return tokens;
     }
     
-// line 254 "WikiTextTokenizer.java"
+// line 262 "WikiTextTokenizer.java"
 private static byte[] init__WikiTextScanner_actions_0()
 {
 	return new byte [] {
@@ -436,7 +444,7 @@ static final int WikiTextScanner_error = -1;
 static final int WikiTextScanner_en_main = 12;
 
 
-// line 77 "WikiTextTokenizer.java.rl"
+// line 85 "WikiTextTokenizer.java.rl"
     
     private void scanLink(byte[] data) {
       int eof = data.length;
@@ -444,7 +452,7 @@ static final int WikiTextScanner_en_main = 12;
       String url = "";
       String text = "";
       
-// line 448 "WikiTextTokenizer.java"
+// line 456 "WikiTextTokenizer.java"
 	{
 	cs = URLParser_start;
 	ts = -1;
@@ -452,7 +460,7 @@ static final int WikiTextScanner_en_main = 12;
 	act = 0;
 	}
 
-// line 456 "WikiTextTokenizer.java"
+// line 464 "WikiTextTokenizer.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -477,7 +485,7 @@ case 1:
 // line 1 "NONE"
 	{ts = p;}
 	break;
-// line 481 "WikiTextTokenizer.java"
+// line 489 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -546,39 +554,39 @@ case 3:
 	{te = p+1;}
 	break;
 	case 3:
-// line 93 "WikiTextTokenizer.java.rl"
+// line 101 "WikiTextTokenizer.java.rl"
 	{act = 3;}
 	break;
 	case 4:
-// line 94 "WikiTextTokenizer.java.rl"
+// line 102 "WikiTextTokenizer.java.rl"
 	{act = 4;}
 	break;
 	case 5:
-// line 91 "WikiTextTokenizer.java.rl"
+// line 99 "WikiTextTokenizer.java.rl"
 	{te = p+1;}
 	break;
 	case 6:
-// line 92 "WikiTextTokenizer.java.rl"
+// line 100 "WikiTextTokenizer.java.rl"
 	{te = p+1;}
 	break;
 	case 7:
-// line 95 "WikiTextTokenizer.java.rl"
+// line 103 "WikiTextTokenizer.java.rl"
 	{te = p+1;{ text += spliceToString(data, ts, te); }}
 	break;
 	case 8:
-// line 93 "WikiTextTokenizer.java.rl"
+// line 101 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ url  += spliceToString(data, ts, te); }}
 	break;
 	case 9:
-// line 94 "WikiTextTokenizer.java.rl"
+// line 102 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ text += spliceToString(data, ts, te); }}
 	break;
 	case 10:
-// line 95 "WikiTextTokenizer.java.rl"
+// line 103 "WikiTextTokenizer.java.rl"
 	{te = p;p--;{ text += spliceToString(data, ts, te); }}
 	break;
 	case 11:
-// line 95 "WikiTextTokenizer.java.rl"
+// line 103 "WikiTextTokenizer.java.rl"
 	{{p = ((te))-1;}{ text += spliceToString(data, ts, te); }}
 	break;
 	case 12:
@@ -593,7 +601,7 @@ case 3:
 	}
 	}
 	break;
-// line 597 "WikiTextTokenizer.java"
+// line 605 "WikiTextTokenizer.java"
 			}
 		}
 	}
@@ -607,7 +615,7 @@ case 2:
 // line 1 "NONE"
 	{ts = -1;}
 	break;
-// line 611 "WikiTextTokenizer.java"
+// line 619 "WikiTextTokenizer.java"
 		}
 	}
 
@@ -630,7 +638,7 @@ case 5:
 	break; }
 	}
 
-// line 100 "WikiTextTokenizer.java.rl"
+// line 108 "WikiTextTokenizer.java.rl"
 
 		
 	  try {
@@ -641,7 +649,7 @@ case 5:
 	  }
     }
     
-// line 645 "WikiTextTokenizer.java"
+// line 653 "WikiTextTokenizer.java"
 private static byte[] init__URLParser_actions_0()
 {
 	return new byte [] {
@@ -794,5 +802,5 @@ static final int URLParser_error = -1;
 static final int URLParser_en_main = 9;
 
 
-// line 110 "WikiTextTokenizer.java.rl"
+// line 118 "WikiTextTokenizer.java.rl"
 }

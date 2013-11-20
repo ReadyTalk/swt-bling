@@ -27,21 +27,23 @@ public class Example {
       final TextPaintEventHandler eventHandler2 = 
           new TextPaintEventHandler(this)
           .setTokenizer(new WikiTextTokenizer())
-          .setText("This is wiki text \n '''BOLD TEXT''' http://www.google.com")
+          .setText("This is wiki '''text''' d '''BOLD TEXT''' http://www.google.com")
           .setClipping(false)
           .setBounds(new Rectangle(0, 50, 100, 100))
           .setDrawBounds(true)
           .setWrapping(true)
           .addNavigationListener(new NavigationListener() {
             @Override
-            public void navigate(NavigationEvent event) {}
+            public void navigate(NavigationEvent event) {
+              System.out.println("Navigate to: "+event.getUrl());
+            }
           });
     
       addPaintListener(new PaintListener() {
         
         @Override
         public void paintControl(PaintEvent e) {
-          eventHandler1.handlePaint(e);
+//          eventHandler1.handlePaint(e);
           eventHandler2.handlePaint(e);
         }
       });

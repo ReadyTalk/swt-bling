@@ -7,10 +7,9 @@ public class ParserTest {
 
 	public static void main(String[] args) throws IOException {
 		List<TextToken> tokens = new WikiTextTokenizer()
-		    .tokenize("'asdasd' '''Bold Text''' \n" + "'''''Bold and Italic''''' \n"
-		        + " asd ''ITALIC''\n" + "[http://www.google.com Google]\n");
+		    .tokenize("This is wiki '''text''' d '''BOLD TEXT''' http://www.google.com");
 		for (TextToken token : tokens) {
-//			System.out.println(token);
+			System.out.println(token);
 		}
 	}
 }

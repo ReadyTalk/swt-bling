@@ -5,7 +5,7 @@ import java.net.URL;
 public class TextToken {
 
 	public enum Type {
-		TEXT, PLAIN_URL, LINK_URL, LINK_AND_NAMED_URL, NAKED_URL, HEADER, ITALIC, BOLD, BOLD_AND_ITALIC
+		TEXT, ITALIC, BOLD, BOLD_AND_ITALIC, HEADER, PLAIN_URL, LINK_URL, LINK_AND_NAMED_URL, NAKED_URL
 	}
 
 	private Type type;
