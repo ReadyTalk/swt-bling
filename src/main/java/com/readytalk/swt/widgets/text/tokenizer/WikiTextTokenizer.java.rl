@@ -50,12 +50,12 @@ public class WikiTextTokenizer implements TextTokenizer {
        
       %%{ 
         machine WikiTextScanner;   
-    	word              = (any - space)+;
+    	word              = (any - (space|'\''))+;
     	url               = ('http'|'https') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
-    	boldAndItalicText = '\'\'\'\'\'' (any - ('\''))+ '\'\'\'\'\'';
-    	boldText          = ('\'\'\'') (any - ('\''))+ ('\'\'\'');
-    	italicText        = '\'\'' (any - ('\''))+ '\'\'';
+    	boldAndItalicText = '\'\'\'\'\'' (any - '\'')+ '\'\'\'\'\'';
+    	boldText          = '\'\'\'' (any - '\'')+ '\'\'\'';
+    	italicText        = '\'\'' (any - '\'')+ '\'\'';
 
     	main := |*
     	  link              => { scanLink(splice(data, ts, te)); };
@@ -63,7 +63,7 @@ public class WikiTextTokenizer implements TextTokenizer {
     		  String url = spliceToString(data, ts, te);
     		  try {
     			tokens.add(new TextToken(
-    				TextToken.Type.NAKED_URL, text).setUrl(new URL(url)));
+    				TextToken.Type.NAKED_URL, url).setUrl(new URL(url)));
 			  } catch (MalformedURLException exception) {
 				tokens.add(new TextToken(TextToken.Type.TEXT, text));
 			  }

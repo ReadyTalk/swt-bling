@@ -27,9 +27,13 @@ public class Example {
       final TextPaintEventHandler eventHandler2 = 
           new TextPaintEventHandler(this)
           .setTokenizer(new WikiTextTokenizer())
-          .setText("This is wiki '''text''' d '''BOLD TEXT''' http://www.google.com")
+          .setText("This is '''wiki text''' is auto-wrapped and can display "
+          		 + "''Italic Text,'' '''Bold Text,''' and "
+          		 + "'''''Bold and Italic Text'''''"
+          		 + " naked url: http://www.google.com"
+          		 + " [http://www.stackoverflow.com StackOverflow]")
           .setClipping(false)
-          .setBounds(new Rectangle(0, 50, 100, 100))
+          .setBounds(new Rectangle(0, 50, 300, 100))
           .setDrawBounds(true)
           .setWrapping(true)
           .addNavigationListener(new NavigationListener() {
