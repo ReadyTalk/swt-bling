@@ -1,10 +1,8 @@
-#swt-bling
+#swt-bling [![Build Status](https://travis-ci.org/ReadyTalk/swt-bling.png?branch=master)](https://travis-ci.org/ReadyTalk/swt-bling)
+
 Behold, swt-bling!  A project that will help you enhance your mundane [swt](http://www.eclipse.org/swt/) where others may fail.  Perhaps you have stumbled upon this project because you're bad at spelling and it's so largely popular that it was the first in your search for "sweet bling".  If, on the other hand, you've been saddled with SWT or have chosen such a life, but are disappointed in the rather... er... pedestrian look and feel, interactions, and general "sweetness" of the standard complement of widgets (and yes, we know, not all UI elements in SWT inherit from Widget) then you've come to the right place.  In an attempt to make your life better (studies show that 90% of the users of swt-bling will live longer, but don't ask us for a reference), we offer you the "sweetness" that is swt-bling.  Feel free to reduce, reuse, and recycle (and maybe even contribute) as needed.
 
 Don't fret, fellow SWT-user for swt-bling is surely the answer to ~~all of~~ *some of* your problems.
-
-##Build Status
-[![Build Status](https://travis-ci.org/ReadyTalk/swt-bling.png?branch=master)](https://travis-ci.org/ReadyTalk/swt-bling)
 
 ##Building
 Building swt-bling is simple. Just open a terminal and run
