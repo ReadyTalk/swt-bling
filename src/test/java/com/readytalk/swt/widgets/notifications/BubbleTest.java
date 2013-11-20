@@ -94,18 +94,4 @@ public class BubbleTest {
               DISPLAY_WIDTH - INSIDE_BOUNDS_VALUE, DISPLAY_HEIGHT - INSIDE_BOUNDS_VALUE);
     }
   }
-
-  // Note: The positive tests are in BubbleIntegTest because we need a Display
-  public static class BubbleConstructionTest {
-    @Test(expected=IllegalArgumentException.class)
-    public void bubble_parentIsNull_throwsIllegalArgumentException() {
-      new Bubble(null, "Here's some text");
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void bubble_parentAndTextAreNull_throwsIllegalArgumentException() {
-      new Bubble(null, null);
-    }
-  }
-
 }
