@@ -1,0 +1,13 @@
+language: java
+
+env:
+  global:
+    secure: cJg3YFHZqmcstozwtO0heN92ADmtdaKlEqNY8lnUAf4KhT4aIO9uFFsXVER0Up/bPQC89q9XZQvNIchxXyrJ0xABgoxD9c6Emn9fupXgpyAKCAiGTVYmf0bIIrfiV3/L5g0n6pXXL/DK8Mvsfd7hlyILsgHhwrdrcjUc7kjUTIw=
+
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+
+script: ./gradlew integTest check Javadoc --info --stacktrace
+
+after_success: .utility/push-javadoc-to-gh-pages.sh

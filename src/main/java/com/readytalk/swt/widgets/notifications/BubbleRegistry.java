@@ -1,7 +1,6 @@
 package com.readytalk.swt.widgets.notifications;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
@@ -44,6 +43,16 @@ public class BubbleRegistry {
     addTags(widget, tags);
   }
 
+  public void register(Bubblable bubblable, Bubble bubble, BubbleTag ... tags) {
+    BubbleRegistrant registrant = findRegistrant(bubblable);
+
+    if(registrant == null) {
+      registrant = new CustomWidgetBubbleRegistrant(bubblable, bubble, tags);
+      registrant.addMouseListener();
+      registrants.add(registrant);
+    }
+  }
+
 
   public void addTags(Object target, BubbleTag ... tags) {
     BubbleRegistrant registrant = findRegistrant(target);
@@ -79,6 +88,7 @@ public class BubbleRegistry {
     for(BubbleTag tag : tags) {
       List<BubbleRegistrant> registrants = getTagList(tag);
       for(BubbleRegistrant registrant : registrants) {
+        registrant.bubble.setDisableAutoHide(true);
         registrant.showBubble();
       }
     }
@@ -86,6 +96,7 @@ public class BubbleRegistry {
 
   public void showAllBubbles() {
     for(BubbleRegistrant registrant : registrants) {
+      registrant.bubble.setDisableAutoHide(true);
       registrant.showBubble();
     }
   }
@@ -101,6 +112,7 @@ public class BubbleRegistry {
       List<BubbleRegistrant> registrants = getTagList(tag);
       for(BubbleRegistrant registrant : registrants) {
         registrant.dismissBubble();
+        registrant.bubble.setDisableAutoHide(false);
       }
     }
   }
@@ -108,6 +120,7 @@ public class BubbleRegistry {
   public void dismissAllBubbles() {
     for(BubbleRegistrant registrant : registrants) {
       registrant.dismissBubble();
+      registrant.bubble.setDisableAutoHide(false);
     }
   }
 
@@ -196,7 +209,7 @@ public class BubbleRegistry {
       return widget;
     }
 
-    public void addMouseListener() {
+    void addMouseListener() {
       if (mouseHoverListener == null) {
         mouseHoverListener = new Listener() {
           public void handleEvent(Event event) {
@@ -207,7 +220,9 @@ public class BubbleRegistry {
       if (mouseOutListener == null) {
         mouseOutListener = new Listener() {
           public void handleEvent(Event event) {
-            bubble.fadeOut();
+            if(bubble.isDisableAutoHide() != true) {
+              bubble.fadeOut();
+            }
           }
         };
       }
@@ -215,9 +230,43 @@ public class BubbleRegistry {
       widget.addListener(SWT.MouseExit, mouseOutListener);
     }
 
-    public void removeMouseListener() {
+    void removeMouseListener() {
       widget.removeListener(SWT.MouseHover, mouseHoverListener);
       widget.removeListener(SWT.MouseExit, mouseOutListener);
+    }
+  }
+
+  static class CustomWidgetBubbleRegistrant extends BubbleRegistrant {
+    final Bubblable bubblable;
+    Listener mouseTrackListener;
+
+    CustomWidgetBubbleRegistrant(Bubblable bubblable, Bubble bubble, BubbleTag ... tags) {
+      super(bubble, tags);
+      this.bubblable = bubblable;
+    }
+
+    Object getTarget() {
+      return bubblable;
+    }
+
+    void addMouseListener() {
+      if (mouseTrackListener == null) {
+        mouseTrackListener = new Listener() {
+          public void handleEvent(Event event) {
+            if (bubblable.getRectangleArea().contains(event.x, event.y)) {
+              bubble.show();
+            } else if (bubble.isVisible() && !bubble.getIsFadeEffectInProgress() && !bubble.isDisableAutoHide()) {
+              bubble.fadeOut();
+            }
+          }
+        };
+      }
+
+      bubblable.getPaintedElement().addListener(SWT.MouseMove, mouseTrackListener);
+    }
+
+    void removeMouseListener() {
+      bubblable.getPaintedElement().removeListener(SWT.MouseMove, mouseTrackListener);
     }
   }
 }

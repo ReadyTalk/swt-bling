@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -195,6 +196,21 @@ public class BubbleIntegTest {
               "would appreciate if this Bubble message wasn\'t extraoridinarily long, so please break this up for me.";
 
       assertTrue(bubble.maybeBreakLines(longWithoutLineBreaks).contains("\n"));
+    }
+  }
+
+  public static class BubbleConstructorTests {
+    @Test(expected=IllegalArgumentException.class)
+    public void bubble_textIsNull_throwsIllegalArgumentException() {
+      Shell shell = new Shell();
+      new Bubble(shell, null);
+    }
+
+    @Test
+    public void bubble_validArguments_returnsBubbleObject() {
+      Shell shell = new Shell();
+      Bubble bubble = new Bubble(shell, "Some test text");
+      assertNotNull(bubble);
     }
   }
 }

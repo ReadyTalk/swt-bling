@@ -94,5 +94,4 @@ public class BubbleTest {
               DISPLAY_WIDTH - INSIDE_BOUNDS_VALUE, DISPLAY_HEIGHT - INSIDE_BOUNDS_VALUE);
     }
   }
-
 }
