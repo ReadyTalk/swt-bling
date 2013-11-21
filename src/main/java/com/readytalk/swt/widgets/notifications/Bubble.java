@@ -25,16 +25,16 @@ import org.eclipse.swt.widgets.Widget;
 import java.util.logging.Logger;
 
 /**
- * Instances of this class represent contextual information about a UI element.
- *
- * Bubble will attempt to always be visible on screen.
- * If the default Bubble would appear off-screen, we will calculate a suitable location to appear.
- *
- * Bubble utilizes the system font, and provides a constructor to indicate use of a bolded font.
- *
- * Bubble will also break up lines that would be longer than 400 pixels when drawn.
- * You can short-circuit this logic by providing your own line-breaks with <code>\n</code> characters in the text.
- * We will never format your text if your provide your own formatting.
+ * Instances of this class represent contextual information about a UI element.<br/>
+ * <br/>
+ * Bubble will attempt to always be visible on screen.<br/>
+ * If the default Bubble would appear off-screen, we will calculate a suitable location to appear.<br/>
+ * <br/>
+ * Bubble utilizes the system font, and provides a constructor to indicate use of a bolded font.<br/>
+ * <br/>
+ * Bubble will also break up lines that would be longer than 400 pixels when drawn.<br/>
+ * You can short-circuit this logic by providing your own line-breaks with <code>\n</code> characters in the text.<br/>
+ * We will never format your text if your provide your own formatting.<br/>
  */
 public class Bubble extends Widget implements Fadeable {
   private static final Logger LOG = Logger.getLogger(Bubble.class.getName());
@@ -42,7 +42,7 @@ public class Bubble extends Widget implements Fadeable {
   public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
   public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
-  protected static final int MAX_STRING_LENGTH = 400; //pixels
+  static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB BACKGROUND_COLOR = new RGB(74, 74, 74);
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
@@ -51,8 +51,8 @@ public class Bubble extends Widget implements Fadeable {
   private static final int FADE_OUT_TIME = 200; //milliseconds
   private static final int FULLY_VISIBLE_ALPHA = 255; //fully opaque
   private static final int FULLY_HIDDEN_ALPHA = 0; //fully transparent
-  protected static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
-  protected static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
+  static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
+  static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
   private boolean disableAutoHide;
 
@@ -74,8 +74,8 @@ public class Bubble extends Widget implements Fadeable {
   private Font boldFont;
 
   private Listener parentListener;
-  protected BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
-  protected BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
+  BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
+  BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
   private boolean bubbleIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
@@ -273,7 +273,23 @@ public class Bubble extends Widget implements Fadeable {
     resetState();
   }
 
-  protected boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  /**
+   * Returns a boolean describing whether or not auto-hide functionality is disabled for this Bubble.
+   * @return Whether or not auto-hide functionality is disabled
+   */
+  protected boolean isDisableAutoHide() {
+    return disableAutoHide;
+  }
+
+  /**
+   * Tells the Bubble whether or not it should auto-hide when the user mouses off the Bubble'd item.
+   * @param disableAutoHide whether or not auto-hide should be disabled
+   */
+  protected void setDisableAutoHide(boolean disableAutoHide) {
+    this.disableAutoHide = disableAutoHide;
+  }
+
+  boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
     if (configureBubbleIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
       return false;
     } else if  (configureBubbleIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
@@ -283,7 +299,7 @@ public class Bubble extends Widget implements Fadeable {
     return true;
   }
 
-  protected boolean configureBubbleIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  boolean configureBubbleIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
     Point lowestYPosition = new Point(locationRelativeToDisplay.x, locationRelativeToDisplay.y + containingRectangle.height);
 
     if (!displayBounds.contains(lowestYPosition)) {
@@ -294,7 +310,7 @@ public class Bubble extends Widget implements Fadeable {
     }
   }
 
-  protected boolean configureBubbleIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  boolean configureBubbleIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
     Point farthestXPosition = new Point(locationRelativeToDisplay.x + containingRectangle.width, locationRelativeToDisplay.y);
 
     if (!displayBounds.contains(farthestXPosition)) {
@@ -391,14 +407,6 @@ public class Bubble extends Widget implements Fadeable {
     gc.drawText(tooltipText, containingRectangle.x + (TEXT_WIDTH_PADDING / 2), containingRectangle.y + (TEXT_HEIGHT_PADDING / 2));
   }
 
-  public boolean isDisableAutoHide() {
-    return disableAutoHide;
-  }
-
-  public void setDisableAutoHide(boolean disableAutoHide) {
-    this.disableAutoHide = disableAutoHide;
-  }
-
   private void onMouseDown(Event event) {
     if(!isDisableAutoHide()) {
       hide();
@@ -413,7 +421,7 @@ public class Bubble extends Widget implements Fadeable {
     });
   }
 
-  protected String maybeBreakLines(String rawString) {
+  String maybeBreakLines(String rawString) {
     GC gc = new GC(getDisplay());
     if (boldFont != null) {
       gc.setFont(boldFont);
@@ -469,7 +477,7 @@ public class Bubble extends Widget implements Fadeable {
       this.bubblable = bubblable;
     }
 
-    protected Point getSize() {
+    Point getSize() {
       if (control != null) {
         return control.getSize();
       } else {
@@ -477,7 +485,7 @@ public class Bubble extends Widget implements Fadeable {
       }
     }
 
-    protected Point getLocation() {
+    Point getLocation() {
       if (control != null) {
         return control.getLocation();
       } else {
@@ -485,7 +493,7 @@ public class Bubble extends Widget implements Fadeable {
       }
     }
 
-    protected Control getControl() {
+    Control getControl() {
       if (control != null) {
         return control;
       } else {
@@ -494,6 +502,10 @@ public class Bubble extends Widget implements Fadeable {
     }
   }
 
+  /**
+   * Implemented as part of Fadeable. <br/>
+   * Users should not interact directly invoke this method.
+   */
   public boolean fadeComplete(int targetAlpha) {
     synchronized (fadeLock) {
       if (tooltip.getAlpha() == targetAlpha) {
@@ -504,6 +516,10 @@ public class Bubble extends Widget implements Fadeable {
     }
   }
 
+  /**
+   * Implemented as part of Fadeable. <br/>
+   * Users should not interact directly invoke this method.
+   */
   public void fade(int alpha) {
     synchronized (fadeLock) {
       tooltip.setAlpha(alpha);
