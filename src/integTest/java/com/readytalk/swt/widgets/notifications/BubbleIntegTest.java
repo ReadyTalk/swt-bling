@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -137,7 +138,7 @@ public class BubbleIntegTest {
       button = new Button(composite, SWT.PUSH);
       button.setText("Testing Button");
 
-      bubble = new Bubble(button, BUBBLE_TEXT);
+      bubble = Bubble.createBubble(button, BUBBLE_TEXT);
       button.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, true));
       shell.pack();
       shell.layout();
@@ -201,16 +202,56 @@ public class BubbleIntegTest {
 
   public static class BubbleConstructorTests {
     @Test(expected=IllegalArgumentException.class)
-    public void bubble_textIsNull_throwsIllegalArgumentException() {
+    public void createBubble_textIsNull_throwsIllegalArgumentException() {
       Shell shell = new Shell();
-      new Bubble(shell, null);
+      Bubble.createBubble(shell, null);
     }
 
     @Test
-    public void bubble_validArguments_returnsBubbleObject() {
+    public void createBubble_validArguments_returnsBubbleObject() {
       Shell shell = new Shell();
-      Bubble bubble = new Bubble(shell, "Some test text");
+      Bubble bubble = Bubble.createBubble(shell, "Some test text");
       assertNotNull(bubble);
+    }
+  }
+
+  public static class BubbleTagTests {
+    Composite composite;
+    Bubble bubble;
+    BubbleRegistry bubbleRegistry;
+    BubbleRegistry.BubbleRegistrant registrant;
+
+    @Before
+    public void setUp() {
+      MockitoAnnotations.initMocks(this);
+
+      Display display = Display.getDefault();
+      Shell shell = new Shell(display);
+
+      composite = new Composite(shell, SWT.NONE);
+      bubbleRegistry = BubbleRegistry.getInstance();
+      bubble = Bubble.createBubble(composite, "Some test text");
+      registrant = bubbleRegistry.findRegistrant(composite);
+    }
+
+    @Test
+    public void addTags_addANewTag_tagIsAdded() {
+      assertEquals(registrant.getTags().size(), 0);
+
+      bubble.addTags(BubbleTag.NEW);
+
+      assertNotNull(bubbleRegistry.tagMap.get(BubbleTag.NEW.getText()));
+      assertTrue(registrant.getTags().contains(BubbleTag.NEW));
+    }
+
+    @Test
+    public void removeTags_removeTag_tagIsRemoved() {
+      assertEquals(registrant.getTags().size(), 0);
+
+      bubble.addTags(BubbleTag.NEW);
+      bubble.removeTags(BubbleTag.NEW);
+
+      assertFalse(registrant.getTags().contains(BubbleTag.NEW));
     }
   }
 }

@@ -6,12 +6,9 @@ import com.readytalk.swt.widgets.notifications.Bubble;
 import com.readytalk.swt.widgets.notifications.BubbleRegistry;
 import com.readytalk.swt.widgets.notifications.BubbleTag;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -35,8 +32,7 @@ public class BubbleExample implements SwtBlingExample {
 
     Button displayNewBubbles = new Button(composite, SWT.PUSH);
     displayNewBubbles.setText("Display Bubbles Tag NEW");
-    Bubble displayNewBubblesBubble = new Bubble(displayNewBubbles, "Click here to display all Bubbles of type \"NEW\"");
-    bubbleRegistry.register(displayNewBubbles, displayNewBubblesBubble);
+    Bubble.createBubble(displayNewBubbles, "Click here to display all Bubbles of type \"NEW\"");
     displayNewBubbles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         bubbleRegistry.showBubblesByTags(BubbleTag.NEW);
@@ -45,8 +41,7 @@ public class BubbleExample implements SwtBlingExample {
 
     Button displayAllBubbles = new Button(composite, SWT.PUSH);
     displayAllBubbles.setText("Display All Bubbles");
-    Bubble displayAllBubblesBubble = new Bubble(displayAllBubbles, "Click here to display all Bubbles");
-    bubbleRegistry.register(displayAllBubbles, displayAllBubblesBubble);
+    Bubble.createBubble(displayAllBubbles, "Click here to display all Bubbles");
     displayAllBubbles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         bubbleRegistry.showAllBubbles();
@@ -55,8 +50,7 @@ public class BubbleExample implements SwtBlingExample {
 
     Button dismissAllBubbles = new Button(composite, SWT.PUSH);
     dismissAllBubbles.setText("Dismiss All Bubbles");
-    Bubble hideAllBubblesBubble = new Bubble(dismissAllBubbles, "Click here to dismiss all Bubbles");
-    bubbleRegistry.register(dismissAllBubbles, hideAllBubblesBubble);
+    Bubble.createBubble(dismissAllBubbles, "Click here to dismiss all Bubbles");
     dismissAllBubbles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         bubbleRegistry.dismissAllBubbles();
@@ -65,23 +59,19 @@ public class BubbleExample implements SwtBlingExample {
 
     Button newFeatureButton = new Button(composite, SWT.PUSH);
     newFeatureButton.setText("A New Feature");
-    Bubble newFeatureButtonBubble = new Bubble(newFeatureButton, "This text explains a new, exciting feature!");
-    bubbleRegistry.register(newFeatureButton, newFeatureButtonBubble, BubbleTag.NEW);
+    Bubble.createBubble(newFeatureButton, "This text explains a new, exciting feature!", BubbleTag.NEW);
 
     Label labelExample = new Label(composite, SWT.NONE);
     labelExample.setText("A Short Label");
-    Bubble labelBubble = new Bubble(labelExample, "This is a longer description of what the short label explains");
-    bubbleRegistry.register(labelExample, labelBubble);
+    Bubble.createBubble(labelExample, "This is a longer description of what the short label explains");
 
     ProgressBar progress = new ProgressBar(composite, SWT.INDETERMINATE);
-    Bubble progressBubble = new Bubble(progress, "This is a really long description where no line breaks are provided. " +
+    Bubble.createBubble(progress, "This is a really long description where no line breaks are provided. " +
             "We will automatically break these lines for you, so that users aren't overwhelmed by a long single line.");
-    bubbleRegistry.register(progress, progressBubble);
 
     Label boldLabel = new Label(composite, SWT.NONE);
     boldLabel.setText("This is a label with a bold Bubble");
-    Bubble boldBubble = new Bubble(boldLabel, "This is a bold Bubble tooltip text", true);
-    bubbleRegistry.register(boldLabel, boldBubble);
+    Bubble.createBubble(boldLabel, "This is a bold Bubble tooltip text", true);
 
     shell.pack();
     shell.open();

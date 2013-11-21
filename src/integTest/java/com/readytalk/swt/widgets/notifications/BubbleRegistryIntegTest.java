@@ -10,11 +10,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-/**
- */
 public class BubbleRegistryIntegTest {
 
   Bubble topBubble, middleBubble, bottomBubble;
@@ -25,7 +25,8 @@ public class BubbleRegistryIntegTest {
 
   BubbleRegistry bubbleRegistry;
 
-  private void setupShell() {
+  @Before
+  public void setUp() {
     display = Display.getDefault();
     shell = new Shell(display);
     shell.setLayout(new FillLayout());
@@ -59,49 +60,32 @@ public class BubbleRegistryIntegTest {
     formData.right = new FormAttachment(100);
     bottomButton.setLayoutData(formData);
 
-    topBubble = new Bubble(topButton,
-      "Some text.");
+    topBubble = Bubble.createBubble(topButton,
+      "Some text.", BubbleTag.NEW);
 
-    middleBubble = new Bubble(middleButton,
-      "Some middlin' text");
+    middleBubble = Bubble.createBubble(middleButton,
+      "Some middlin' text", BubbleTag.FREE_FORM);
 
-    bottomBubble = new Bubble(bottomButton,
-      "Some other text");
+    bottomBubble = Bubble.createBubble(bottomButton,
+      "Some other text", BubbleTag.NEW);
 
-    bubbleRegistry = new BubbleRegistry();
+    bubbleRegistry = BubbleRegistry.getInstance();
 
     shell.setSize(500, 250);
     shell.open();
   }
 
-  private void closeShell() {
-    shell.close();
-    display.close();
-  }
-
-
   @Test
   public void test_show_by_tag() {
-    setupShell();
-    bubbleRegistry.register(topButton, topBubble, BubbleTag.NEW);
-    bubbleRegistry.register(middleButton, middleBubble, BubbleTag.FREE_FORM);
-    bubbleRegistry.register(bottomButton, bottomBubble, BubbleTag.NEW);
-
     bubbleRegistry.showBubblesByTags(BubbleTag.NEW);
 
     Assert.assertTrue(topBubble.isVisible());
     Assert.assertFalse(middleBubble.isVisible());
     Assert.assertTrue(bottomBubble.isVisible());
-    closeShell();
   }
 
   @Test
   public void test_hide_by_tag() {
-    setupShell();
-    bubbleRegistry.register(topButton, topBubble, BubbleTag.NEW);
-    bubbleRegistry.register(middleButton, middleBubble, BubbleTag.FREE_FORM);
-    bubbleRegistry.register(bottomButton, bottomBubble, BubbleTag.NEW);
-
     bubbleRegistry.showBubblesByTags(BubbleTag.NEW);
 
     Assert.assertTrue(topBubble.isVisible());
@@ -114,32 +98,19 @@ public class BubbleRegistryIntegTest {
     Assert.assertTrue(topBubble.getIsFadeEffectInProgress());
     Assert.assertTrue(middleBubble.isVisible());
     Assert.assertTrue(bottomBubble.getIsFadeEffectInProgress());
-
-    closeShell();
   }
 
   @Test
   public void test_show_all() {
-    setupShell();
-    bubbleRegistry.register(topButton, topBubble, BubbleTag.NEW);
-    bubbleRegistry.register(middleButton, middleBubble, BubbleTag.FREE_FORM);
-    bubbleRegistry.register(bottomButton, bottomBubble, BubbleTag.NEW);
-
     bubbleRegistry.showAllBubbles();
 
     Assert.assertTrue(topBubble.isVisible());
     Assert.assertTrue(middleBubble.isVisible());
     Assert.assertTrue(bottomBubble.isVisible());
-    closeShell();
   }
 
   @Test
   public void test_hide_all() {
-    setupShell();
-    bubbleRegistry.register(topButton, topBubble, BubbleTag.NEW);
-    bubbleRegistry.register(middleButton, middleBubble, BubbleTag.FREE_FORM);
-    bubbleRegistry.register(bottomButton, bottomBubble, BubbleTag.NEW);
-
     bubbleRegistry.showAllBubbles();
 
     Assert.assertTrue(topBubble.isVisible());
@@ -151,6 +122,5 @@ public class BubbleRegistryIntegTest {
     Assert.assertTrue(topBubble.getIsFadeEffectInProgress());
     Assert.assertTrue(middleBubble.getIsFadeEffectInProgress());
     Assert.assertTrue(bottomBubble.getIsFadeEffectInProgress());
-    closeShell();
   }
 }
