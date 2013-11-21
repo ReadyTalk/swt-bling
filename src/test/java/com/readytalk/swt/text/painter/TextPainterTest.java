@@ -2,10 +2,6 @@ package com.readytalk.swt.text.painter;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.event.MouseEvent;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +9,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.readytalk.swt.text.navigation.NavigationListener;
-import com.readytalk.swt.text.tokenizer.WikiTextTokenizer;
+import com.readytalk.swt.text.tokenizer.TextTokenizer;
+import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
+import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 
 public class TextPainterTest {
   
@@ -39,8 +37,11 @@ public class TextPainterTest {
   }
   
   @Test
-  public void setText_ConfiguredToTokenizeWikiText_SevenTokens () {
-    painter.setTokenizer(new WikiTextTokenizer()).setText(WIKI_TEXT);
+  public void setText_ConfiguredToTokenizeWikiText_SevenTokens () 
+      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    
+    TextTokenizer tokenizer = TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI);
+    painter.setTokenizer(tokenizer).setText(WIKI_TEXT);
     assertEquals(7, painter.getTokens().size());
   }
   

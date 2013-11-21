@@ -21,12 +21,18 @@ public class WikiTextTokenizer implements TextTokenizer {
 	
 	private int styleState = 0x00;
 	
-	  
+	@Override  
 	public WikiTextTokenizer setEncoding(final Charset encoding) {
 		this.encoding = encoding;
 		return this;
 	}
 	
+	@Override
+	public void getEncoding() {
+		return encoding;
+	}
+	
+	@Override
 	public WikiTextTokenizer reset() {
 	  tokens.clear();
 	  return this;
@@ -48,6 +54,7 @@ public class WikiTextTokenizer implements TextTokenizer {
       return new String(splice(data, start, end), encoding);
     }
     
+    @Override
     public List<TextToken> tokenize(final String text) {
       byte[] data = text.getBytes(encoding);
       int eof = data.length;

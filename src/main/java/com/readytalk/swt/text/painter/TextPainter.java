@@ -22,9 +22,9 @@ import org.eclipse.swt.widgets.Listener;
 import com.readytalk.swt.text.navigation.Hyperlink;
 import com.readytalk.swt.text.navigation.NavigationEvent;
 import com.readytalk.swt.text.navigation.NavigationListener;
-import com.readytalk.swt.text.tokenizer.PlainTextTokenizer;
 import com.readytalk.swt.text.tokenizer.TextToken;
 import com.readytalk.swt.text.tokenizer.TextTokenizer;
+import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 
 public class TextPainter {
   
@@ -70,7 +70,7 @@ public class TextPainter {
     text = "";
     clipping = true;
     wrapping = true;
-    textTokenizer = new PlainTextTokenizer();
+    textTokenizer = TextTokenizerFactory.createDefault();
     foregroundColor = parent.getForeground();
     hyperlinkColor = buildColor(100, 50, 200);
     boundaryColor = buildColor(255, 30, 30);
@@ -294,7 +294,6 @@ public class TextPainter {
       configureForStyle(gc, token); 
       Point nextPosition = gc.textExtent(token.getText());
       
-      int startX = drawPosition.x + nextPosition.x;
       if (wrapping && (drawPosition.x + nextPosition.x > bounds.width + bounds.x)) {
         drawPosition.y += nextPosition.y + 5;
         drawPosition.x = bounds.x;

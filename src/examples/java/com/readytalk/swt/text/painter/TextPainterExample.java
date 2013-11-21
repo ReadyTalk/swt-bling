@@ -16,7 +16,9 @@ import org.eclipse.swt.widgets.Shell;
 import com.readytalk.swt.text.navigation.NavigationEvent;
 import com.readytalk.swt.text.navigation.NavigationListener;
 import com.readytalk.swt.text.painter.TextPainter;
-import com.readytalk.swt.text.tokenizer.WikiTextTokenizer;
+import com.readytalk.swt.text.tokenizer.TextTokenizer;
+import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
+import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 
 public class TextPainterExample {
 
@@ -24,7 +26,9 @@ public class TextPainterExample {
 
     Timer timer;
 
-    public TextCanvas(Composite parent, int style) {
+    public TextCanvas(Composite parent, int style) 
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+      
       super(parent, style);
       timer = new Timer();
 
@@ -34,8 +38,9 @@ public class TextPainterExample {
 
       final int width = 250;
       Rectangle wikiTextBounds = new Rectangle(0, 50, width, 100);
+      TextTokenizer tokenizer = TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI);
       final TextPainter eventHandler2 = new TextPainter(this)
-          .setTokenizer(new WikiTextTokenizer())
+          .setTokenizer(tokenizer)
           .setText("This is '''wiki text''' is auto-wrapped and can display "
                   + "''Italic Text,'' '''Bold Text,''' and "
                   + "'''''Bold and Italic Text'''''"
@@ -51,10 +56,8 @@ public class TextPainterExample {
               System.out.println("Navigate to: " + event.getUrl());
             }
           });
-
       
       timer.scheduleAtFixedRate(new TimerTask() {
-        
         double counter = 0.0;
         
         @Override
@@ -82,7 +85,10 @@ public class TextPainterExample {
     }
   };
 
-  public static void main(String[] args) {
+  
+  public static void main(String[] args) 
+      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    
     final Display display = new Display();
     final Shell shell = new Shell(display);
     shell.setSize(400, 250);

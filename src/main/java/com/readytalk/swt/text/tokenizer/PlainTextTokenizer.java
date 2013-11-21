@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.readytalk.swt.text.painter.TextType;
 
-public class PlainTextTokenizer implements TextTokenizer {
+class PlainTextTokenizer implements TextTokenizer {
   
   private List<TextToken> tokens = new ArrayList<TextToken>();
   private Charset encoding = Charset.defaultCharset(); 
@@ -15,6 +15,11 @@ public class PlainTextTokenizer implements TextTokenizer {
   public TextTokenizer setEncoding(Charset encoding) {
     this.encoding = encoding;
     return this;
+  }
+  
+  @Override
+  public Charset getEncoding() {
+    return encoding;
   }
   
   @Override
