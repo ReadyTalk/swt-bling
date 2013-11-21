@@ -48,3 +48,10 @@ tasks.withType(FindBugs) {
     html.enabled = true
   }
 }
+
+task ragel(type:Exec) {
+	ext.destDir = new File(buildDir, 'generated/java/com/readytalk/swt/text/tokenizer')
+	ext.destDir.mkdirs()
+    workingDir = 'src/main/resources/ragel'
+    commandLine 'ragel', '-J', '-o', file(ext.destDir.getPath() + '/WikiTextTokenizer.java'), 'WikiTextTokenizer.java.rl'
+}
