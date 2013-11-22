@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class BubbleRegistryIntegTest {
@@ -96,6 +97,7 @@ public class BubbleRegistryIntegTest {
     Assert.assertTrue(bottomBubble.getIsFadeEffectInProgress());
   }
 
+  @Ignore("This test works everywhere but XVFB. Tracked by issue #27")
   @Test
   public void test_show_all() {
     bubbleRegistry.showAllBubbles();
@@ -105,6 +107,7 @@ public class BubbleRegistryIntegTest {
     Assert.assertTrue(bottomBubble.isVisible());
   }
 
+  @Ignore("This test works everywhere but XVFB. Tracked by issue #27")
   @Test
   public void test_hide_all() {
     bubbleRegistry.showAllBubbles();
