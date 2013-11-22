@@ -19,16 +19,13 @@ public class BubbleRegistryIntegTest {
 
   Bubble topBubble, middleBubble, bottomBubble;
   Button topButton, middleButton, bottomButton;
-  Shell shell;
-
-  Display display;
 
   BubbleRegistry bubbleRegistry;
 
   @Before
   public void setUp() {
-    display = Display.getDefault();
-    shell = new Shell(display);
+    Display display = Display.getDefault();
+    Shell shell = new Shell(display);
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
     composite.setLayout(new FormLayout());
@@ -72,7 +69,6 @@ public class BubbleRegistryIntegTest {
     bubbleRegistry = BubbleRegistry.getInstance();
 
     shell.setSize(500, 250);
-    shell.open();
   }
 
   @Test

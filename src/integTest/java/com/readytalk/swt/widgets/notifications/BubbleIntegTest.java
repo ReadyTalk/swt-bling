@@ -60,8 +60,7 @@ public class BubbleIntegTest {
 
     @After
     public void tearDown() {
-      shell.dispose();
-      display.dispose();
+      shell.close();
     }
 
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
