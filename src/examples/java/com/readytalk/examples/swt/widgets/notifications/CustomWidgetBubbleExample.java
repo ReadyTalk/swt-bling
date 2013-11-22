@@ -45,9 +45,8 @@ public class CustomWidgetBubbleExample implements SwtBlingExample {
       }
     });
 
-    Bubble bubble = new Bubble(widget, "Here's some info about the custom icon. This item is drawn with a GC, and would " +
-                                       "traditionally have un-tooltip-able");
-    BubbleRegistry.getInstance().register(widget, bubble);
+    Bubble.createBubbleForCustomWidget(widget, "Here's some info about the custom icon. This item is drawn with a GC," +
+            " and would traditionally have un-tooltip-able");
 
     shell.setSize(200, 200);
     shell.open();
