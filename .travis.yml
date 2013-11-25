@@ -8,6 +8,6 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 
-script: ./gradlew integTest check Javadoc --info --stacktrace
+script: TERM=dumb ./gradlew integTest check Javadoc --info --stacktrace
 
 after_success: .utility/push-javadoc-to-gh-pages.sh

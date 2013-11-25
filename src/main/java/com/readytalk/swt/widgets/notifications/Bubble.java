@@ -25,16 +25,16 @@ import org.eclipse.swt.widgets.Widget;
 import java.util.logging.Logger;
 
 /**
- * Instances of this class represent contextual information about a UI element.
- *
- * Bubble will attempt to always be visible on screen.
- * If the default Bubble would appear off-screen, we will calculate a suitable location to appear.
- *
- * Bubble utilizes the system font, and provides a constructor to indicate use of a bolded font.
- *
- * Bubble will also break up lines that would be longer than 400 pixels when drawn.
- * You can short-circuit this logic by providing your own line-breaks with <code>\n</code> characters in the text.
- * We will never format your text if your provide your own formatting.
+ * Instances of this class represent contextual information about a UI element.<br/>
+ * <br/>
+ * Bubble will attempt to always be visible on screen.<br/>
+ * If the default Bubble would appear off-screen, we will calculate a suitable location to appear.<br/>
+ * <br/>
+ * Bubble utilizes the system font, and provides a constructor to indicate use of a bolded font.<br/>
+ * <br/>
+ * Bubble will also break up lines that would be longer than 400 pixels when drawn.<br/>
+ * You can short-circuit this logic by providing your own line-breaks with <code>\n</code> characters in the text.<br/>
+ * We will never format your text if your provide your own formatting.<br/>
  */
 public class Bubble extends Widget implements Fadeable {
   private static final Logger LOG = Logger.getLogger(Bubble.class.getName());
@@ -42,7 +42,7 @@ public class Bubble extends Widget implements Fadeable {
   public enum BubbleDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
   public enum BubblePointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
-  protected static final int MAX_STRING_LENGTH = 400; //pixels
+  static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB BACKGROUND_COLOR = new RGB(74, 74, 74);
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
@@ -51,8 +51,8 @@ public class Bubble extends Widget implements Fadeable {
   private static final int FADE_OUT_TIME = 200; //milliseconds
   private static final int FULLY_VISIBLE_ALPHA = 255; //fully opaque
   private static final int FULLY_HIDDEN_ALPHA = 0; //fully transparent
-  protected static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
-  protected static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
+  static final BubbleDisplayLocation DEFAULT_DISPLAY_LOCATION = BubbleDisplayLocation.BELOW_PARENT;
+  static final BubblePointCenteredOnParent DEFAULT_POINT_CENTERED = BubblePointCenteredOnParent.TOP_LEFT_CORNER;
 
   private boolean disableAutoHide;
 
@@ -74,14 +74,13 @@ public class Bubble extends Widget implements Fadeable {
   private Font boldFont;
 
   private Listener parentListener;
-  protected BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
-  protected BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
+  BubbleDisplayLocation bubbleDisplayLocation = DEFAULT_DISPLAY_LOCATION;
+  BubblePointCenteredOnParent bubblePointCenteredOnParent = DEFAULT_POINT_CENTERED;
   private boolean bubbleIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
   /**
-   * Constructs a new instance of the class. The Bubble does not appear until you call
-   * <code>show()</code> or apply it to a component via the <code>BubbleRegistry</code>.
+   * Creates and attaches a bubble to a component that implements <code>Bubblable</code>.
    * This is a convenience constructor which assumes you do not want the Bubble text to appear
    * in a Bold font.
    *
@@ -89,26 +88,26 @@ public class Bubble extends Widget implements Fadeable {
    * @param text The text you want to appear in the Bubble
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
    */
-  public Bubble(Bubblable bubblable, String text) throws IllegalArgumentException {
-    this(bubblable.getPaintedElement(), bubblable, text);
+  public static Bubble createBubbleForCustomWidget(Bubblable bubblable, String text, BubbleTag ... tags)
+          throws IllegalArgumentException {
+    return new Bubble(bubblable.getPaintedElement(), bubblable, text, tags);
   }
 
   /**
-   * Constructs a new instance of the class. The Bubble does not appear until you call
-   * <code>show()</code> or apply it to a component via the <code>BubbleRegistry</code>.
+   * Creates and attaches a Bubble to a component that implements <code>Bubblable</code>
    *
    * @param bubblable The Bubblable element that the Bubble provides contextual help about
    * @param text The text you want to appear in the Bubble
    * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
    */
-  public Bubble(Bubblable bubblable, String text, boolean useBoldFont) throws IllegalArgumentException{
-    this(bubblable.getPaintedElement(), bubblable, text, useBoldFont);
+  public static Bubble createBubbleForCustomWidget(Bubblable bubblable, String text, boolean useBoldFont, BubbleTag ... tags)
+          throws IllegalArgumentException {
+    return new Bubble(bubblable.getPaintedElement(), bubblable, text, useBoldFont, tags);
   }
 
   /**
-   * Constructs a new instance of the class. The Bubble does not appear until you call
-   * <code>show()</code> or apply it to a component via the <code>BubbleRegistry</code>.
+   * Creates and attaches a Bubble to any SWT Control (or descendant).
    * This is a convenience constructor which assumes you do not want the Bubble text to appear
    * in a Bold font.
    *
@@ -116,28 +115,29 @@ public class Bubble extends Widget implements Fadeable {
    * @param text The text you want to appear in the Bubble
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
    */
-  public Bubble(Control parentControl, String text) throws IllegalArgumentException {
-    this(parentControl, null, text, false);
+  public static Bubble createBubble(Control parentControl, String text, BubbleTag ... tags) {
+    return new Bubble(parentControl, null, text, false, tags);
   }
 
   /**
-   * Constructs a new instance of the class. The Bubble does not appear until you call
-   * <code>show()</code> or apply it to a component via the <code>BubbleRegistry</code>.
+   * Creates and attaches a Bubble to any SWT Control (or descendant).
    *
    * @param parentControl The parent element that the Bubble provides contextual help about
    * @param text The text you want to appear in the Bubble
    * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
    */
-  public Bubble(Control parentControl, String text, boolean useBoldFont) throws IllegalArgumentException {
-    this(parentControl, null, text, useBoldFont);
+  public static Bubble createBubble(Control parentControl, String text, boolean useBoldFont, BubbleTag ... tags)
+          throws IllegalArgumentException {
+    return new Bubble(parentControl, null, text, useBoldFont, tags);
   }
 
-  private Bubble(Control parentControl, Bubblable bubblable, String text) {
-    this(parentControl, bubblable, text, false);
+  private Bubble(Control parentControl, Bubblable bubblable, String text, BubbleTag ... tags) {
+    this(parentControl, bubblable, text, false, tags);
   }
 
-  private Bubble(Control parentControl, Bubblable bubblable, String text, boolean useBoldFont) throws IllegalArgumentException {
+  private Bubble(Control parentControl, Bubblable bubblable, String text, boolean useBoldFont, BubbleTag ... tags)
+          throws IllegalArgumentException {
     super(parentControl, SWT.NONE);
 
     if (bubblable != null) {
@@ -167,34 +167,18 @@ public class Bubble extends Widget implements Fadeable {
     tooltip = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     tooltip.setBackground(backgroundColor);
 
-    listener = new Listener() {
-      public void handleEvent(Event event) {
-        switch (event.type) {
-          case SWT.Dispose:
-            onDispose(event);
-            break;
-          case SWT.Paint:
-            onPaint(event);
-            break;
-          case SWT.MouseDown:
-            onMouseDown(event);
-            break;
-          default:
-            break;
-        }
-      }
-    };
-    addListener(SWT.Dispose, listener);
-    tooltip.addListener(SWT.Paint, listener);
-    tooltip.addListener(SWT.MouseDown, listener);
+    attachListeners();
+    registerBubble(bubbledItem, tags);
+  }
 
-    parentListener = new Listener() {
-      public void handleEvent(Event event) {
-        dispose();
-      }
-    };
-    parentControl.addListener(SWT.Dispose, parentListener);
-    addAccessibilityHooks(parentControl);
+  private void registerBubble(BubbledItem bubbledItem, BubbleTag ... tags) {
+    BubbleRegistry bubbleRegistry = BubbleRegistry.getInstance();
+
+    if (bubbledItem.getBubblable() != null) {
+      bubbleRegistry.register(bubbledItem.bubblable, this, tags);
+    } else {
+      bubbleRegistry.register(bubbledItem.getControl(), this, tags);
+    }
   }
 
   /**
@@ -224,6 +208,35 @@ public class Bubble extends Widget implements Fadeable {
     tooltip.setLocation(location);
     tooltip.setAlpha(FULLY_VISIBLE_ALPHA);
     tooltip.setVisible(true);
+  }
+
+  /**
+   * Add tags to a previously created Bubble. <br/>
+   * <br/>
+   * Tags can be shown by calling <code>BubbleRegistry.getInstance.showBubblesByTag(BubbleTag tag)</code>
+   * @param bubbleTags Tags to associate with this Bubble
+   */
+  public void addTags(BubbleTag ... bubbleTags) {
+    BubbleRegistry.getInstance().addTags(bubbledItem.getControlOrBubblable(), bubbleTags);
+  }
+
+  /**
+   * Remove tags from a previously created Bubble.
+   * @param bubbleTags Tags to un-associate with this Bubble
+   */
+  public void removeTags(BubbleTag ... bubbleTags) {
+    BubbleRegistry bubbleRegistry = BubbleRegistry.getInstance();
+    BubbleRegistry.BubbleRegistrant registrant = bubbleRegistry.findRegistrant(bubbledItem.getControlOrBubblable());
+    BubbleRegistry.getInstance().removeTags(registrant, bubbleTags);
+  }
+
+  /**
+   * Remove the Bubble from the Component.<br/>
+   * Note, this will also dispose the Bubble. Future interactions with this Bubble will result in Widget Diposed exceptions.
+   */
+  public void deactivateBubble() {
+    BubbleRegistry.getInstance().unregister(bubbledItem.getControlOrBubblable());
+    dispose();
   }
 
   /**
@@ -273,7 +286,54 @@ public class Bubble extends Widget implements Fadeable {
     resetState();
   }
 
-  protected boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  /**
+   * Returns a boolean describing whether or not auto-hide functionality is disabled for this Bubble.
+   * @return Whether or not auto-hide functionality is disabled
+   */
+  protected boolean isDisableAutoHide() {
+    return disableAutoHide;
+  }
+
+  /**
+   * Tells the Bubble whether or not it should auto-hide when the user mouses off the Bubble'd item.
+   * @param disableAutoHide whether or not auto-hide should be disabled
+   */
+  protected void setDisableAutoHide(boolean disableAutoHide) {
+    this.disableAutoHide = disableAutoHide;
+  }
+
+  private void attachListeners() {
+    listener = new Listener() {
+      public void handleEvent(Event event) {
+        switch (event.type) {
+          case SWT.Dispose:
+            onDispose(event);
+            break;
+          case SWT.Paint:
+            onPaint(event);
+            break;
+          case SWT.MouseDown:
+            onMouseDown(event);
+            break;
+          default:
+            break;
+        }
+      }
+    };
+    addListener(SWT.Dispose, listener);
+    tooltip.addListener(SWT.Paint, listener);
+    tooltip.addListener(SWT.MouseDown, listener);
+
+    parentListener = new Listener() {
+      public void handleEvent(Event event) {
+        dispose();
+      }
+    };
+    parentControl.addListener(SWT.Dispose, parentListener);
+    addAccessibilityHooks(parentControl);
+  }
+
+  boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
     if (configureBubbleIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
       return false;
     } else if  (configureBubbleIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
@@ -283,7 +343,7 @@ public class Bubble extends Widget implements Fadeable {
     return true;
   }
 
-  protected boolean configureBubbleIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  boolean configureBubbleIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
     Point lowestYPosition = new Point(locationRelativeToDisplay.x, locationRelativeToDisplay.y + containingRectangle.height);
 
     if (!displayBounds.contains(lowestYPosition)) {
@@ -294,7 +354,7 @@ public class Bubble extends Widget implements Fadeable {
     }
   }
 
-  protected boolean configureBubbleIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  boolean configureBubbleIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
     Point farthestXPosition = new Point(locationRelativeToDisplay.x + containingRectangle.width, locationRelativeToDisplay.y);
 
     if (!displayBounds.contains(farthestXPosition)) {
@@ -391,14 +451,6 @@ public class Bubble extends Widget implements Fadeable {
     gc.drawText(tooltipText, containingRectangle.x + (TEXT_WIDTH_PADDING / 2), containingRectangle.y + (TEXT_HEIGHT_PADDING / 2));
   }
 
-  public boolean isDisableAutoHide() {
-    return disableAutoHide;
-  }
-
-  public void setDisableAutoHide(boolean disableAutoHide) {
-    this.disableAutoHide = disableAutoHide;
-  }
-
   private void onMouseDown(Event event) {
     if(!isDisableAutoHide()) {
       hide();
@@ -413,7 +465,7 @@ public class Bubble extends Widget implements Fadeable {
     });
   }
 
-  protected String maybeBreakLines(String rawString) {
+  String maybeBreakLines(String rawString) {
     GC gc = new GC(getDisplay());
     if (boldFont != null) {
       gc.setFont(boldFont);
@@ -469,7 +521,7 @@ public class Bubble extends Widget implements Fadeable {
       this.bubblable = bubblable;
     }
 
-    protected Point getSize() {
+    Point getSize() {
       if (control != null) {
         return control.getSize();
       } else {
@@ -477,7 +529,7 @@ public class Bubble extends Widget implements Fadeable {
       }
     }
 
-    protected Point getLocation() {
+    Point getLocation() {
       if (control != null) {
         return control.getLocation();
       } else {
@@ -485,15 +537,31 @@ public class Bubble extends Widget implements Fadeable {
       }
     }
 
-    protected Control getControl() {
+    Control getControl() {
       if (control != null) {
         return control;
       } else {
         return bubblable.getPaintedElement();
       }
     }
+
+    Object getControlOrBubblable() {
+      if (bubblable != null) {
+        return bubblable;
+      } else {
+        return control;
+      }
+    }
+
+    Bubblable getBubblable() {
+      return bubblable;
+    }
   }
 
+  /**
+   * Implemented as part of Fadeable. <br/>
+   * Users should not interact directly invoke this method.
+   */
   public boolean fadeComplete(int targetAlpha) {
     synchronized (fadeLock) {
       if (tooltip.getAlpha() == targetAlpha) {
@@ -504,6 +572,10 @@ public class Bubble extends Widget implements Fadeable {
     }
   }
 
+  /**
+   * Implemented as part of Fadeable. <br/>
+   * Users should not interact directly invoke this method.
+   */
   public void fade(int alpha) {
     synchronized (fadeLock) {
       tooltip.setAlpha(alpha);

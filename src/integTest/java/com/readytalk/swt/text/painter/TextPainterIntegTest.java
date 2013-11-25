@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -31,12 +32,14 @@ public class TextPainterIntegTest {
     painter = new TextPainter(shell).setWrapping(true);
   }
   
+  @Ignore
   @Test
   public void setText_ConfiguredToTokenizePlainText_OneToken () {
     painter.setText(PLAIN_TEXT);
     assertEquals(1, painter.getTokens().size());
   }
   
+  @Ignore
   @Test
   public void setText_ConfiguredToTokenizeWikiText_SevenTokens () 
       throws InstantiationException, IllegalAccessException, ClassNotFoundException {
