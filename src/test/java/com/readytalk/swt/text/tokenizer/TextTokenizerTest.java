@@ -38,6 +38,8 @@ public class TextTokenizerTest {
 	@Test
 	public void reset_MultipleTokenizeCalls_ResetClearsInternalList() {
 		textTokenizer.tokenize(PLAIN_TEXT);
+		textTokenizer.tokenize(PLAIN_TEXT);
+		textTokenizer.tokenize(PLAIN_TEXT);
 		textTokenizer.reset();
 		Assert.assertEquals(1, textTokenizer.tokenize(PLAIN_TEXT).size());
 	}
