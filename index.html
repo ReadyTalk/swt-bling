@@ -31,41 +31,51 @@
         <hr>
 
         <section id="main_content">
-          <p>Behold, swt-bling!  A project that will help you enhance your mundane <a href="http://www.eclipse.org/swt/">swt</a> where others may fail.  Perhaps you have stumbled upon this project because you're bad at spelling and it's so largely popular that it was the first in your search for "sweet bling".  In that event, may we direct you to some <a href="http://bit.ly/1ho6tNM">truly sweet bling</a>.  If, on the other hand, you've been saddled with SWT or have chosen such a life, but are disappointed in the rather... er... pedestrian look and feel, interactions, and general "sweetness" of the standard complement of widgets (and yes, we know, not all UI elements in SWT inherit from Widget) then you've come to the right place.  In an attempt to make your life better (studies show that 90% of the users of swt-bling will live longer, but don't ask us for a reference), we offer you the "sweetness" that is swt-bling.  Feel free to reduce, reuse, and recycle (and maybe even contribute) as needed.</p>
+            <h1 id="swtblingbuildstatushttpstravisciorgreadytalkswtblingpngbranchmasterhttpstravisciorgreadytalkswtbling">swt-bling <a href="https://travis-ci.org/ReadyTalk/swt-bling"><img src="https://travis-ci.org/ReadyTalk/swt-bling.png?branch=master" alt="Build Status" title="" /></a></h1>
 
-<p>Don't fret, fellow SWT-user for swt-bling is surely the answer to <del>all of</del> <em>some of</em> your problems.</p>
+            <p>Behold, swt-bling!  A project that will help you enhance your mundane <a href="http://www.eclipse.org/swt/">swt</a> where others may fail.  Perhaps you have stumbled upon this project because you're bad at spelling and it's so largely popular that it was the first in your search for "sweet bling".  If, on the other hand, you've been saddled with SWT or have chosen such a life, but are disappointed in the rather... er... pedestrian look and feel, interactions, and general "sweetness" of the standard complement of widgets (and yes, we know, not all UI elements in SWT inherit from Widget) then you've come to the right place.  In an attempt to make your life better (studies show that 90% of the users of swt-bling will live longer, but don't ask us for a reference), we offer you the "sweetness" that is swt-bling.  Feel free to reduce, reuse, and recycle (and maybe even contribute) as needed.</p>
 
-<h2>
-<a name="build-status" class="anchor" href="#build-status"><span class="octicon octicon-link"></span></a>Build Status</h2>
+            <p>Don't fret, fellow SWT-user for swt-bling is surely the answer to ~~all of~~ <em>some of</em> your problems.</p>
 
-<p><a href="https://drone.io/github.com/ReadyTalk/swt-bling/latest"><img src="https://drone.io/github.com/ReadyTalk/swt-bling/status.png" alt="Build Status"></a></p>
+            <h2 id="building">Building</h2>
 
-<h2>
-<a name="building" class="anchor" href="#building"><span class="octicon octicon-link"></span></a>Building</h2>
+            <p>Building swt-bling is simple. Just open a terminal and run</p>
 
-<p>Building swt-bling is simple. Just open a terminal and run</p>
-
-<pre><code>gradlew build
+<pre><code>./gradlew build
 </code></pre>
 
-<p>from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.</p>
+            <p>from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.</p>
 
-<h2>
-<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+            <h2 id="documentation">Documentation</h2>
 
-<p>Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a 'runExample'. For instance:</p>
+            <p>Javadoc is available for swt-bling <a href="http://oss.readytalk.com/swt-bling/javadoc/">here</a>.</p>
 
-<pre><code>gradlew runExampleSquareButton
+            <h2 id="guitests">GUI Tests</h2>
+
+            <p>In addition to standard unit tests, swt-bling has gui-based tests located in <code>src/integTest/java</code>. To run them:</p>
+
+<pre><code>./gradlew integTest
 </code></pre>
 
-<h2>
-<a name="ide-setup" class="anchor" href="#ide-setup"><span class="octicon octicon-link"></span></a>IDE Setup</h2>
+            <h2 id="examples">Examples</h2>
 
-<h3>
-<a name="intellij" class="anchor" href="#intellij"><span class="octicon octicon-link"></span></a>IntelliJ</h3>
+            <p>Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a <code>runExample&lt;WidgetName&gt;</code>. For instance:</p>
 
-<p>Most active contributors use <a href="http://www.jetbrains.com/idea/">IntelliJ</a> as their primary IDE. Simply import the project
-by pointing IntelliJ at the build.gradle file at the root of the project.</p>
+<pre><code>./gradlew runExampleSquareButton
+</code></pre>
+
+            <h2 id="idesetup">IDE Setup</h2>
+
+            <h3 id="intellij">IntelliJ</h3>
+
+            <p>Most active contributors use <a href="http://www.jetbrains.com/idea/">IntelliJ</a> as their primary IDE. Run</p>
+
+<pre><code>./gradlew idea
+</code></pre>
+
+            <p>at the root of the project to create an IntelliJ project file. When you start IntelliJ, simply point at the <code>.imr</code> file to get started.</p>
+
+            <p>Note: On OS X, if you receive a <code>Invalid Thread Access</code> message, you'll need to open the Run Configuration and add <code>-XstartOnFirstThread</code> to the VM Options text input box.</p>
         </section>
 
         <footer>
