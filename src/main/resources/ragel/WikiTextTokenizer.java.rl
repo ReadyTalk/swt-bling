@@ -11,8 +11,10 @@ import org.eclipse.swt.SWT;
 import com.readytalk.swt.text.painter.TextType;
 
 /*
- * To rebuild this parser by hand, run the following command:
- * ragel -J WikiTextTokenizer.java.rl -o WikiTextTokenizer.java
+ * This parser will automatically build via the gradle build process.  If you want to 
+ * rebuild this parser by hand, run the following command:
+ * 
+ *    ragel -J WikiTextTokenizer.java.rl -o WikiTextTokenizer.java
  */
 public class WikiTextTokenizer implements TextTokenizer {
 	

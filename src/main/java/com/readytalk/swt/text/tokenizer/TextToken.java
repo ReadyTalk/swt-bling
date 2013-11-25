@@ -6,11 +6,7 @@ import com.readytalk.swt.text.painter.TextType;
 
 public class TextToken {
   
-  /*
-   * TODO look into subclassing or compositing the actual TextStyle class
-   */
-
-	private TextType type;
+  private TextType type;
 	private String text;
 	private URL url;
 
