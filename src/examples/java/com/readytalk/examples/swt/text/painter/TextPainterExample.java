@@ -1,8 +1,10 @@
-package com.readytalk.swt.text.painter;
+package com.readytalk.examples.swt.text.painter;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.readytalk.examples.swt.RunnableExample;
+import com.readytalk.examples.swt.SwtBlingExample;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -20,9 +22,9 @@ import com.readytalk.swt.text.tokenizer.TextTokenizer;
 import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 
-public class TextPainterExample {
+public class TextPainterExample implements SwtBlingExample {
 
-  static class TextCanvas extends Canvas {
+  class TextCanvas extends Canvas {
 
     Timer timer;
 
@@ -86,13 +88,26 @@ public class TextPainterExample {
     }
   };
 
-  public static void main(String[] args) throws InstantiationException,
-      IllegalAccessException, ClassNotFoundException {
+  @RunnableExample(name="TextPainter")
+  public TextPainterExample() { }
 
-    final Display display = new Display();
-    final Shell shell = new Shell(display);
+  public void run() {
+
+    Display display = new Display();
+    Shell shell = new Shell(display);
     shell.setSize(400, 250);
-    TextCanvas canvas = new TextCanvas(shell, SWT.NONE);
+
+    TextCanvas canvas = null;
+    try {
+      canvas = new TextCanvas(shell, SWT.NONE);
+    } catch (InstantiationException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+
     FillLayout fillLayout = new FillLayout();
     shell.setLayout(fillLayout);
     shell.open();
