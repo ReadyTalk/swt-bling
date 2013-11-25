@@ -28,7 +28,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	}
 	
 	@Override
-	public void getEncoding() {
+	public Charset getEncoding() {
 		return encoding;
 	}
 	
@@ -56,6 +56,11 @@ public class WikiTextTokenizer implements TextTokenizer {
     
     @Override
     public List<TextToken> tokenize(final String text) {
+	  
+      if(text == null || "".equals(text)) {
+        return tokens;
+      }
+	  
       byte[] data = text.getBytes(encoding);
       int eof = data.length;
       
@@ -119,7 +124,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	    machine URLParser;
 		lbrace   = '[';
 		rbrace   = ']';
-		url      = (' ')* ('http'|'https'|'file') '://' (any - (' '|'\t'))+;
+		url      = (' ')* ('http'|'https'|'file') '://' (any - (' '|'\t'| '[' | ']'))+;
 		linkText = (any - (' ' | '\n' | '[' | ']'))+;
 	
 		main := |*
@@ -135,7 +140,11 @@ public class WikiTextTokenizer implements TextTokenizer {
 	  }%%
 		
 	  try {
-		tokens.add(new TextToken(TextType.LINK_AND_NAMED_URL, text).setUrl(new URL(url)));
+		if (text == null || "".equals(text)){
+          tokens.add(new TextToken(TextType.LINK_URL, url).setUrl(new URL(url)));
+		} else {
+          tokens.add(new TextToken(TextType.LINK_AND_NAMED_URL, text).setUrl(new URL(url)));
+		}
 	  } catch (MalformedURLException exception) {
 		tokens.add(new TextToken(TextType.TEXT, text + " (" + url + ") "));
 	  }

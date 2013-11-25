@@ -26,9 +26,10 @@ public class TextPainterExample {
 
     Timer timer;
 
-    public TextCanvas(Composite parent, int style) 
-        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-      
+    public TextCanvas(Composite parent, int style)
+        throws InstantiationException, IllegalAccessException,
+        ClassNotFoundException {
+
       super(parent, style);
       timer = new Timer();
 
@@ -38,34 +39,34 @@ public class TextPainterExample {
 
       final int width = 250;
       Rectangle wikiTextBounds = new Rectangle(0, 50, width, 100);
-      TextTokenizer tokenizer = TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI);
+      TextTokenizer tokenizer = TextTokenizerFactory
+          .createTextTokenizer(TextTokenizerType.WIKI);
       final TextPainter eventHandler2 = new TextPainter(this)
           .setTokenizer(tokenizer)
-          .setText("This is '''wiki text''' is auto-wrapped and can display "
+          .setText(
+              "This is '''wiki text''' is auto-wrapped and can display "
                   + "''Italic Text,'' '''Bold Text,''' and "
                   + "'''''Bold and Italic Text'''''"
                   + " naked url: http://www.google.com"
-                  + " wiki url: [http://www.readytalk.com ReadyTalk]")
-          .setClipping(false)
-          .setBounds(wikiTextBounds)
-          .setDrawBounds(true)
-          .setWrapping(true)
-          .addNavigationListener(new NavigationListener() {
+                  + " wiki url: [http://www.readytalk.com ReadyTalk]"  
+                  + " url: [http://www.readytalk.com]")
+          .setClipping(false).setBounds(wikiTextBounds).setDrawBounds(true)
+          .setWrapping(true).addNavigationListener(new NavigationListener() {
             @Override
             public void navigate(NavigationEvent event) {
               System.out.println("Navigate to: " + event.getUrl());
             }
           });
-      
+
       timer.scheduleAtFixedRate(new TimerTask() {
         double counter = 0.0;
-        
+
         @Override
         public void run() {
           counter += 0.01;
           int w = (int) (width * Math.sin(counter) / 3) + width;
           eventHandler2.setBounds(new Rectangle(0, 50, w, 100));
-          Display.getDefault().syncExec( new Runnable() {
+          Display.getDefault().syncExec(new Runnable() {
             public void run() {
               if (!isDisposed()) {
                 redraw();
@@ -85,10 +86,9 @@ public class TextPainterExample {
     }
   };
 
-  
-  public static void main(String[] args) 
-      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-    
+  public static void main(String[] args) throws InstantiationException,
+      IllegalAccessException, ClassNotFoundException {
+
     final Display display = new Display();
     final Shell shell = new Shell(display);
     shell.setSize(400, 250);

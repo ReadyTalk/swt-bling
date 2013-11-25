@@ -29,6 +29,11 @@ class PlainTextTokenizer implements TextTokenizer {
   }
   
   public List<TextToken> tokenize(String text) {
+	
+	if(text == null || "".equals(text)) {
+		return tokens;
+	}
+	
     TextToken textToken = new TextToken(TextType.TEXT, text);
     tokens.add(textToken);
     return tokens;

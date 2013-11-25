@@ -39,6 +39,50 @@ dependencies {
   examplesCompile "org.reflections:reflections:0.9.9-RC1"
 }
 
+task ragel(type:Exec) {
+  ext.sourcePath = 'generated-src/java/com/readytalk/swt/text/tokenizer'
+  ext.sourceName = 'WikiTextTokenizer.java'
+  ext.destDir = new File(buildDir, sourcePath)
+  workingDir = 'src/main/resources/ragel'
+  ext.runRagel = false
+    
+  doFirst {
+    def path = "ragel"
+    def command = "which ragel"
+    
+    if (platform == 'windows') {
+      command = "where ragel"
+    }
+    
+    def proc = command.execute()   
+    proc.waitFor()                 
+    def rpath = "${proc.in.text}"
+    if (rpath != null && rpath.length() > 0 && rpath.contains('ragel')) {
+      runRagel = true
+      destDir.mkdirs()
+      path = rpath.trim()
+    } else {
+      logger.warn('')
+      logger.warn('The Ragel finite-state machine compiler could not be found on the path.')
+      logger.warn('This must be installed for compilation to succeed.')
+      logger.warn('To install:')
+      logger.warn('  - Debian & Debian Variants: sudo apt-get install ragel')
+      logger.warn('  - OS X with Homebrew: brew install ragel')
+      logger.warn('  - Windows: download from http://www.jgoettgens.de/Meine_Bilder_und_Dateien/ragel-vs2012.7z')
+      logger.warn('For more installation information, please visit http://www.complang.org/ragel/')
+      logger.warn('') 
+    }
+    
+    commandLine path, '-J', '-o', file(destDir.getPath() + '/' + sourceName), sourceName + '.rl'
+  }
+}
+
+compileJava { 
+  dependsOn ragel
+  source = ['src/main/java', 'build/generated-src/java'] 
+  options.fork = true
+} 
+
 findbugs {
   reportLevel = "high"
 }
@@ -50,9 +94,7 @@ tasks.withType(FindBugs) {
   }
 }
 
-task ragel(type:Exec) {
-	ext.destDir = new File(buildDir, 'generated/java/com/readytalk/swt/text/tokenizer')
-	ext.destDir.mkdirs()
-    workingDir = 'src/main/resources/ragel'
-    commandLine 'ragel', '-J', '-o', file(ext.destDir.getPath() + '/WikiTextTokenizer.java'), 'WikiTextTokenizer.java.rl'
-}
+
+
+
+
