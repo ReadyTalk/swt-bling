@@ -1,46 +1,62 @@
 allprojects { Project proj ->
   proj.plugins.withType(org.gradle.api.plugins.JavaPlugin) {
+
     proj.sourceSets {
       integTest {
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
       }
     }
+    
+    ext {
+      swtVersion = '4.3'
+      swtArtifactName = "org.eclipse.swt.${swtWindowingLibrary}.${swtPlatform}.${swtArch}"
+      platform = getPlatform(System.properties['os.name'])
+    }
 
+    repositories {
+      mavenCentral()
+      maven {
+        url "https://swt-repo.googlecode.com/svn/repo/"
+      }
+    }
+    
     proj.configurations {
       integTestCompile.extendsFrom testCompile
       integTestRuntime.extendsFrom testRuntime
+      junitAnt 
     }
-
-	task iTest(group: 'Verification') {
-		
-	}
-	
+    
+    proj.dependencies {
+    	junitAnt 'junit:junit:4.11'
+        junitAnt('org.apache.ant:ant-junit:1.8.4') {
+            transitive = false
+        }
+        junitAnt 'org.slf4j:slf4j-api:1.7.5'
+        junitAnt "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
+        junitAnt "org.mockito:mockito-all:1.9.5"
+    }
+    
     task integTest(type: Test, group: 'Verification') {
-      doFirst {
-        if(platform == "darwin") {
-          jvmArgs '-XstartOnFirstThread'
-        }
-      }
-
-      reports {
-        html.destination = "${proj.testReportDir}/integTest"
-        junitXml.destination = "${proj.testResultsDir}/integTest"
-      }
-      classpath = sourceSets.integTest.runtimeClasspath
-      testClassesDir = sourceSets.integTest.output.classesDir
-
-      beforeTest { testName ->
-        logger.info("Running test: ${testName}")
-      }
-
-      doFirst {
-        if(proj.files(sourceSets.integTest.getAllSource()).isEmpty()) {
-          logger.lifecycle("${proj.name} does not contain any integration tests")
-        }
+      
+      ant.taskdef(name: 'junit', classname: 'org.apache.tools.ant.taskdefs.optional.junit.JUnitTask', 
+                classpath: configurations.junitAnt.asPath)
+      doLast {
+	  	  ant.junit(printsummary: true, showoutput: true, fork: true, forkmode: "once", clonevm: false, haltonerror: true, haltonfailure: true) {
+            if(platform == 'darwin') {
+          		jvmarg(value: '-XstartOnFirstThread')
+          	}
+	        formatter(type: 'plain', usefile: 'false')
+	        batchtest {
+	          fileset (dir: 'build/classes/integTest') {
+	            include(name: '**/*IntegTest.class')
+	          }
+	        }
+	        sourceSets.integTest.runtimeClasspath.collect { relativePath(it) }.sort().each { classpath(path: it) }
+	      }   
       }
     }
-
+    
     proj.test {
       dependsOn compileIntegTestJava
     }
