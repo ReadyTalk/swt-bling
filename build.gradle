@@ -32,7 +32,6 @@ repositories {
 }
 
 dependencies {
-  compile 'org.slf4j:slf4j-api:1.7.5'
   compile "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
   testCompile "junit:junit:4.11"
   testCompile "org.mockito:mockito-all:1.9.5"

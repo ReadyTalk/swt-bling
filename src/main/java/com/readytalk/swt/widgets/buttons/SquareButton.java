@@ -28,47 +28,41 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
- * New, improved, full of youth and vigor!  Behold SquareButton 2.0!
- *
- * Some things have changed (duh), so here's the skinny.
- *
  * The SquareButton class is a simple SWT widget that can be used in place of
  * a native SWT button. Unlike the native button, this should look exactly the
- * same on all platforms, and about a million times better than most native buttons.
- *
+ * same on all platforms, and about a million times better than most native buttons. <br/>
+ * <br/>
  * Because I'm lazy and hate boilerplate, 2.0 now uses a Builder to speed up construction
  * and make things less ugly. Here's an example:
- * <code>
+ * <pre><code>
  *              SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();<br/>
  *              SquareButton button = builder.setParent(composite).setImage(image).setText("Bon jour!).build();<br/>
  *              button.addMouseListener(new MouseAdapter() {
- *                @Overrides
  *                public void mouseUp(MouseEvent mouseEvent) {
  *                  magic();
  *                }
  *              }
  *
- * </code>
+ * </code></pre>
  * Julian (the OG author) set default colors to a pretty basic pallet that he was modelling after the stock GMail interface.
  * It's fine, but you'll probably want to use your own, hence the SquareButtonColorGroups.  You can specify gradients for all
- * possible states of the button.
- *
+ * possible states of the button.<br/>
+ * <br/>
  * You can also specify a background image to be used, either cropped, centered, stretched, tiled, or set
- * such that the button is exactly the size of the background image.
- *
+ * such that the button is exactly the size of the background image. <br/>
+ * <br/>
  * Version 2.0 adds the ability to place the image above the text using the ImagePadding enum, more centering options,
- * as well as some cleaner internal logic (if you find bugs).
- *
+ * as well as some cleaner internal logic (if you find bugs). <br/>
+ */
+/*
  * This code may be used under the terms of the Apache license, version 2.0.
  * Version 1.0 Copyright 2009-2010 Strategic Network Applications, Inc. (http://www.snapps.com).
- * Version 2.0 Copyright 2013 ReadyTalk (http://www.readytalk.com) NOTE: do we need this?
+ * Version 2.0 Copyright 2013 ReadyTalk (http://www.readytalk.com)
  *
  * @author Julian Robichaux
  * @author Matt Weaver
  * @version 2.0
- *
  */
-
 public class SquareButton extends Canvas {
   protected static final Logger log = Logger.getLogger(SquareButton.class.getName());
 
@@ -470,13 +464,12 @@ public class SquareButton extends Canvas {
     }
   }
 
-  /**
+  /*
    * for LEFT_OF_TEXT and RIGHT_OF_TEXT
    *    widthOfContents = image.width + image.padding
    *                             + text.width
    * for ABOVE_TEXT
    *  widthOfContents = Math.max(image.width, text.width)
-   * @return
    */
   protected int getWidthOfContents() {
     int widthOfContents = 0;
@@ -499,13 +492,12 @@ public class SquareButton extends Canvas {
     return widthOfContents;
   }
 
-  /**
+  /*
    * for LEFT_OF_TEXT and RIGHT_OF_TEXT
    *  heightOfContents = Math.max(textHeight, imageHeight);
    *
    * for ABOVE_TEXT
    *  heightOfContents = imageHeight + imagePadding + textHeight
-   * @return
    */
   protected int getHeightOfContents() {
     int heightOfContents = 0;
@@ -528,11 +520,9 @@ public class SquareButton extends Canvas {
     return heightOfContents;
   }
 
-  /**
-   * Trying to consolidate this for sanity's sake.
-   *
-   * @return
-   */
+   /*
+    * Trying to consolidate this for sanity's sake.
+    */
   protected ContentOriginSet getContentsOrigin(Rectangle rectangle) {
     int imageX, imageY, textX, textY;
     imageX = imageY = textX = textY = 0;
