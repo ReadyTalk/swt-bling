@@ -57,7 +57,7 @@ allprojects { Project proj ->
       }
     }
     
-    proj.test {
+    proj.integTest {
       dependsOn compileIntegTestJava
     }
 
