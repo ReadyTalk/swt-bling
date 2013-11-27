@@ -1,6 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'findbugs'
+
+repositories {
+  mavenCentral()
+  maven {
+    url "https://swt-repo.googlecode.com/svn/repo/"
+  }
+}
+
 apply from: 'gradle/swt.gradle'
 apply from: 'gradle/integTest.gradle'
 apply from: 'gradle/example.gradle'
@@ -22,13 +30,6 @@ ext {
   swtArtifactName = "org.eclipse.swt.${swtWindowingLibrary}.${swtPlatform}.${swtArch}"
 
   platform = getPlatform(System.properties['os.name'])
-}
-
-repositories {
-  mavenCentral()
-  maven {
-    url "https://swt-repo.googlecode.com/svn/repo/"
-  }
 }
 
 dependencies {

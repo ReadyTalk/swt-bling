@@ -8,19 +8,6 @@ allprojects { Project proj ->
       }
     }
 
-    ext {
-      swtVersion = '4.3'
-      swtArtifactName = "org.eclipse.swt.${swtWindowingLibrary}.${swtPlatform}.${swtArch}"
-      platform = getPlatform(System.properties['os.name'])
-    }
-
-    repositories {
-      mavenCentral()
-      maven {
-        url "https://swt-repo.googlecode.com/svn/repo/"
-      }
-    }
-
     proj.configurations {
       integTestCompile.extendsFrom testCompile
       integTestRuntime.extendsFrom testRuntime
@@ -28,13 +15,9 @@ allprojects { Project proj ->
     }
 
     proj.dependencies {
-      junitAnt 'junit:junit:4.11'
       junitAnt('org.apache.ant:ant-junit:1.8.4') {
         transitive = false
       }
-      junitAnt 'org.slf4j:slf4j-api:1.7.5'
-      junitAnt "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
-      junitAnt "org.mockito:mockito-all:1.9.5"
     }
 
     task integTest(type: Test, group: 'Verification') {
