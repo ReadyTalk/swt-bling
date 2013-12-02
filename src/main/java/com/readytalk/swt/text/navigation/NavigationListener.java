@@ -1,5 +1,13 @@
 package com.readytalk.swt.text.navigation;
 
+/**
+ * NavigationListener is an interface to be implemented by objects
+ * wanting to be notified of NavigationEvents.
+ */
 public interface NavigationListener {
-	void navigate(NavigationEvent event);
+
+  /**
+   * Called when a navigation event occurs.
+   */
+  void navigate(NavigationEvent event);
 }

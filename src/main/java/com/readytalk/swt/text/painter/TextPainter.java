@@ -26,6 +26,49 @@ import com.readytalk.swt.text.tokenizer.TextToken;
 import com.readytalk.swt.text.tokenizer.TextTokenizer;
 import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 
+/**
+ * TextPainter is a utility class used to render text onto a Composite within a 
+ * given boundary with a call to its handlePaint method.  It can render the 
+ * following TextTypes:
+ * <p>
+ * <li>TEXT</li>
+ * <li>BOLD</li>
+ * <li>ITALIC</li>
+ * <li>BOLD_AND_ITALIC</li>
+ * <li>PLAIN_URL</li>
+ * <li>LINK_URL</li>
+ * <li>LINK_AND_NAMED_URL</li>
+ * <li>NAMED_URL</li>
+ * </p>
+ * <p>
+ * TextPainter works by tokenizing text into a TextToken list of the 
+ * aforementioned TextTypes and then painting them into the given boundary using 
+ * the TextPainter options for guidance.  By default, TextPainter uses a 
+ * PlainText tokenizer which does not recognize any text styling rules such as 
+ * BOLD or ITALICS.
+ * </p>
+ * <pre>
+ * Example:
+ * {@code
+ * final TextPainter painter = new TextPainter(this)
+ *         .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI))
+ *         .setText(
+ *             "This is '''wiki text''' is auto-wrapped and can display "
+ *                 + "''Italic Text,'' '''Bold Text,''' and "
+ *                 + "'''''Bold and Italic Text'''''"
+ *                 + " naked url: http://www.google.com"
+ *                 + " wiki url: [http://www.readytalk.com ReadyTalk]"  
+ *                 + " url: [http://www.readytalk.com]")
+ *         .setClipping(false).setBounds(wikiTextBounds).setDrawBounds(true)
+ *         .setWrapping(true).addNavigationListener(new NavigationListener() {
+ *           @Override
+ *           public void navigate(NavigationEvent event) {
+ *             System.out.println("Navigate to: " + event.getUrl());
+ *           }
+ *         });
+ * }
+ * </pre>
+ */
 public class TextPainter {
   
   private Color boundaryColor;
@@ -53,6 +96,9 @@ public class TextPainter {
   private List<TextToken> tokens;
   private boolean wrapping;
 
+  /**
+   * Creates a new TextPainter to paint text onto the given Composite.  
+   */
   public TextPainter(final Composite parent) {
     this.parent = parent;
     Listener listener = new Listener() {
@@ -112,6 +158,10 @@ public class TextPainter {
     });
   }
   
+  /**
+   * Disposes of the operating system resources associated with the 
+   * receiver and all its descendants.
+   */
   public void dispose() {
     boundaryColor.dispose();
     foregroundColor.dispose();
@@ -123,6 +173,10 @@ public class TextPainter {
     handCursor.dispose();
   }
   
+  /**
+   * Returns the list of TextTokens as parsed by the TextTokenizer
+   * @return List<TextToken> : The list of text tokens 
+   */
   public List<TextToken> getTokens() {
     return tokens;
   }
@@ -152,34 +206,55 @@ public class TextPainter {
     return new Color(parent.getDisplay(), r, g, b);
   }
   
+  /**
+   * Sets the boundary color.  By default, it is set to (255, 30, 30).
+   */
   public TextPainter setBoundaryColor(final int r, final int g, final int b) {
     boundaryColor.dispose();
     boundaryColor = buildColor(r, g, b);
     return this;
   }
   
+  /**
+   * Sets the text color.  By default, it clones the parent Composite's 
+   * foreground color upon construction.
+   */
   public TextPainter setForeground(final int r, final int g, final int b) {
     foregroundColor.dispose();
     foregroundColor = buildColor(r, g, b);
     return this;
   }
   
+  /**
+   * Sets the hyperlink text color.  By default, it is set to (100, 50, 200).
+   */
   public TextPainter setHyperlinkColor(final int r, final int g, final int b) {
     hyperlinkColor.dispose();
     hyperlinkColor = buildColor(r, g, b);
     return this;
   }
   
+  /**
+   * Sets the text painting boundary.  By default, it is the size of the 
+   * parent Composite.
+   */
   public TextPainter setBounds (final Rectangle bounds) {
     this.bounds = bounds;
     return this;
   }
   
+  /**
+   * Sets the clipping paint rule.  By default, clipping is enabled.
+   */
   public TextPainter setClipping(final boolean clipping) {
     this.clipping = clipping;
     return this;
   }
   
+  /**
+   * Sets the boundary painting rule.  By default, set to false and the boundary 
+   * will not be painted.
+   */
   public TextPainter setDrawBounds(boolean drawBounds) {
     this.drawBounds = drawBounds;
     return this;
@@ -189,18 +264,28 @@ public class TextPainter {
     tokens = textTokenizer.tokenize(text);
   }
   
+  /**
+   * Sets the text to be painted.  By default, this is an empty string.
+   */
   public TextPainter setText(final String text) {
     this.text = text;
     tokenizeText();
     return this;
   }
   
+  /**
+   * Sets the Tokenizer strategy.  By default, this is a PlainTextTokenizer.
+   */
   public TextPainter setTokenizer(final TextTokenizer textTokenizer){
     this.textTokenizer = textTokenizer;
     tokenizeText();
     return this;
   }
   
+  /**
+   * Sets the text wrapping paint rule.  By default, this is set to true and
+   * text will be wrapped. 
+   */
   public TextPainter setWrapping(final boolean wrapping) {
     this.wrapping = wrapping;
     return this;
@@ -215,6 +300,17 @@ public class TextPainter {
     return false;
   }
   
+  /**
+   * Adds a NavigationListener to be called upon navigation events.  Navigation
+   * events occur when a mouse up event falls within the boundary of Hyperlink
+   * as discovered when painting TextTokens of TextTypes:
+   * <p>
+   * <li>PLAIN_URL</li>
+   * <li>LINK_URL</li>
+   * <li>LINK_AND_NAMED_URL</li>
+   * <li>NAMED_URL</li>
+   * </p>
+   */
   public TextPainter addNavigationListener(final NavigationListener listener) {
     if (!navigationListeners.contains(listener)) {
       navigationListeners.add(listener);
@@ -229,6 +325,10 @@ public class TextPainter {
     }
   }
 
+  /**
+   * Removes the NavigationListener from the list of NavigationListeners.  The
+   * given NavigationListener will no longer be notified of NavigationEvents.
+   */
   public void removeNavigationListener(final NavigationListener listener) {
     navigationListeners.remove(listener);
   }
@@ -275,6 +375,19 @@ public class TextPainter {
     }
   }
 
+  /**
+   * Paints the text using the GC found in the given PaintEvent.  For example,
+   * one might call this from the parent Composite's paintControl event handler:
+   * {@code
+   *   ...
+   *   addPaintListener(new PaintListener() {
+   *     @Override
+   *     public void paintControl(PaintEvent e) {
+   *       textPainter.handlePaint(e);
+   *     }
+   *   });
+   * }    
+   */ 
   public void handlePaint(final PaintEvent e) {
     final GC gc = e.gc;
     final Rectangle clip = gc.getClipping();

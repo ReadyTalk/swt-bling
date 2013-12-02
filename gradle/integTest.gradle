@@ -12,9 +12,9 @@ allprojects { Project proj ->
       integTestRuntime.extendsFrom testRuntime
     }
 
-	task iTest(group: 'Verification') {
-		
-	}
+  	task iTest(group: 'Verification') {
+  		
+  	}
 	
     task integTest(type: Test, group: 'Verification') {
       doFirst {
