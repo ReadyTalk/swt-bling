@@ -17,8 +17,8 @@ public class TextToken {
   /**
    * Creates a new TextToken of the given type to describe the given text.
    * 
-   * @param {@link TextType}
-   * @param {@link String}
+   * @param type : {@link TextType}
+   * @param text : {@link String}
    */
   public TextToken(final TextType type, final String text) {
     this.type = type;
@@ -28,7 +28,7 @@ public class TextToken {
   /**
    * Sets the TextType of this TextToken.
    * 
-   * @param {@link TextType}
+   * @param type : {@link TextType}
    * @return {@link TextToken}
    */
   public TextToken setType(final TextType type) {
@@ -39,7 +39,7 @@ public class TextToken {
   /**
    * Sets the text of this TextToken.
    * 
-   * @param {@link String}
+   * @param text : {@link String}
    * @return {@link TextToken}
    */
   public TextToken setText(final String text) {
@@ -50,7 +50,7 @@ public class TextToken {
   /**
    * Set the URL that this token represents, if any.
    * 
-   * @param {@link URL}
+   * @param url : {@link URL}
    * @return {@link TextToken}
    */
   public TextToken setUrl(final URL url) {

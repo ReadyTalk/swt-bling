@@ -17,8 +17,8 @@ public class Hyperlink {
 	/**
 	 * Creates a Hyperlink with the given token and visual boundary.
 	 * 
-	 * @param {@link TextToken}
-	 * @param {@link Rectangle}
+	 * @param token : {@link TextToken}
+	 * @param bounds : {@link Rectangle}
 	 */
 	public Hyperlink(final TextToken token, final Rectangle bounds) {
 		this.token = token;
