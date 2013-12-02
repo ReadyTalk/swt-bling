@@ -1,6 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'findbugs'
+
+repositories {
+  mavenCentral()
+  maven {
+    url "https://swt-repo.googlecode.com/svn/repo/"
+  }
+}
+
 apply from: 'gradle/swt.gradle'
 apply from: 'gradle/integTest.gradle'
 apply from: 'gradle/example.gradle'
@@ -24,15 +32,7 @@ ext {
   platform = getPlatform(System.properties['os.name'])
 }
 
-repositories {
-  mavenCentral()
-  maven {
-    url "https://swt-repo.googlecode.com/svn/repo/"
-  }
-}
-
 dependencies {
-  compile 'org.slf4j:slf4j-api:1.7.5'
   compile "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
   testCompile "junit:junit:4.11"
   testCompile "org.mockito:mockito-all:1.9.5"

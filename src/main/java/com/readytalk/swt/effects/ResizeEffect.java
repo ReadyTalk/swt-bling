@@ -410,7 +410,7 @@ public class ResizeEffect extends LinkableEffect {
 
     /**
      * (Optional) The <code>Control</code> to Resize.
-     * @param A controls
+     * @param control controls
      */
     public ResizeEffectBuilder setCurrentControl(Control control) {
       setCurrentBounds(control.getBounds());

@@ -159,7 +159,6 @@ public class FadeEffect extends LinkableEffect {
      * (Optional) Set the target alpha to fade to.<br/>
      * Defaults to 0 (fully transparent)
      * @param targetAlpha The target alpha you want to fade to. SWT uses values between 255 (opaque) and 0 (transparent).
-     * @return
      */
     public FadeEffectBuilder setTargetAlpha(int targetAlpha) {
       this.targetAlpha = targetAlpha;

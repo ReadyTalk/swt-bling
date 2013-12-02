@@ -1,5 +1,6 @@
 allprojects { Project proj ->
   proj.plugins.withType(org.gradle.api.plugins.JavaPlugin) {
+
     proj.sourceSets {
       integTest {
         compileClasspath += main.output + test.output
@@ -10,34 +11,36 @@ allprojects { Project proj ->
     proj.configurations {
       integTestCompile.extendsFrom testCompile
       integTestRuntime.extendsFrom testRuntime
+      junitAnt
     }
 
-  	task integTest(type: Test, group: 'Verification') {
-      doFirst {
-        if(platform == "darwin") {
-          jvmArgs '-XstartOnFirstThread'
-        }
-      }
-
-      reports {
-        html.destination = "${proj.testReportDir}/integTest"
-        junitXml.destination = "${proj.testResultsDir}/integTest"
-      }
-      classpath = sourceSets.integTest.runtimeClasspath
-      testClassesDir = sourceSets.integTest.output.classesDir
-
-      beforeTest { testName ->
-        logger.info("Running test: ${testName}")
-      }
-
-      doFirst {
-        if(proj.files(sourceSets.integTest.getAllSource()).isEmpty()) {
-          logger.lifecycle("${proj.name} does not contain any integration tests")
-        }
+    proj.dependencies {
+      junitAnt('org.apache.ant:ant-junit:1.8.4') {
+        transitive = false
       }
     }
 
-    proj.test {
+    task integTest(type: Test, group: 'Verification') {
+
+      ant.taskdef(name: 'junit', classname: 'org.apache.tools.ant.taskdefs.optional.junit.JUnitTask',
+              classpath: configurations.junitAnt.asPath)
+      doLast {
+        ant.junit(printsummary: true, showoutput: true, fork: true, forkmode: "once", clonevm: false, haltonerror: true, haltonfailure: true) {
+          if (platform == 'darwin') {
+            jvmarg(value: '-XstartOnFirstThread')
+          }
+          formatter(type: 'plain', usefile: 'false')
+          batchtest {
+            fileset(dir: 'build/classes/integTest') {
+              include(name: '**/*IntegTest.class')
+            }
+          }
+          sourceSets.integTest.runtimeClasspath.collect { relativePath(it) }.sort().each { classpath(path: it) }
+        }
+      }
+    }
+
+    proj.integTest {
       dependsOn compileIntegTestJava
     }
 
