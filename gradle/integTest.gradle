@@ -12,11 +12,7 @@ allprojects { Project proj ->
       integTestRuntime.extendsFrom testRuntime
     }
 
-  	task iTest(group: 'Verification') {
-  		
-  	}
-	
-    task integTest(type: Test, group: 'Verification') {
+  	task integTest(type: Test, group: 'Verification') {
       doFirst {
         if(platform == "darwin") {
           jvmArgs '-XstartOnFirstThread'
