@@ -14,4 +14,6 @@ before_install:
 
 script: TERM=dumb ./gradlew integTest check Javadoc --info --stacktrace
 
-after_success: .utility/push-javadoc-to-gh-pages.sh
+after_success:
+  - .utility/initiate-publish.sh
+  - .utility/push-javadoc-to-gh-pages.sh
