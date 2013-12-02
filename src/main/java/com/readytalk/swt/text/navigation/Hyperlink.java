@@ -16,6 +16,9 @@ public class Hyperlink {
 	
 	/**
 	 * Creates a Hyperlink with the given token and visual boundary.
+	 * 
+	 * @param {@link TextToken}
+	 * @param {@link Rectangle}
 	 */
 	public Hyperlink(final TextToken token, final Rectangle bounds) {
 		this.token = token;
@@ -24,7 +27,7 @@ public class Hyperlink {
 	
 	/**
 	 * Gets the URL from the internal Token.
-	 * @return URL 
+	 * @return {@link URL} 
 	 */
 	public URL getURL() {
 		return token.getURL();

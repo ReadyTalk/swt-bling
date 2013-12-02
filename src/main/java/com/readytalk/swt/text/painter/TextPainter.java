@@ -61,7 +61,6 @@ import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
  *                 + " url: [http://www.readytalk.com]")
  *         .setClipping(false).setBounds(wikiTextBounds).setDrawBounds(true)
  *         .setWrapping(true).addNavigationListener(new NavigationListener() {
- *           @Override
  *           public void navigate(NavigationEvent event) {
  *             System.out.println("Navigate to: " + event.getUrl());
  *           }
@@ -98,6 +97,8 @@ public class TextPainter {
 
   /**
    * Creates a new TextPainter to paint text onto the given Composite.  
+   * 
+   * @param parent : Composite
    */
   public TextPainter(final Composite parent) {
     this.parent = parent;
@@ -175,7 +176,7 @@ public class TextPainter {
   
   /**
    * Returns the list of TextTokens as parsed by the TextTokenizer
-   * @return List<TextToken> : The list of text tokens 
+   * @return List<TextToken> : The list of TextTokens 
    */
   public List<TextToken> getTokens() {
     return tokens;
@@ -208,6 +209,11 @@ public class TextPainter {
   
   /**
    * Sets the boundary color.  By default, it is set to (255, 30, 30).
+   * 
+   * @param r : an int representing the red component
+   * @param g : an int representing the green component
+   * @param b : an int representing the blue component
+   * @return {@link TextPainter}
    */
   public TextPainter setBoundaryColor(final int r, final int g, final int b) {
     boundaryColor.dispose();
@@ -218,6 +224,11 @@ public class TextPainter {
   /**
    * Sets the text color.  By default, it clones the parent Composite's 
    * foreground color upon construction.
+   * 
+   * @param r : an int representing the red component
+   * @param g : an int representing the green component
+   * @param b : an int representing the blue component
+   * @return {@link TextPainter}
    */
   public TextPainter setForeground(final int r, final int g, final int b) {
     foregroundColor.dispose();
@@ -227,6 +238,11 @@ public class TextPainter {
   
   /**
    * Sets the hyperlink text color.  By default, it is set to (100, 50, 200).
+   * 
+   * @param r : an int representing the red component
+   * @param g : an int representing the green component
+   * @param b : an int representing the blue component
+   * @return {@link TextPainter}
    */
   public TextPainter setHyperlinkColor(final int r, final int g, final int b) {
     hyperlinkColor.dispose();
@@ -237,6 +253,8 @@ public class TextPainter {
   /**
    * Sets the text painting boundary.  By default, it is the size of the 
    * parent Composite.
+   * 
+   * @return {@link TextPainter}
    */
   public TextPainter setBounds (final Rectangle bounds) {
     this.bounds = bounds;
@@ -245,6 +263,8 @@ public class TextPainter {
   
   /**
    * Sets the clipping paint rule.  By default, clipping is enabled.
+   * 
+   * @return {@link TextPainter}
    */
   public TextPainter setClipping(final boolean clipping) {
     this.clipping = clipping;
@@ -254,6 +274,8 @@ public class TextPainter {
   /**
    * Sets the boundary painting rule.  By default, set to false and the boundary 
    * will not be painted.
+   * 
+   * @return {@link TextPainter}
    */
   public TextPainter setDrawBounds(boolean drawBounds) {
     this.drawBounds = drawBounds;
@@ -266,6 +288,8 @@ public class TextPainter {
   
   /**
    * Sets the text to be painted.  By default, this is an empty string.
+   * 
+   * @return {@link TextPainter}
    */
   public TextPainter setText(final String text) {
     this.text = text;
@@ -275,6 +299,9 @@ public class TextPainter {
   
   /**
    * Sets the Tokenizer strategy.  By default, this is a PlainTextTokenizer.
+   * 
+   * @param {@link TextTokenizer}
+   * @return {@link TextPainter}
    */
   public TextPainter setTokenizer(final TextTokenizer textTokenizer){
     this.textTokenizer = textTokenizer;
@@ -285,6 +312,8 @@ public class TextPainter {
   /**
    * Sets the text wrapping paint rule.  By default, this is set to true and
    * text will be wrapped. 
+   * 
+   * @return {@link TextPainter}
    */
   public TextPainter setWrapping(final boolean wrapping) {
     this.wrapping = wrapping;
@@ -310,6 +339,8 @@ public class TextPainter {
    * <li>LINK_AND_NAMED_URL</li>
    * <li>NAMED_URL</li>
    * </p>
+   * 
+   * @return {@link TextPainter}
    */
   public TextPainter addNavigationListener(final NavigationListener listener) {
     if (!navigationListeners.contains(listener)) {
@@ -328,6 +359,8 @@ public class TextPainter {
   /**
    * Removes the NavigationListener from the list of NavigationListeners.  The
    * given NavigationListener will no longer be notified of NavigationEvents.
+   * 
+   * @param listener : The {@link NavigationListener} to remove
    */
   public void removeNavigationListener(final NavigationListener listener) {
     navigationListeners.remove(listener);
@@ -378,15 +411,17 @@ public class TextPainter {
   /**
    * Paints the text using the GC found in the given PaintEvent.  For example,
    * one might call this from the parent Composite's paintControl event handler:
+   * <pre>
    * {@code
-   *   ...
-   *   addPaintListener(new PaintListener() {
-   *     @Override
-   *     public void paintControl(PaintEvent e) {
-   *       textPainter.handlePaint(e);
-   *     }
-   *   });
-   * }    
+   * ...
+   * addPaintListener(new PaintListener() {
+   *   public void paintControl(PaintEvent e) {
+   *     textPainter.handlePaint(e);
+   *   }
+   * });    
+   * </pre>
+   * 
+   * @param e : {@link PaintEvent}
    */ 
   public void handlePaint(final PaintEvent e) {
     final GC gc = e.gc;

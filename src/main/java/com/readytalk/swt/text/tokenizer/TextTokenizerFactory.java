@@ -10,6 +10,9 @@ public class TextTokenizerFactory {
   
   /**
    * Constructs a Text tokenizer of the given TextTokenizerType.
+   * 
+   * @param  {@link TextTokenizerType}
+   * @return {@link TextTokenizer}
    */
   public static TextTokenizer createTextTokenizer(TextTokenizerType type) 
       throws InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -18,6 +21,8 @@ public class TextTokenizerFactory {
   
   /**
    * Create the default TextTokenizer; which is currently a PlainTextTokenizer.
+   * 
+   * @return {@link TextTokenizer}
    */
   public static TextTokenizer createDefault() {
     return new PlainTextTokenizer();

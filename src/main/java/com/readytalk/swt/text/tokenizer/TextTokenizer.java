@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 /**
- * TextTokenizer is an interface to be implemented text tokenizers wanting
+ * TextTokenizer is an interface to be implemented by text tokenizers wanting
  * to be constructed by the TextTokenizerFactory.
  */
 public interface TextTokenizer { 
