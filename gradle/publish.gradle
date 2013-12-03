@@ -1,71 +1,49 @@
-apply plugin: 'maven-publish'
+apply plugin: 'nexus'
 
-task packageSources(type: Jar, dependsOn: compileJava) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-task packageJavdoc(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
-}
-
-publishing {
-  publications {
-    mavenSwtBling(MavenPublication) {
-      from components.java
-      pom.withXml {
-        asNode().children().last() + {
-          resolveStrategy = Closure.DELEGATE_FIRST
-          packaging 'jar'
-          name 'swt-bling'
-          description 'Blinged-out, modern widgets for SWT'
-          url 'http://oss.readytalk.com/swt-bling/'
-          organization {
-            name 'ReadyTalk'
-            url 'http://www.readytalk.com'
-          }
-          licenses {
-            license {
-              name 'MIT License'
-              url 'http://www.opensource.org/licenses/mit-license.php'
-              distribution 'repo'
-            }
-          }
-          scm {
-            url 'https://github.com/ReadyTalk/swt-bling'
-            connection 'scm:git:https://github.com/ReadyTalk/swt-bling.git'
-            developerConnection 'scm:git@github.com:ReadyTalk/swt-bling.git'
-          }
-          developers {
-            developer {
-              id 'l1m5'
-              name 'Ben Limmer'
-            }
-            developer {
-              id 'sesteel'
-              name 'Stan Steel'
-            }
-            developer {
-              id 'ezweave'
-              name 'Matt Weaver'
-            }
-          }
-        }
-
-        // Since SWT isn't in Maven Central (and SWT jars are platform-dependent), we
-        // remove all dependencies. Eventually, it might be nice to resolve this in a
-        // different way, but this works for now.
-        asNode().remove(asNode().dependencies)
+modifyPom {
+  project {
+    name 'swt-bling'
+    description 'Blinged-out, modern widgets for SWT'
+    url 'http://oss.readytalk.com/swt-bling/'
+    packaging 'jar'
+    organization {
+      name 'ReadyTalk'
+      url 'http://www.readytalk.com'
+    }
+    licenses {
+      license {
+        name 'MIT License'
+        url 'http://www.opensource.org/licenses/mit-license.php'
+        distribution 'repo'
       }
-
-      artifact packageSources {
-        classifier 'sources'
+    }
+    scm {
+      url 'https://github.com/ReadyTalk/swt-bling'
+      connection 'scm:git:https://github.com/ReadyTalk/swt-bling.git'
+      developerConnection 'scm:git@github.com:ReadyTalk/swt-bling.git'
+    }
+    developers {
+      developer {
+        id 'l1m5'
+        name 'Ben Limmer'
       }
-
-      artifact packageJavdoc {
-        classifier 'javadoc'
+      developer {
+        id 'sesteel'
+        name 'Stan Steel'
+      }
+      developer {
+        id 'ezweave'
+        name 'Matt Weaver'
       }
     }
   }
+}
+
+nexus {
+  attachJavadoc = true
+  attachSources = true
+  attachTests = true
+  sign = true
+  repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+  snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
 }
