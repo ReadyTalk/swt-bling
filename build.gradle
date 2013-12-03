@@ -9,6 +9,7 @@ repositories {
   }
 }
 
+apply from: 'gradle/publish.gradle'
 apply from: 'gradle/swt.gradle'
 apply from: 'gradle/integTest.gradle'
 apply from: 'gradle/example.gradle'
