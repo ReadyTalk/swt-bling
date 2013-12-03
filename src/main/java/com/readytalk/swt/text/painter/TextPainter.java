@@ -300,7 +300,7 @@ public class TextPainter {
   /**
    * Sets the Tokenizer strategy.  By default, this is a PlainTextTokenizer.
    * 
-   * @param {@link TextTokenizer}
+   * @param textTokenizer : {@link TextTokenizer}
    * @return {@link TextPainter}
    */
   public TextPainter setTokenizer(final TextTokenizer textTokenizer){
@@ -413,12 +413,13 @@ public class TextPainter {
    * one might call this from the parent Composite's paintControl event handler:
    * <pre>
    * {@code
-   * ...
-   * addPaintListener(new PaintListener() {
-   *   public void paintControl(PaintEvent e) {
-   *     textPainter.handlePaint(e);
-   *   }
-   * });    
+   *   ...
+   *   addPaintListener(new PaintListener() {
+   *     public void paintControl(PaintEvent e) {
+   *       textPainter.handlePaint(e);
+   *     }
+   *   });
+   * }
    * </pre>
    * 
    * @param e : {@link PaintEvent}

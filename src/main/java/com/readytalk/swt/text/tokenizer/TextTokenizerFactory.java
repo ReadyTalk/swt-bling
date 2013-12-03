@@ -11,7 +11,7 @@ public class TextTokenizerFactory {
   /**
    * Constructs a Text tokenizer of the given TextTokenizerType.
    * 
-   * @param  {@link TextTokenizerType}
+   * @param  type {@link TextTokenizerType}
    * @return {@link TextTokenizer}
    */
   public static TextTokenizer createTextTokenizer(TextTokenizerType type) 
