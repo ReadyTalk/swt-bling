@@ -36,6 +36,12 @@ modifyPom {
         name 'Matt Weaver'
       }
     }
+    // We need to remove the SWT dependency. SWT is platform specific and not available in Maven Central.
+    // For this reason, we don't include it in the POM. If you need to grab SWT for your project, and you're
+    // using Gradle, check out how we get it from the Google Code repo in our build.gradle.
+    dependencies {
+
+    }
   }
 }
 
