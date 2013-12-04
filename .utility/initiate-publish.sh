@@ -4,7 +4,7 @@
 #       to use the internal ReadyTalk Jenkins job.
 
 # TODO: Remove publishing test branch.
-if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" || "$TRAVIS_BRANCH" == "publishing" ]; then
+if [ "$TRAVIS_PULL_REQUEST" == "false" ] && ( [ "$TRAVIS_BRANCH" == "master" ] || [ "$TRAVIS_BRANCH" == "publishing" ] ); then
   if [[ $(./gradlew -q getVersion) != *SNAPSHOT* ]]; then
       echo 'Travis can only publish snapshots. To publish a release, use the ReadyTalk Jenkins instance.'
       return 0
@@ -12,7 +12,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" || "$
 
   echo -e "Starting publish to Sonatype...\n"
 
-  ./gradlew uploadArchives -PnexusUsername="${NEXUS_USERNAME} -PnexusPassword="${NEXUS_PASSWORD}"
+  ./gradlew uploadArchives -PnexusUsername="${NEXUS_USERNAME}" -PnexusPassword="${NEXUS_PASSWORD}"
   RETVAL=$?
 
   if [ $RETVAL -eq 0 ]; then
