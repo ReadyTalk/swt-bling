@@ -1,20 +1,20 @@
 language: java
-
 jdk:
-    - oraclejdk7
-    - openjdk6
-
+- oraclejdk7
+- openjdk6
 env:
   global:
-    secure: cJg3YFHZqmcstozwtO0heN92ADmtdaKlEqNY8lnUAf4KhT4aIO9uFFsXVER0Up/bPQC89q9XZQvNIchxXyrJ0xABgoxD9c6Emn9fupXgpyAKCAiGTVYmf0bIIrfiV3/L5g0n6pXXL/DK8Mvsfd7hlyILsgHhwrdrcjUc7kjUTIw=
-
+  - secure: cJg3YFHZqmcstozwtO0heN92ADmtdaKlEqNY8lnUAf4KhT4aIO9uFFsXVER0Up/bPQC89q9XZQvNIchxXyrJ0xABgoxD9c6Emn9fupXgpyAKCAiGTVYmf0bIIrfiV3/L5g0n6pXXL/DK8Mvsfd7hlyILsgHhwrdrcjUc7kjUTIw=
+  - secure: WfPSGgEgEdT7LOCSJDVgoOI8rUX3BrE1t5KfL4J62KxFHI7i1LANB/nvRJHw8Q7bQeJhQZ5xOtkrttRYd5n0YfuQTXed0k0KUqmbhi3H9ZPn8dWzoY0/dOLF2KQ9HcNmeYwrSKF8hFOhS22AD0Gk/0F1i+JOT4ycPYj8XJ/i1Os=
+  - secure: OPG6/iyLfvqvLGWu5RCKWdQC20pJzC3PEwQD/4oufbbSppd8okjDMpOheA1y1l4Quyk3MGgOdiUq7qkNUUjhrbhx1gljNzOBAtZqlkUJksKJuf8ZVbxAdAj/Gt/ge8hsVHT+8jlox9DSN6702hQFzquYZDsPGj3TqCGI/C4E7MA=
+  - secure: AtKR2VjujI7L9BL7vjcBREV8HcZCA2L5tiOiysgh517bx3eCTz8BJU2fTzMQNUMC77o8h4CtVtvx3og7m0GKWgLz8kpHCLYvo5iwe6JJg/2x7AuZJmqmGSmBo1sd4zvsNuP6yJdI2FTeEjuZw559MzvAJ+V38Tse4xHi0Jjm6bw=
 before_install:
-  - export TERM=dumb
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-
+- export TERM=dumb
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 script: ./gradlew integTest check Javadoc --info --stacktrace
-
 after_success:
-  - .utility/initiate-publish.sh
-  - .utility/push-javadoc-to-gh-pages.sh
+- sudo apt-get update -qq
+- sudo apt-get install -qq gnupg
+- .utility/initiate-publish.sh
+- .utility/push-javadoc-to-gh-pages.sh

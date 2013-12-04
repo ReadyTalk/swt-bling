@@ -5,7 +5,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
   echo -e "Starting publish to Sonatype...\n"
 
   # Uncomment when publish functionality is implemented
-  #./gradle publish
+  #./gradle publish -PnexusUsername="${NEXUS_USERNAME} -PnexusPassword="${NEXUS_PASSWORD}" -Psigning.password="${SIGNING_PASSWORD}"
 
   echo -e "Completed publish!\n"
 fi
