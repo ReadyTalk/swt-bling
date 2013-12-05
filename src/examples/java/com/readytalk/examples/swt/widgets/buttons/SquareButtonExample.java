@@ -42,10 +42,6 @@ public class SquareButtonExample implements SwtBlingExample {
     Composite composite = new Composite(shell, SWT.NONE);
     composite.setLayout(new GridLayout());
 
-    // This is needed remove focus from the Button by default.
-    Composite composite2 = new Composite(shell, SWT.NONE);
-    composite2.setFocus();
-
     SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(composite)
             .setText(BUTTON_TEXT)
@@ -60,6 +56,10 @@ public class SquareButtonExample implements SwtBlingExample {
 
     shell.setSize(200, 200);
     shell.open();
+
+    // This is needed remove focus from the Button by default.
+    Composite composite2 = new Composite(shell, SWT.NONE);
+    composite2.setFocus();
 
     while (!shell.isDisposed()) {
       if (!DISPLAY.readAndDispatch()) {
