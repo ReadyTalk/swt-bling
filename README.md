@@ -4,6 +4,34 @@ Behold, swt-bling!  A project that will help you enhance your mundane [swt](http
 
 Don't fret, fellow SWT-user for swt-bling is surely the answer to ~~all of~~ *some of* your problems.
 
+##Widgets
+###[Bubble](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/widgets/notifications/Bubble.html)
+Bubble is a ToolTip that is far more customizable than the [ToolTip](http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fswt%2Fwidgets%2FToolTip.html) provided by SWT.
+Bubble can be applied to any SWT widget that inherits from ```Control```.
+<p align="center">
+  <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/bubble.png" alt="Bubble Widget" />
+</p>
+
+You can also apply Bubbles to any element that implements the ```Bubblable``` interface (useful for apply ToolTips to elements drawn with ```GC```).
+
+<p align="center">
+  <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/customBubble.png" alt="Custom Bubble Widget" />
+</p>
+
+Additionally, you can apply tags to Bubble and issue commands to show/hide all Bubbles with a particular tag. This is especially useful when exposing a user to a new feature.
+###[SquareButton](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/widgets/buttons/SquareButton.html)
+SquareButton is a simple widget that can be used in place of the standard SWT [Button](http://help.eclipse.org/helios/nftopic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/Button.html). Unlike the traditional Button, it looks the same across different platforms.
+<p align="center">
+  <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/squareButton.png" alt="SquareButton Widget" />
+</p>
+The SquareButton is far more customizable than the SWT Button.
+###[TextPainter](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/text/painter/TextPainter.html)
+TextPainter is a utility class used to render text onto a ```Composite``` within a given boundary with a call to its handlePaint method.
+<p align="center">
+  <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/textPainter.png" alt="Text Painter" />
+</p>
+TextPainter can understand a subset of WikiText formatting, which makes it easy to use Wiki formatting within SWT.
+
 ##Building
 Building swt-bling is simple. Just open a terminal and run
 ```
