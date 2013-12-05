@@ -32,6 +32,15 @@ TextPainter is a utility class used to render text onto a ```Composite``` within
 </p>
 TextPainter can understand a subset of WikiText formatting, which makes it easy to use Wiki formatting within SWT.
 
+##Examples
+Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a `runExample<WidgetName>`. For instance:
+```
+./gradlew runExampleSquareButton
+```
+
+##Documentation
+Javadoc is available for swt-bling [here](http://oss.readytalk.com/swt-bling/javadoc/).
+
 ##Building
 Building swt-bling is simple. Just open a terminal and run
 ```
@@ -43,19 +52,10 @@ from the root of the repository. You'll have a fresh build of the widgets in bui
 ###Snapshots
 Snapshots are created and uploaded to [Sonatype](http://oss.sonatype.org/content/repositories/snapshots/com/readytalk/swt-bling/) on each push to master. Travis-CI handles the publish automagically.
 
-##Documentation
-Javadoc is available for swt-bling [here](http://oss.readytalk.com/swt-bling/javadoc/).
-
 ##GUI Tests
 In addition to standard unit tests, swt-bling has gui-based tests located in `src/integTest/java`. To run them:
 ```
 ./gradlew integTest
-```
-
-##Examples
-Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a `runExample<WidgetName>`. For instance:
-```
-./gradlew runExampleSquareButton
 ```
 
 ##IDE Setup
