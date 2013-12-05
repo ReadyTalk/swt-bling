@@ -11,6 +11,10 @@ Building swt-bling is simple. Just open a terminal and run
 ```
 from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.
 
+##Artifacts
+###Snapshots
+Snapshots are created and uploaded to [Sonatype](http://oss.sonatype.org/content/repositories/snapshots/com/readytalk/swt-bling/) on each push to master. Travis-CI handles the publish automagically.
+
 ##Documentation
 Javadoc is available for swt-bling [here](http://oss.readytalk.com/swt-bling/javadoc/).
 
