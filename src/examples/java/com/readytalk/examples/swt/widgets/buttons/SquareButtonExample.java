@@ -29,9 +29,9 @@ public class SquareButtonExample implements SwtBlingExample {
   public static final SquareButton.ImagePosition BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
   public static final int CORNER_RADIUS = 3;
   public static final SquareButton.SquareButtonColorGroup BUTTON_HOVER_COLOR_GROUP =
-          new SquareButton.SquareButtonColorGroup(LIGHTER_GRAY, LIGHTEST_GRAY, LIGHT_GRAY, OFF_BLACK);
-  public static final SquareButton.SquareButtonColorGroup BUTTON_DEFAULT_COLOR_GROUP =
           new SquareButton.SquareButtonColorGroup(WHITE, WHITE, WHITE, OFF_BLACK);
+  public static final SquareButton.SquareButtonColorGroup BUTTON_DEFAULT_COLOR_GROUP =
+          new SquareButton.SquareButtonColorGroup(LIGHTER_GRAY, LIGHTEST_GRAY, LIGHT_GRAY, OFF_BLACK);
 
   @RunnableExample(name="SquareButton")
   public SquareButtonExample() { }
@@ -41,6 +41,10 @@ public class SquareButtonExample implements SwtBlingExample {
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
     composite.setLayout(new GridLayout());
+
+    // This is needed remove focus from the Button by default.
+    Composite composite2 = new Composite(shell, SWT.NONE);
+    composite2.setFocus();
 
     SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(composite)
@@ -56,6 +60,7 @@ public class SquareButtonExample implements SwtBlingExample {
 
     shell.setSize(200, 200);
     shell.open();
+
     while (!shell.isDisposed()) {
       if (!DISPLAY.readAndDispatch()) {
         DISPLAY.sleep();
