@@ -50,7 +50,14 @@ from the root of the repository. You'll have a fresh build of the widgets in bui
 
 ##Artifacts
 ###Releases
-Releases are created using the ReadyTalk internal Jenkins and uploaded to Maven Central by way of Sonatype.
+Releases are created using the ReadyTalk internal Jenkins and uploaded to Maven Central by way of Sonatype. You can declare a Maven Dependency as follows (using any tagged [release](https://github.com/ReadyTalk/swt-bling/releases)):
+```
+<dependency>
+    <groupId>com.readytalk</groupId>
+    <artifactId>swt-bling</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
 ###Snapshots
 Snapshots are created and uploaded to [Sonatype](http://oss.sonatype.org/content/repositories/snapshots/com/readytalk/swt-bling/) on each push to master. Travis-CI handles the publish automagically.
 
