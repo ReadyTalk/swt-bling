@@ -3,5 +3,6 @@ com.readytalk.swt.helpers
 com.readytalk.swt.text.navigation
 com.readytalk.swt.text.painter
 com.readytalk.swt.text.tokenizer
+com.readytalk.swt.util
 com.readytalk.swt.widgets.buttons
 com.readytalk.swt.widgets.notifications
