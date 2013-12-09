@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.readytalk.swt.helpers.DebugHelper;
+import com.readytalk.swt.util.Executor;
 import org.eclipse.swt.widgets.Display;
 
 public abstract class LinkableEffect implements Runnable {
@@ -222,10 +223,5 @@ public abstract class LinkableEffect implements Runnable {
      * @return true if you want effectComplete called after the effect is aborted, false otherwise
      */
     public abstract boolean abortEffect();
-  }
-
-  public interface Executor {
-    public void timerExec(final int time, final Runnable runnable);
-    public void asyncExec(Runnable runnable);
   }
 }

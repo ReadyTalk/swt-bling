@@ -1,5 +1,6 @@
 package com.readytalk.swt.effects;
 
+import com.readytalk.swt.util.Executor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
