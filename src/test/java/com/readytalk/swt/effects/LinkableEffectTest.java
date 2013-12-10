@@ -1,14 +1,16 @@
 package com.readytalk.swt.effects;
 
+import com.readytalk.swt.util.Executor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-/**
- */
 public class LinkableEffectTest {
+
+  @MockitoAnnotations.Mock
+  private Executor executor;
 
   @MockitoAnnotations.Mock
   private LinkableEffect parent;
@@ -29,7 +31,7 @@ public class LinkableEffectTest {
   public void testConstructorWithParent() {
     try {
       // mocking an abstract classes constructor is not something do-able as far as i found, so we just make a dummy one
-      LinkableEffect effect = new DummyLinkableEffect(parent, TIME_INTERVAL);
+      LinkableEffect effect = new DummyLinkableEffect(parent, null, TIME_INTERVAL);
 
       Assert.assertTrue(parent.getEffectList().contains(effect));
       Assert.assertNotSame(TIME_INTERVAL, effect.getTimeInterval());
@@ -39,15 +41,42 @@ public class LinkableEffectTest {
     }
   }
 
+  @Test
+  public void testConstructorWithExecutor() {
+    try {
+      // mocking an abstract classes constructor is not something do-able as far as i found, so we just make a dummy one
+      LinkableEffect effect = new DummyLinkableEffect(null, executor, TIME_INTERVAL, parent);
+
+      Assert.assertEquals(executor, effect.getExecutor());
+      Assert.assertTrue(effect.getEffectList().contains(parent));
+      Assert.assertEquals(TIME_INTERVAL, effect.getTimeInterval());
+    } catch (InvalidEffectArgumentException iea) {
+      Assert.fail(iea.getMessage());
+    }
+  }
+
+  @Test
+  public void testConstructorWithExecutorAndDefaultTimeInterval() {
+    try {
+      // mocking an abstract classes constructor is not something do-able as far as i found, so we just make a dummy one
+      LinkableEffect effect = new DummyLinkableEffect(null, executor, 0);
+
+      Assert.assertEquals(executor, effect.getExecutor());
+      Assert.assertFalse(effect.getEffectList().contains(parent));
+      Assert.assertNotSame(0, effect.getTimeInterval());
+    } catch (InvalidEffectArgumentException iea) {
+      Assert.fail(iea.getMessage());
+    }
+  }
 
   /**
    * Can't mock abstract classes, but for this problem this really is the best solution (making LinkableEffect an abstract class)... or the best I found.  :-(
    */
   private class DummyLinkableEffect extends LinkableEffect {
 
-    public DummyLinkableEffect(LinkableEffect parent,
+    public DummyLinkableEffect(LinkableEffect parent, Executor executor,
                                int timeInterval, LinkableEffect ... linkableEffects) throws InvalidEffectArgumentException {
-      super(parent, null, timeInterval, linkableEffects);
+      super(parent, executor, timeInterval, linkableEffects);
     }
 
     @Override
