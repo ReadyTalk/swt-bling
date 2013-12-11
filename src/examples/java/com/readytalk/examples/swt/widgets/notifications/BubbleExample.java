@@ -24,9 +24,7 @@ public class BubbleExample implements SwtBlingExample {
   @RunnableExample(name="Bubble")
   public BubbleExample() { }
 
-  public void run() {
-    final Display display = new Display();
-    final Shell shell = new Shell(display);
+  public void run(Display display, Shell shell) {
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
     composite.setLayout(new GridLayout(3, false));
@@ -78,10 +76,5 @@ public class BubbleExample implements SwtBlingExample {
 
     shell.pack();
     shell.open();
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch()) {
-        display.sleep();
-      }
-    }
   }
 }
