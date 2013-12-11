@@ -7,7 +7,10 @@ package com.readytalk.examples.swt.util;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import com.readytalk.examples.swt.SwtBlingExample;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.DeviceData;
@@ -39,14 +42,24 @@ public class Sleak {
   Shell shell;
   List list;
   Canvas canvas;
-  Button start, stop, check;
+  Button capture, runExample, clear, check;
   Text text;
   Label label;
+
+  SwtBlingExample example;
+  Display exampleDisplay;
+  Shell exampleShell;
 
   Object [] oldObjects = new Object [0];
   Error [] oldErrors = new Error [0];
   Object [] objects = new Object [0];
   Error [] errors = new Error [0];
+
+  public Sleak(SwtBlingExample example, Display exampleDisplay, Shell exampleShell) {
+    this.example = example;
+    this.exampleDisplay = exampleDisplay;
+    this.exampleShell = exampleShell;
+  }
 
   public void createGUI() {
     display = Display.getCurrent ();
@@ -60,47 +73,64 @@ public class Sleak {
 
     FormData data = new FormData();
 
-    start = new Button (shell, SWT.PUSH);
-    start.setText ("Start");
-    start.addListener (SWT.Selection, new Listener() {
-      public void handleEvent (Event event) {
-        refreshAll ();
+    capture = new Button (shell, SWT.PUSH);
+    capture.setText("Capture");
+    capture.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        refreshAll();
       }
     });
     data.top = new FormAttachment(0);
     data.left = new FormAttachment(0);
     data.right = new FormAttachment(30);
-    start.setLayoutData(data);
+    capture.setLayoutData(data);
 
-    stop = new Button (shell, SWT.PUSH);
-    stop.setText ("Stop");
-    stop.addListener (SWT.Selection, new Listener () {
-      public void handleEvent (Event event) {
-        refreshDifference ();
+    runExample = new Button(shell, SWT.PUSH);
+    runExample.setText("Run Example");
+    runExample.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        if (exampleShell.isDisposed()) {
+          exampleShell = new Shell(exampleDisplay);
+        }
+        example.run(exampleDisplay, exampleShell);
       }
     });
     data = new FormData();
-    data.top = new FormAttachment(start);
+    data.top = new FormAttachment(capture);
     data.left = new FormAttachment(0);
     data.right = new FormAttachment(30);
-    stop.setLayoutData(data);
+    runExample.setLayoutData(data);
+
+    clear = new Button (shell, SWT.PUSH);
+    clear.setText("Clear");
+    clear.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        refreshDifference();
+      }
+    });
+    data = new FormData();
+    data.top = new FormAttachment(runExample);
+    data.left = new FormAttachment(0);
+    data.right = new FormAttachment(30);
+    clear.setLayoutData(data);
 
     check = new Button (shell, SWT.CHECK);
     check.setText ("Stack");
-    check.addListener (SWT.Selection, new Listener () {
-      public void handleEvent (Event e) {
+    check.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
         toggleStackTrace ();
       }
     });
     data = new FormData();
-    data.top = new FormAttachment(stop);
+    data.top = new FormAttachment(clear);
     data.left = new FormAttachment(0);
     data.right = new FormAttachment(30);
     check.setLayoutData(data);
 
     list = new List (shell, SWT.BORDER | SWT.V_SCROLL);
-    list.addListener (SWT.Selection, new Listener () {
-      public void handleEvent (Event event) {
+    list.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
         refreshObject ();
       }
     });
@@ -310,15 +340,4 @@ public class Sleak {
   public Shell getShell() {
     return shell;
   }
-
-  public static void main (String [] args) {
-    Display display = new Display ();
-    Sleak sleak = new Sleak ();
-    sleak.open ();
-    while (!sleak.shell.isDisposed ()) {
-      if (!display.readAndDispatch ()) display.sleep ();
-    }
-    display.dispose ();
-  }
-
 }

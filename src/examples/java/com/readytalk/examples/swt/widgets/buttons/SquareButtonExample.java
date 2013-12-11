@@ -4,6 +4,8 @@ import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.widgets.buttons.SquareButton;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -19,11 +21,11 @@ public class SquareButtonExample implements SwtBlingExample {
 
   public void run(Display display, Shell shell) {
     /* Colors */
-    Color offBlack = new Color(display, 74, 74, 74);
-    Color lightGray = new Color(display, 204, 204, 204);
-    Color lighterGray = new Color(display, 232, 232, 232);
-    Color lightestGray = new Color(display, 239, 239, 239);
-    Color white = new Color(display, 255, 255, 255);
+    final Color offBlack = new Color(display, 74, 74, 74);
+    final Color lightGray = new Color(display, 204, 204, 204);
+    final Color lighterGray = new Color(display, 232, 232, 232);
+    final Color lightestGray = new Color(display, 239, 239, 239);
+    final Color white = new Color(display, 255, 255, 255);
 
     /* SquareButton */
     String buttonText = "SquareButton";
@@ -57,5 +59,15 @@ public class SquareButtonExample implements SwtBlingExample {
     // This is needed remove focus from the Button by default.
     Composite composite2 = new Composite(shell, SWT.NONE);
     composite2.setFocus();
+
+    shell.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent e) {
+        offBlack.dispose();
+        lightGray.dispose();
+        lighterGray.dispose();
+        lightestGray.dispose();
+        white.dispose();
+      }
+    });
   }
 }

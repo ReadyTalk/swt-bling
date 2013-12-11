@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 public class Examples {
   private static final Logger logger = Logger.getLogger("com.readytalk.examples.Example");
-  private static Sleak sleak;
 
   public static void main(String[] args) {
     if (args.length <= 0) {
@@ -39,13 +38,19 @@ public class Examples {
       RunnableExample annotation = (RunnableExample) constructor.getAnnotation(RunnableExample.class);
       if (annotation.name().equals(exampleToRun)) {
         try {
-          Display display = maybeStartSleak(debug);
+          Display display = createDisplay(debug);
           Shell exampleShell = new Shell(display);
-
           SwtBlingExample example = (SwtBlingExample) constructor.newInstance();
-          example.run(display, exampleShell);
 
-          runGuiLoop(display, exampleShell);
+          Sleak sleak = null;
+          if (debug) {
+            sleak = new Sleak(example, display, exampleShell);
+            sleak.open();
+          } else {
+            example.run(display, exampleShell);
+          }
+
+          runGuiLoop(display, exampleShell, sleak);
           return;
         } catch (InstantiationException e) {
           logger.severe("Caught InstantiationException");
@@ -70,7 +75,7 @@ public class Examples {
     logger.info(validChoices.toString());
   }
 
-  private static void runGuiLoop(Display display, Shell exampleShell) {
+  private static void runGuiLoop(Display display, Shell exampleShell, Sleak sleak) {
     Shell shellToMonitor;
     if (sleak != null) {
       shellToMonitor = sleak.getShell();
@@ -87,15 +92,12 @@ public class Examples {
     display.dispose();
   }
 
-  private static Display maybeStartSleak(boolean debug) {
+  private static Display createDisplay(boolean debug) {
     Display display;
     if (debug) {
       DeviceData data = new DeviceData();
       data.tracking = true;
       display = new Display(data);
-
-      sleak = new Sleak();
-      sleak.open();
     } else {
       display = new Display();
     }
