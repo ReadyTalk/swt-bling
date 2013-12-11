@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.TypedListener;
 import org.eclipse.swt.SWT;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -117,7 +119,9 @@ public class SquareButton extends Canvas {
 
 
   protected void widgetDisposed(DisposeEvent e) {
-    // TODO clean up here (listeners?)
+    for (Map.Entry<String, Color> entry : colorRegistry.entrySet()) {
+      entry.getValue().dispose();
+    }
   }
 
 
