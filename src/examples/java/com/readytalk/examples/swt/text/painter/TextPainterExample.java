@@ -94,9 +94,8 @@ public class TextPainterExample implements SwtBlingExample {
   public void run(Display display, Shell shell) {
     shell.setSize(400, 250);
 
-    TextCanvas canvas = null;
     try {
-      canvas = new TextCanvas(shell, SWT.NONE);
+      new TextCanvas(shell, SWT.NONE);
     } catch (InstantiationException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {

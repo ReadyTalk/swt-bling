@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 public class Sleak {
   Display display;
@@ -314,10 +315,13 @@ public class Sleak {
     int index = list.getSelectionIndex ();
     if (index == -1) return;
     if (check.getSelection ()) {
-      ByteArrayOutputStream stream = new ByteArrayOutputStream ();
-      PrintStream s = new PrintStream (stream);
-      errors [index].printStackTrace (s);
-      text.setText (stream.toString ());
+      try {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream ();
+        PrintStream s = new PrintStream (stream, false, "UTF-8");
+        errors [index].printStackTrace (s);
+        text.setText (stream.toString ("UTF-8"));
+      } catch (UnsupportedEncodingException e) { }
+      
       text.setVisible (true);
       canvas.setVisible (false);
     } else {
