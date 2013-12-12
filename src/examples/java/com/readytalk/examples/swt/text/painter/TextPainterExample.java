@@ -45,13 +45,14 @@ public class TextPainterExample implements SwtBlingExample {
           .createTextTokenizer(TextTokenizerType.WIKI);
       final TextPainter eventHandler2 = new TextPainter(this)
           .setTokenizer(tokenizer)
+          .setJustification(SWT.CENTER)
           .setText(
-              "This is '''wiki text''' is auto-wrapped and can display "
-                  + "''Italic Text,'' '''Bold Text,''' and "
-                  + "'''''Bold and Italic Text'''''"
-                  + " naked url: http://www.google.com"
-                  + " wiki url: [http://www.readytalk.com ReadyTalk]"  
-                  + " url: [http://www.readytalk.com]")
+              "aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa sThis '''wiki text''' is auto-wrapped and can display "
+              + "''Italic Text,'' '''Bold Text,''' and "
+              + "'''''Bold and Italic Text'''''"
+              + " naked url: http://www.google.com"
+              + " wiki url: [http://www.readytalk.com ReadyTalk]"
+              + " url: [http://www.readytalk.com]")
           .setClipping(false).setBounds(wikiTextBounds).setDrawBounds(true)
           .setWrapping(true).addNavigationListener(new NavigationListener() {
             @Override

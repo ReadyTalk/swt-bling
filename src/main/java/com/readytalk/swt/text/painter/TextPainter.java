@@ -46,6 +46,7 @@ public class TextPainter {
   private boolean clipping;
   private boolean drawBounds;
   private List<Hyperlink> hyperlinks;
+  private int justification;
   private List<NavigationListener> navigationListeners;
   private Composite parent;
   private String text;
@@ -74,6 +75,7 @@ public class TextPainter {
     foregroundColor = parent.getForeground();
     hyperlinkColor = buildColor(100, 50, 200);
     boundaryColor = buildColor(255, 30, 30);
+    justification = SWT.LEFT;
     FontData fontData = parent.getFont().getFontData()[0];
     setFont(fontData.getName(), fontData.getHeight());
     Point size = parent.getSize();
@@ -169,7 +171,12 @@ public class TextPainter {
     hyperlinkColor = buildColor(r, g, b);
     return this;
   }
-  
+
+  public TextPainter setJustification (final int justification) {
+    this.justification = justification;
+    return this;
+  }
+
   public TextPainter setBounds (final Rectangle bounds) {
     this.bounds = bounds;
     return this;
@@ -275,6 +282,41 @@ public class TextPainter {
     }
   }
 
+  class PackLineResult {
+    int numberOfTokens;
+    int extraSpace;
+
+    PackLineResult(int numberOfTokens, int extraSpace) {
+      this.numberOfTokens = numberOfTokens;
+      this.extraSpace = extraSpace;
+    }
+  }
+
+  Rectangle calculateSize() {
+    Rectangle size = new Rectangle(0, 0, 0, 0);
+
+    return size;
+  }
+
+  PackLineResult packLine(GC gc, int startIndex) {
+    int x = 0;
+    int i = startIndex;
+    Point lastPosition = new Point(0, 0);
+
+    for (; i < tokens.size(); i++) {
+      TextToken token = tokens.get(i);
+      configureForStyle(gc, token);
+      int nx = gc.textExtent(token.getText()).x;
+      if (nx + x > bounds.width) {
+        break;
+      }
+      x += nx;
+    }
+
+    return new PackLineResult(i - 1, bounds.width - x);
+  }
+
+
   public void handlePaint(final PaintEvent e) {
     final GC gc = e.gc;
     final Rectangle clip = gc.getClipping();
@@ -285,16 +327,42 @@ public class TextPainter {
     }
     
     hyperlinks.clear();
-    Point drawPosition = new Point(bounds.x, bounds.y);
-    
-    for (TextToken token:tokens) {
+    int numberOfTokensOnLine = 0;
+    PackLineResult linepack = packLine(gc, 0);
+    Point drawPosition = null;
+
+    switch (justification) {
+      case SWT.CENTER:
+        drawPosition = new Point(bounds.x + (linepack.extraSpace / 2), bounds.y);
+        break;
+      case SWT.RIGHT:
+        drawPosition = new Point(bounds.x+linepack.extraSpace, bounds.y);
+        break;
+      default:
+        drawPosition = new Point(bounds.x, bounds.y);
+    }
+
+    for (int i = 0; i < tokens.size(); i++) {
+      TextToken token = tokens.get(i);
       boolean drawWhitespace = true;
-      configureForStyle(gc, token); 
+      configureForStyle(gc, token);
       Point nextPosition = gc.textExtent(token.getText());
-      
-      if (wrapping && (drawPosition.x + nextPosition.x > bounds.width + bounds.x)) {
+
+      if (wrapping && (drawPosition.x + nextPosition.x > bounds.width + bounds.x) ) {
+        if (i > linepack.numberOfTokens) {
+          linepack = packLine(gc, i);
+        }
+        switch (justification) {
+          case SWT.CENTER:
+            drawPosition.x = bounds.x + (linepack.extraSpace / 2);
+            break;
+          case SWT.RIGHT:
+            drawPosition.x = bounds.x + linepack.extraSpace;
+            break;
+          default:
+            drawPosition.x = bounds.x;
+        }
         drawPosition.y += nextPosition.y + 5;
-        drawPosition.x = bounds.x;
         drawWhitespace = false;
       }
       
