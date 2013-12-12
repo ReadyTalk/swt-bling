@@ -417,13 +417,14 @@ public class Bubble extends Widget implements Fadeable {
     //no-op
   }
 
-  // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
   private void onDispose(Event event) {
     parentControl.removeListener(SWT.Dispose, parentListener);
     removeListener(SWT.Dispose, listener);
     notifyListeners(SWT.Dispose, event);
     event.type = SWT.None;
 
+    backgroundColor.dispose();
+    textColor.dispose();
     tooltip.dispose();
     tooltip = null;
     if (tooltipRegion != null) {
@@ -471,6 +472,7 @@ public class Bubble extends Widget implements Fadeable {
       gc.setFont(boldFont);
     }
 
+    String returnString;
     Point textExtent = gc.textExtent(rawString, SWT.DRAW_DELIMITER);
     if (textExtent.x > MAX_STRING_LENGTH && !rawString.contains("\n")) {
       StringBuilder sb = new StringBuilder();
@@ -492,10 +494,13 @@ public class Bubble extends Widget implements Fadeable {
         }
       }
 
-      return sb.toString();
+      returnString = sb.toString();
     } else {
-      return rawString;
+      returnString = rawString;
     }
+
+    gc.dispose();
+    return returnString;
   }
 
   private Point getTextSize(String text) {

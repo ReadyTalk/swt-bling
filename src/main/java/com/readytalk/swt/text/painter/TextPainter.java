@@ -169,6 +169,7 @@ public class TextPainter {
     hyperlinkColor.dispose();
     font.dispose();
     boldFont.dispose();
+    italicFont.dispose();
     underlineFont.dispose();
     boldAndItalicFont.dispose();
     handCursor.dispose();
