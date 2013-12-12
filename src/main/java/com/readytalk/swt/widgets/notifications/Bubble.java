@@ -424,6 +424,8 @@ public class Bubble extends Widget implements Fadeable {
     notifyListeners(SWT.Dispose, event);
     event.type = SWT.None;
 
+    backgroundColor.dispose();
+    textColor.dispose();
     tooltip.dispose();
     tooltip = null;
     if (tooltipRegion != null) {
@@ -471,6 +473,7 @@ public class Bubble extends Widget implements Fadeable {
       gc.setFont(boldFont);
     }
 
+    String returnString;
     Point textExtent = gc.textExtent(rawString, SWT.DRAW_DELIMITER);
     if (textExtent.x > MAX_STRING_LENGTH && !rawString.contains("\n")) {
       StringBuilder sb = new StringBuilder();
@@ -492,10 +495,13 @@ public class Bubble extends Widget implements Fadeable {
         }
       }
 
-      return sb.toString();
+      returnString = sb.toString();
     } else {
-      return rawString;
+      returnString = rawString;
     }
+
+    gc.dispose();
+    return returnString;
   }
 
   private Point getTextSize(String text) {
