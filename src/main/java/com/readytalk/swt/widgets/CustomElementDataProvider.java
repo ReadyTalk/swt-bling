@@ -1,4 +1,4 @@
-package com.readytalk.swt.widgets.notifications;
+package com.readytalk.swt.widgets;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;

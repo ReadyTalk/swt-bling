@@ -2,7 +2,7 @@ package com.readytalk.examples.swt.widgets.notifications;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
-import com.readytalk.swt.widgets.notifications.CustomElementDataProvider;
+import com.readytalk.swt.widgets.CustomElementDataProvider;
 import com.readytalk.swt.widgets.notifications.Bubble;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;

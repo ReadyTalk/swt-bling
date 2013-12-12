@@ -5,6 +5,7 @@ import com.readytalk.swt.effects.FadeEffect.Fadeable;
 import com.readytalk.swt.effects.FadeEffect.FadeEffectBuilder;
 import com.readytalk.swt.effects.InvalidEffectArgumentException;
 import com.readytalk.swt.helpers.AncestryHelper;
+import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
