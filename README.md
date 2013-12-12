@@ -38,16 +38,6 @@ Want to see a widget in action? We provide simple example apps for each of our w
 ./gradlew runExampleSquareButton
 ```
 
-##Documentation
-Javadoc is available for swt-bling [here](http://oss.readytalk.com/swt-bling/javadoc/).
-
-##Building
-Building swt-bling is simple. Just open a terminal and run
-```
-./gradlew build
-```
-from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.
-
 ##Artifacts
 ###Releases
 Releases are created using the ReadyTalk internal Jenkins and uploaded to Maven Central by way of Sonatype. You can declare a Maven Dependency as follows (using any tagged [release](https://github.com/ReadyTalk/swt-bling/releases)):
@@ -61,18 +51,15 @@ Releases are created using the ReadyTalk internal Jenkins and uploaded to Maven 
 ###Snapshots
 Snapshots are created and uploaded to [Sonatype](http://oss.sonatype.org/content/repositories/snapshots/com/readytalk/swt-bling/) on each push to master. Travis-CI handles the publish automagically.
 
-##GUI Tests
-In addition to standard unit tests, swt-bling has gui-based tests located in `src/integTest/java`. To run them:
+##Building
+Building swt-bling is simple. Just open a terminal and run
 ```
-./gradlew integTest
+./gradlew build
 ```
+from the root of the repository. You'll have a fresh build of the widgets in build/libs/swt-bling.jar.
 
-##IDE Setup
-### IntelliJ
-Most active contributors use [IntelliJ](http://www.jetbrains.com/idea/) as their primary IDE. Run
-```
-./gradlew idea
-```
-at the root of the project to create an IntelliJ project file. When you start IntelliJ, simply point at the ```.imr``` file to get started.
+##Documentation
+Javadoc is available for swt-bling [here](http://oss.readytalk.com/swt-bling/javadoc/).
 
-Note: On OS X, if you receive a ```Invalid Thread Access``` message, you'll need to open the Run Configuration and add ```-XstartOnFirstThread``` to the VM Options text input box.
+##Wiki
+Additional information is available on [our wiki](https://github.com/ReadyTalk/swt-bling/wiki)
