@@ -92,15 +92,11 @@ public class TextPainterExample implements SwtBlingExample {
   @RunnableExample(name="TextPainter")
   public TextPainterExample() { }
 
-  public void run() {
-
-    Display display = new Display();
-    Shell shell = new Shell(display);
+  public void run(Display display, Shell shell) {
     shell.setSize(400, 250);
 
-    TextCanvas canvas = null;
     try {
-      canvas = new TextCanvas(shell, SWT.NONE);
+      new TextCanvas(shell, SWT.NONE);
     } catch (InstantiationException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {
@@ -112,12 +108,5 @@ public class TextPainterExample implements SwtBlingExample {
     FillLayout fillLayout = new FillLayout();
     shell.setLayout(fillLayout);
     shell.open();
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch()) {
-        display.sleep();
-      }
-    }
-    display.dispose();
-    canvas.timer.cancel();
   }
 }

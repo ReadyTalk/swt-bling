@@ -1,5 +1,7 @@
 package com.readytalk.swt.effects;
 
+import com.readytalk.swt.util.Executor;
+
 import java.util.logging.Logger;
 
 /**

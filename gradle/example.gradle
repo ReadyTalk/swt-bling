@@ -21,11 +21,16 @@ configurations {
 tasks.addRule("Pattern: runExample<WidgetName>") { String taskName ->
   if (taskName.startsWith("runExample")) {
     task(taskName, type: JavaExec) {
-      ext.widgetName = taskName - "runExample"
+      ext.sleakDebug = ""
+      if (taskName.endsWith("Sleak")) {
+        sleakDebug = "sleakDebug"
+      }
+
+      ext.widgetName = taskName - "runExample" - "Sleak"
 
       classpath = sourceSets.examples.runtimeClasspath
       main = "com.readytalk.examples.swt.Examples"
-      args "${widgetName}"
+      args "${widgetName}", "${sleakDebug}"
 
       if (platform == 'darwin') {
         jvmArgs '-XstartOnFirstThread'

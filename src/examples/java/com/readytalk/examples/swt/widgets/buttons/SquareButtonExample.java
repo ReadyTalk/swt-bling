@@ -4,6 +4,8 @@ import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.widgets.buttons.SquareButton;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -14,38 +16,35 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class SquareButtonExample implements SwtBlingExample {
-  public static final Display DISPLAY = new Display();
-
-  /* Colors */
-  public static final Color OFF_BLACK = new Color(DISPLAY, 74, 74, 74);
-  public static final Color LIGHT_GRAY = new Color(DISPLAY, 204, 204, 204);
-  public static final Color LIGHTER_GRAY = new Color(DISPLAY, 232, 232, 232);
-  public static final Color LIGHTEST_GRAY = new Color(DISPLAY, 239, 239, 239);
-  public static final Color WHITE = new Color(DISPLAY, 255, 255, 255);
-
-  /* SquareButton */
-  public static final String BUTTON_TEXT = "SquareButton";
-  public static final Image BUTTON_IMAGE = DISPLAY.getSystemImage(SWT.ICON_INFORMATION);
-  public static final SquareButton.ImagePosition BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
-  public static final int CORNER_RADIUS = 3;
-  public static final SquareButton.SquareButtonColorGroup BUTTON_HOVER_COLOR_GROUP =
-          new SquareButton.SquareButtonColorGroup(LIGHTER_GRAY, LIGHTEST_GRAY, LIGHT_GRAY, OFF_BLACK);
-  public static final SquareButton.SquareButtonColorGroup BUTTON_DEFAULT_COLOR_GROUP =
-          new SquareButton.SquareButtonColorGroup(WHITE, WHITE, WHITE, OFF_BLACK);
-
   @RunnableExample(name="SquareButton")
   public SquareButtonExample() { }
 
-  public void run() {
-    Shell shell = new Shell(DISPLAY);
+  public void run(Display display, Shell shell) {
+    /* Colors */
+    final Color offBlack = new Color(display, 74, 74, 74);
+    final Color lightGray = new Color(display, 204, 204, 204);
+    final Color lighterGray = new Color(display, 232, 232, 232);
+    final Color lightestGray = new Color(display, 239, 239, 239);
+    final Color white = new Color(display, 255, 255, 255);
+
+    /* SquareButton */
+    String buttonText = "SquareButton";
+    Image buttonImage = display.getSystemImage(SWT.ICON_INFORMATION);
+    SquareButton.ImagePosition BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
+    int CORNER_RADIUS = 3;
+    SquareButton.SquareButtonColorGroup BUTTON_HOVER_COLOR_GROUP =
+            new SquareButton.SquareButtonColorGroup(white, white, white, offBlack);
+    SquareButton.SquareButtonColorGroup BUTTON_DEFAULT_COLOR_GROUP =
+            new SquareButton.SquareButtonColorGroup(lighterGray, lightestGray, lightGray, offBlack);
+
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
     composite.setLayout(new GridLayout());
 
     SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(composite)
-            .setText(BUTTON_TEXT)
-            .setImage(BUTTON_IMAGE)
+            .setText(buttonText)
+            .setImage(buttonImage)
             .setImagePosition(BUTTON_IMAGE_POSITION)
             .setCornerRadius(CORNER_RADIUS)
             .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
@@ -56,12 +55,19 @@ public class SquareButtonExample implements SwtBlingExample {
 
     shell.setSize(200, 200);
     shell.open();
-    while (!shell.isDisposed()) {
-      if (!DISPLAY.readAndDispatch()) {
-        DISPLAY.sleep();
-      }
-    }
 
-    DISPLAY.dispose();
+    // This is needed remove focus from the Button by default.
+    Composite composite2 = new Composite(shell, SWT.NONE);
+    composite2.setFocus();
+
+    shell.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent e) {
+        offBlack.dispose();
+        lightGray.dispose();
+        lighterGray.dispose();
+        lightestGray.dispose();
+        white.dispose();
+      }
+    });
   }
 }

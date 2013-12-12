@@ -20,21 +20,18 @@ import org.eclipse.swt.widgets.Shell;
 public class CustomWidgetBubbleExample implements SwtBlingExample {
   private CustomImageWidget widget;
   private Display display;
-  private Shell shell;
   private Composite parentComposite;
 
   @RunnableExample(name="CustomWidgetBubble")
-  public CustomWidgetBubbleExample() {
-    display = new Display();
-    shell = new Shell(display);
+  public CustomWidgetBubbleExample() { }
+
+  public void run(Display display, final Shell shell) {
     shell.setLayout(new FillLayout());
     parentComposite = new Composite(shell, SWT.NONE);
     parentComposite.setLayout(new FillLayout());
 
     widget = new CustomImageWidget(parentComposite, display.getSystemImage(SWT.ICON_QUESTION));
-  }
 
-  public void run() {
     parentComposite.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
         Point shellSize = shell.getSize();
@@ -50,12 +47,6 @@ public class CustomWidgetBubbleExample implements SwtBlingExample {
 
     shell.setSize(200, 200);
     shell.open();
-
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch()) {
-        display.sleep();
-      }
-    }
   }
 
   private class CustomImageWidget extends Bubblable {
