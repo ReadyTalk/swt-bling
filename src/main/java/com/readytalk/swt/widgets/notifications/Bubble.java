@@ -417,7 +417,6 @@ public class Bubble extends Widget implements Fadeable {
     //no-op
   }
 
-  // TODO: we're not supposed to extend widget. We need to make sure that our dispose code is being called appropriately.
   private void onDispose(Event event) {
     parentControl.removeListener(SWT.Dispose, parentListener);
     removeListener(SWT.Dispose, listener);
