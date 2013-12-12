@@ -80,30 +80,30 @@ public class Bubble extends Widget implements Fadeable {
   private boolean fadeEffectInProgress = false;
 
   /**
-   * Creates and attaches a bubble to a component that implements <code>Bubblable</code>.
+   * Creates and attaches a bubble to a component that implements <code>CustomElementDataProvider</code>.
    * This is a convenience constructor which assumes you do not want the Bubble text to appear
    * in a Bold font.
    *
-   * @param bubblable The Bubblable element that the Bubble provides contextual help about
+   * @param customElementDataProvider The CustomElementDataProvider element that the Bubble provides contextual help about
    * @param text The text you want to appear in the Bubble
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
    */
-  public static Bubble createBubbleForCustomWidget(Bubblable bubblable, String text, BubbleTag ... tags)
+  public static Bubble createBubbleForCustomWidget(CustomElementDataProvider customElementDataProvider, String text, BubbleTag ... tags)
           throws IllegalArgumentException {
-    return new Bubble(bubblable.getPaintedElement(), bubblable, text, tags);
+    return new Bubble(customElementDataProvider.getPaintedElement(), customElementDataProvider, text, tags);
   }
 
   /**
-   * Creates and attaches a Bubble to a component that implements <code>Bubblable</code>
+   * Creates and attaches a Bubble to a component that implements <code>CustomElementDataProvider</code>
    *
-   * @param bubblable The Bubblable element that the Bubble provides contextual help about
+   * @param customElementDataProvider The CustomElementDataProvider element that the Bubble provides contextual help about
    * @param text The text you want to appear in the Bubble
    * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
    */
-  public static Bubble createBubbleForCustomWidget(Bubblable bubblable, String text, boolean useBoldFont, BubbleTag ... tags)
+  public static Bubble createBubbleForCustomWidget(CustomElementDataProvider customElementDataProvider, String text, boolean useBoldFont, BubbleTag ... tags)
           throws IllegalArgumentException {
-    return new Bubble(bubblable.getPaintedElement(), bubblable, text, useBoldFont, tags);
+    return new Bubble(customElementDataProvider.getPaintedElement(), customElementDataProvider, text, useBoldFont, tags);
   }
 
   /**
@@ -132,16 +132,16 @@ public class Bubble extends Widget implements Fadeable {
     return new Bubble(parentControl, null, text, useBoldFont, tags);
   }
 
-  private Bubble(Control parentControl, Bubblable bubblable, String text, BubbleTag ... tags) {
-    this(parentControl, bubblable, text, false, tags);
+  private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text, BubbleTag ... tags) {
+    this(parentControl, customElementDataProvider, text, false, tags);
   }
 
-  private Bubble(Control parentControl, Bubblable bubblable, String text, boolean useBoldFont, BubbleTag ... tags)
+  private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text, boolean useBoldFont, BubbleTag ... tags)
           throws IllegalArgumentException {
     super(parentControl, SWT.NONE);
 
-    if (bubblable != null) {
-      bubbledItem = new BubbledItem(bubblable);
+    if (customElementDataProvider != null) {
+      bubbledItem = new BubbledItem(customElementDataProvider);
     } else {
       bubbledItem = new BubbledItem(parentControl);
     }
@@ -174,8 +174,8 @@ public class Bubble extends Widget implements Fadeable {
   private void registerBubble(BubbledItem bubbledItem, BubbleTag ... tags) {
     BubbleRegistry bubbleRegistry = BubbleRegistry.getInstance();
 
-    if (bubbledItem.getBubblable() != null) {
-      bubbleRegistry.register(bubbledItem.bubblable, this, tags);
+    if (bubbledItem.getCustomElementDataProvider() != null) {
+      bubbleRegistry.register(bubbledItem.customElementDataProvider, this, tags);
     } else {
       bubbleRegistry.register(bubbledItem.getControl(), this, tags);
     }
@@ -217,7 +217,7 @@ public class Bubble extends Widget implements Fadeable {
    * @param bubbleTags Tags to associate with this Bubble
    */
   public void addTags(BubbleTag ... bubbleTags) {
-    BubbleRegistry.getInstance().addTags(bubbledItem.getControlOrBubblable(), bubbleTags);
+    BubbleRegistry.getInstance().addTags(bubbledItem.getControlOrCustomElement(), bubbleTags);
   }
 
   /**
@@ -226,7 +226,7 @@ public class Bubble extends Widget implements Fadeable {
    */
   public void removeTags(BubbleTag ... bubbleTags) {
     BubbleRegistry bubbleRegistry = BubbleRegistry.getInstance();
-    BubbleRegistry.BubbleRegistrant registrant = bubbleRegistry.findRegistrant(bubbledItem.getControlOrBubblable());
+    BubbleRegistry.BubbleRegistrant registrant = bubbleRegistry.findRegistrant(bubbledItem.getControlOrCustomElement());
     BubbleRegistry.getInstance().removeTags(registrant, bubbleTags);
   }
 
@@ -235,7 +235,7 @@ public class Bubble extends Widget implements Fadeable {
    * Note, this will also dispose the Bubble. Future interactions with this Bubble will result in Widget Diposed exceptions.
    */
   public void deactivateBubble() {
-    BubbleRegistry.getInstance().unregister(bubbledItem.getControlOrBubblable());
+    BubbleRegistry.getInstance().unregister(bubbledItem.getControlOrCustomElement());
     dispose();
   }
 
@@ -516,21 +516,21 @@ public class Bubble extends Widget implements Fadeable {
 
   private class BubbledItem {
     private Control control;
-    private Bubblable bubblable;
+    private CustomElementDataProvider customElementDataProvider;
 
     public BubbledItem(Control control) {
       this.control = control;
     }
 
-    public BubbledItem(Bubblable bubblable) {
-      this.bubblable = bubblable;
+    public BubbledItem(CustomElementDataProvider customElementDataProvider) {
+      this.customElementDataProvider = customElementDataProvider;
     }
 
     Point getSize() {
       if (control != null) {
         return control.getSize();
       } else {
-        return bubblable.getSize();
+        return customElementDataProvider.getSize();
       }
     }
 
@@ -538,7 +538,7 @@ public class Bubble extends Widget implements Fadeable {
       if (control != null) {
         return control.getLocation();
       } else {
-        return bubblable.getLocation();
+        return customElementDataProvider.getLocation();
       }
     }
 
@@ -546,20 +546,20 @@ public class Bubble extends Widget implements Fadeable {
       if (control != null) {
         return control;
       } else {
-        return bubblable.getPaintedElement();
+        return customElementDataProvider.getPaintedElement();
       }
     }
 
-    Object getControlOrBubblable() {
-      if (bubblable != null) {
-        return bubblable;
+    Object getControlOrCustomElement() {
+      if (customElementDataProvider != null) {
+        return customElementDataProvider;
       } else {
         return control;
       }
     }
 
-    Bubblable getBubblable() {
-      return bubblable;
+    CustomElementDataProvider getCustomElementDataProvider() {
+      return customElementDataProvider;
     }
   }
 

@@ -12,7 +12,7 @@ Bubble can be applied to any SWT widget that inherits from ```Control```.
   <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/bubble.png" alt="Bubble Widget" />
 </p>
 
-You can also apply Bubbles to any element that implements the ```Bubblable``` interface (useful for apply ToolTips to elements drawn with ```GC```).
+You can also apply Bubbles to any element that implements the ```CustomElementDataProvider``` interface (useful for apply ToolTips to elements drawn with ```GC```).
 
 <p align="center">
   <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/customBubble.png" alt="Custom Bubble Widget" />
