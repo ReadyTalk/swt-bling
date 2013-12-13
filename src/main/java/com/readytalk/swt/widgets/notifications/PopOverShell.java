@@ -20,6 +20,10 @@ import org.eclipse.swt.widgets.Widget;
 
 import java.util.logging.Logger;
 
+/**
+ * PopOverShell provides a simple interface for popping a Shell on top of any Object that subclasses
+ * <code>Control</code> or implements <code>CustomElementDataProvider</code>
+ */
 public abstract class PopOverShell extends Widget implements Fadeable {
   private static final Logger LOG = Logger.getLogger(PopOverShell.class.getName());
 
@@ -33,28 +37,39 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   private static final int FULLY_VISIBLE_ALPHA = 255; //fully opaque
   private static final int FULLY_HIDDEN_ALPHA = 0; //fully transparent
 
-  private Object fadeLock = new Object();
-
-  private PoppedOverItem poppedOverItem;
-  protected Control parentControl;
-  private Shell parentShell;
-  protected Shell popOverShell;
-  private Listener popOverListener;
-
-  private Rectangle borderRectangle;
-  private Color backgroundColor;
-  private Color borderColor;
-  private Region popOverRegion;
-
   static final PopOverShellDisplayLocation DEFAULT_DISPLAY_LOCATION = PopOverShellDisplayLocation.BELOW_PARENT;
   static final PopOverShellPointCenteredOnParent DEFAULT_POINT_CENTERED = PopOverShellPointCenteredOnParent.TOP_LEFT_CORNER;
 
   PopOverShellDisplayLocation popOverShellDisplayLocation = DEFAULT_DISPLAY_LOCATION;
   PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent = DEFAULT_POINT_CENTERED;
 
+  private Object fadeLock = new Object();
+
+  protected Control parentControl;
+  protected Shell popOverShell;
+
+  private Shell parentShell;
+  private PoppedOverItem poppedOverItem;
+  private Listener popOverListener;
+  private Rectangle borderRectangle;
+
+  private Color backgroundColor;
+  private Color borderColor;
+  private Region popOverRegion;
+
   private boolean popOverShellIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
+  /**
+   * Provides the backbone for Custom Widgets that need a <code>Shell</code> popped over a <code>Control</code> or
+   * <code>CustomElementDataProvider</code>. If you're using a <code>CustomElementDataProvider</code>, pass the
+   * <code>CustomElementDataProvider.getPaintedElement()</code> as the parentControl.
+   * @param parentControl The control you want the PopOverShell to appear above. In the case of
+   *                      <code>CustomElementDataProvider</code>, pass
+   *                      <code>CustomElementDataProvider.getPaintedElement()</code>.
+   * @param customElementDataProvider The <code>CustomElementDataProvider</code> you want the PopOverShell to appear
+   *                                  above (or null if you're using a Control)
+   */
   public PopOverShell(Control parentControl, CustomElementDataProvider customElementDataProvider) {
     super(parentControl, SWT.NONE);
 
@@ -77,17 +92,20 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   }
 
   /**
-   * Shows the PopOverShell in a suitable location relative to the parent component.
+   * Shows the PopOverShell in a suitable location relative to the parent component. Classes extending PopOverShell will
+   * provide the <code>Region</code> via the abstract <code>getAppropriatePopOverRegion()</code> method.
    */
   public void show() {
-    popOverRegion = getAppropriatePopOverRegion();
+    Point popOverShellSize = getAppropriatePopOverSize();
+    popOverRegion = new Region();
+    popOverRegion.add(new Rectangle(0, 0, popOverShellSize.x, popOverShellSize.y));
 
     borderRectangle = calculateBorderRectangle(popOverRegion.getBounds());
     Point location = getShellDisplayLocation(parentShell, poppedOverItem, popOverShellDisplayLocation,
             popOverShellPointCenteredOnParent, popOverRegion.getBounds());
 
     while (!popOverShellIsFullyConfigured) {
-      popOverShellIsFullyConfigured = configureBubbleIfWouldBeCutOff(parentShell.getDisplay().getClientArea(),
+      popOverShellIsFullyConfigured = configurePopOverShellIfWouldBeCutOff(parentShell.getDisplay().getClientArea(),
               location, popOverRegion.getBounds());
       location = getShellDisplayLocation(parentShell, getPoppedOverItem(), popOverShellDisplayLocation,
               popOverShellPointCenteredOnParent, popOverRegion.getBounds());
@@ -100,16 +118,23 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverShell.setVisible(true);
   }
 
+  /**
+   * Implementers of this method return a Point describing the width and height the PopOverShell should be.
+   * @return A Point object describing the appropriate PopOverSize. The x is the width and y is the height.
+   */
+  abstract Point getAppropriatePopOverSize();
+
+  /**
+   * Implementers of this method should do any clean-up needed to reset the widget to its default state.
+   */
+  abstract void resetWidget();
+
   PoppedOverItem getPoppedOverItem() {
     return poppedOverItem;
   }
 
-
-  private Rectangle calculateBorderRectangle(Rectangle containingRectangle) {
-    return new Rectangle(containingRectangle.x,
-            containingRectangle.y,
-            containingRectangle.width - BORDER_THICKNESS,
-            containingRectangle.height - BORDER_THICKNESS);
+  public void checkSubclass() {
+    //no-op
   }
 
   private void attachListeners() {
@@ -155,17 +180,19 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverRegion = null;
   }
 
-  boolean configureBubbleIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
-    if (configureBubbleIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
+  boolean configurePopOverShellIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+                                               Rectangle containingRectangle) {
+    if (configurePopOverShellIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
       return false;
-    } else if  (configureBubbleIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
+    } else if  (configurePopOverShellIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
       return false;
     }
 
     return true;
   }
 
-  boolean configureBubbleIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  boolean configurePopOverShellIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+                                              Rectangle containingRectangle) {
     Point lowestYPosition = new Point(locationRelativeToDisplay.x, locationRelativeToDisplay.y + containingRectangle.height);
 
     if (!displayBounds.contains(lowestYPosition)) {
@@ -176,7 +203,8 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
-  boolean configureBubbleIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay, Rectangle containingRectangle) {
+  boolean configurePopOverShellIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+                                                     Rectangle containingRectangle) {
     Point farthestXPosition = new Point(locationRelativeToDisplay.x + containingRectangle.width, locationRelativeToDisplay.y);
 
     if (!displayBounds.contains(farthestXPosition)) {
@@ -187,35 +215,54 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
-  private Point getShellDisplayLocation(Shell parentShell, PoppedOverItem poppedOverItem, PopOverShellDisplayLocation aboveOrBelow,
-                                        PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent, Rectangle bubbleRectangle) {
-    Point bubbledItemSize = poppedOverItem.getSize();
+  private Point getShellDisplayLocation(Shell parentShell, PoppedOverItem poppedOverItem,
+                                        PopOverShellDisplayLocation aboveOrBelow,
+                                        PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent,
+                                        Rectangle popOverRectangle) {
+    Point poppedOverItemSize = poppedOverItem.getSize();
     Point parentLocationRelativeToDisplay = parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
     Point appropriateDisplayLocation = new Point(0, 0);
 
     switch (aboveOrBelow) {
       case ABOVE_PARENT:
-        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y - bubbleRectangle.height;
+        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y - popOverRectangle.height;
         break;
       case BELOW_PARENT:
-        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y + bubbledItemSize.y;
+        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y + poppedOverItemSize.y;
         break;
     }
 
     switch(popOverShellPointCenteredOnParent) {
       case TOP_LEFT_CORNER:
-        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x + (bubbledItemSize.x / 2);
+        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x + (poppedOverItemSize.x / 2);
         break;
       case TOP_RIGHT_CORNER:
-        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x - bubbleRectangle.width + (bubbledItemSize.x / 2);
+        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x - popOverRectangle.width + (poppedOverItemSize.x / 2);
         break;
     }
 
     return appropriateDisplayLocation;
   }
 
+  private Rectangle calculateBorderRectangle(Rectangle containingRectangle) {
+    return new Rectangle(containingRectangle.x,
+            containingRectangle.y,
+            containingRectangle.width - BORDER_THICKNESS,
+            containingRectangle.height - BORDER_THICKNESS);
+  }
+
   /**
-   * Fades the Bubble off the screen.
+   * Returns whether the PopOverShell is currently visible on screen.
+   * Note: If you utilize <code>PopOverShell.fadeOut()</code>, this method will return true while it's fading.
+   * To determine if it's fading out, call <code>PopOverShell.getIsFadeEffectInProgress</code>
+   * @return Visibility state of the PopOverShell
+   */
+  public boolean isVisible() {
+    return popOverShell.isVisible();
+  }
+
+  /**
+   * Fades the <code>PopOverShell</code> off the screen.
    */
   public void fadeOut() {
     if (fadeEffectInProgress) {
@@ -225,7 +272,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     try {
       FadeEffect fade = new FadeEffect.FadeEffectBuilder().
               setFadeable(this).
-              setFadeCallback(new BubbleFadeCallback()).
+              setFadeCallback(new PopOverShellFadeCallback()).
               setFadeTimeInMilliseconds(FADE_OUT_TIME).
               setCurrentAlpha(FULLY_VISIBLE_ALPHA).
               setTargetAlpha(FULLY_HIDDEN_ALPHA).build();
@@ -238,9 +285,9 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   }
 
   /**
-   * Returns whether the Bubble is currently fading from the screen.
-   * Calls to <code>Bubble.isVisible()</code> will return true while the Bubble is dismissing.
-   * @return Whether or not the Bubble is currently fading from the screen
+   * Returns whether the PopOverShell is currently fading from the screen.
+   * Calls to <code>PopOverShell.isVisible()</code> will return true while the PopOverShell is dismissing.
+   * @return Whether or not the PopOverShell is currently fading from the screen
    */
   public boolean getIsFadeEffectInProgress() {
     return fadeEffectInProgress;
@@ -283,12 +330,58 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     fadeEffectInProgress = false;
   }
 
-  private class BubbleFadeCallback implements FadeEffect.FadeCallback {
+  private class PopOverShellFadeCallback implements FadeEffect.FadeCallback {
     public void fadeComplete() {
       hide();
     }
   }
 
-  abstract Region getAppropriatePopOverRegion();
-  abstract void resetWidget();
+  public class PoppedOverItem {
+    private Control control;
+    private CustomElementDataProvider customElementDataProvider;
+
+    public PoppedOverItem(Control control) {
+      this.control = control;
+    }
+
+    public PoppedOverItem(CustomElementDataProvider customElementDataProvider) {
+      this.customElementDataProvider = customElementDataProvider;
+    }
+
+    Point getSize() {
+      if (control != null) {
+        return control.getSize();
+      } else {
+        return customElementDataProvider.getSize();
+      }
+    }
+
+    Point getLocation() {
+      if (control != null) {
+        return control.getLocation();
+      } else {
+        return customElementDataProvider.getLocation();
+      }
+    }
+
+    Control getControl() {
+      if (control != null) {
+        return control;
+      } else {
+        return customElementDataProvider.getPaintedElement();
+      }
+    }
+
+    Object getControlOrCustomElement() {
+      if (customElementDataProvider != null) {
+        return customElementDataProvider;
+      } else {
+        return control;
+      }
+    }
+
+    CustomElementDataProvider getCustomElementDataProvider() {
+      return customElementDataProvider;
+    }
+  }
 }

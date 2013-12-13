@@ -43,7 +43,6 @@ public class Bubble extends PopOverShell {
   private Listener listener;
   private String tooltipText;
 
-  private Rectangle containingRectangle;
   private Color textColor;
   private Font boldFont;
 
@@ -128,6 +127,10 @@ public class Bubble extends PopOverShell {
     registerBubble(getPoppedOverItem(), tags);
   }
 
+  Point getAppropriatePopOverSize() {
+    return getTextSize(tooltipText);
+  }
+
   private void registerBubble(PoppedOverItem poppedOverItem, BubbleTag ... tags) {
     BubbleRegistry bubbleRegistry = BubbleRegistry.getInstance();
 
@@ -136,15 +139,6 @@ public class Bubble extends PopOverShell {
     } else {
       bubbleRegistry.register(poppedOverItem.getControl(), this, tags);
     }
-  }
-
-  Region getAppropriatePopOverRegion() {
-    Point textExtent = getTextSize(tooltipText);
-    Region tooltipRegion = new Region();
-    containingRectangle = calculateContainingRectangleRegion(textExtent);
-    tooltipRegion.add(containingRectangle);
-
-    return tooltipRegion;
   }
 
   /**
@@ -174,16 +168,6 @@ public class Bubble extends PopOverShell {
   public void deactivateBubble() {
     BubbleRegistry.getInstance().unregister(getPoppedOverItem().getControlOrCustomElement());
     dispose();
-  }
-
-  /**
-   * Returns whether the Bubble is currently visible on screen.
-   * Note: If you utilize <code>Bubble.fadeOut()</code>, this method will return true while it's fading.
-   * To determine if it's fading out, call <code>Bubble.getIsFadeEffectInProgress</code>
-   * @return Visibility state of the Bubble
-   */
-  public boolean isVisible() {
-    return popOverShell.isVisible();
   }
 
   /**
@@ -232,18 +216,8 @@ public class Bubble extends PopOverShell {
     addAccessibilityHooks(parentControl);
   }
 
-  private Rectangle calculateContainingRectangleRegion(Point textExtent) {
-    return new Rectangle(0, 0,
-            textExtent.x + TEXT_WIDTH_PADDING,
-            textExtent.y + TEXT_HEIGHT_PADDING);
-  }
-
   void resetWidget() {
     disableAutoHide = false;
-  }
-
-  public void checkSubclass() {
-    //no-op
   }
 
   private void onDispose(Event event) {
@@ -267,7 +241,7 @@ public class Bubble extends PopOverShell {
     }
 
     gc.setForeground(textColor);
-    gc.drawText(tooltipText, containingRectangle.x + (TEXT_WIDTH_PADDING / 2), containingRectangle.y + (TEXT_HEIGHT_PADDING / 2));
+    gc.drawText(tooltipText, TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2);
   }
 
   private void onMouseDown(Event event) {
@@ -328,6 +302,9 @@ public class Bubble extends PopOverShell {
     }
 
     Point textExtent = gc.textExtent(text, SWT.DRAW_DELIMITER);
+    textExtent.x = textExtent.x + TEXT_WIDTH_PADDING;
+    textExtent.y = textExtent.y + TEXT_HEIGHT_PADDING;
+
     gc.dispose();
     return textExtent;
   }

@@ -35,9 +35,9 @@ public class BubbleTest {
     public void setUp() {
       MockitoAnnotations.initMocks(this);
 
-      when(bubble.configureBubbleIfBottomCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
-      when(bubble.configureBubbleIfRightmostTextCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
-      when(bubble.configureBubbleIfWouldBeCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(bubble.configurePopOverShellIfBottomCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(bubble.configurePopOverShellIfRightmostTextCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(bubble.configurePopOverShellIfWouldBeCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
     }
 
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
@@ -62,13 +62,13 @@ public class BubbleTest {
 
     @Test
     public void configureBubbleIfBottomCutOff_differingParameters_returnsCorrectWasConfiguredBoolean() {
-      assertEquals(bubble.configureBubbleIfBottomCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
+      assertEquals(bubble.configurePopOverShellIfBottomCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
               bubbleRectangle), bottomCutOff);
     }
 
     @Test
     public void configureBubbleIfRightmostTextCutOff_differingParameters_returnsCorrectWasConfiguredBoolean() {
-      assertEquals(bubble.configureBubbleIfRightmostTextCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
+      assertEquals(bubble.configurePopOverShellIfRightmostTextCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
               bubbleRectangle), rightCutOff);
     }
 
