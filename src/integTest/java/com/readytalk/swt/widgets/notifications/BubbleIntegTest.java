@@ -67,18 +67,18 @@ public class BubbleIntegTest {
     public static List<Object[]> data() {
       return Arrays.asList(new Object[][] {
               { false, false,  getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
-              { false, true, getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.BubblePointCenteredOnParent.TOP_RIGHT_CORNER },
-              { true, false, getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition.BOTTOM), Bubble.BubbleDisplayLocation.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED },
-              { true, true, getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition.BOTTOM_RIGHT), Bubble.BubbleDisplayLocation.ABOVE_PARENT, Bubble.BubblePointCenteredOnParent.TOP_RIGHT_CORNER }
+              { false, true, getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER },
+              { true, false, getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition.BOTTOM), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED },
+              { true, true, getShellLocationForBubbleTextCutoff(BubbleTextCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER }
       });
     }
 
     Point shellPoint;
-    Bubble.BubbleDisplayLocation expectedDisplayLocation;
-    Bubble.BubblePointCenteredOnParent expectedCenteredOnParent;
+    PopOverShell.PopOverShellDisplayLocation expectedDisplayLocation;
+    PopOverShell.PopOverShellPointCenteredOnParent expectedCenteredOnParent;
 
     public BubblePlacementTests(boolean bottomIsCutOff, boolean rightIsCutOff, Point shellPoint,
-                                Bubble.BubbleDisplayLocation expectedDisplayLocation, Bubble.BubblePointCenteredOnParent expectedCenteredOnParent) {
+                                PopOverShell.PopOverShellDisplayLocation expectedDisplayLocation, PopOverShell.PopOverShellPointCenteredOnParent expectedCenteredOnParent) {
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
@@ -90,8 +90,8 @@ public class BubbleIntegTest {
       shell.open();
       bubble.show();
 
-      assertEquals(bubble.bubbleDisplayLocation, expectedDisplayLocation);
-      assertEquals(bubble.bubblePointCenteredOnParent, expectedCenteredOnParent);
+      assertEquals(bubble.popOverShellDisplayLocation, expectedDisplayLocation);
+      assertEquals(bubble.popOverShellPointCenteredOnParent, expectedCenteredOnParent);
     }
 
 
