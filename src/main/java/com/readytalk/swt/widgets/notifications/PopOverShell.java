@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -87,6 +88,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
     popOverShell = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     popOverShell.setBackground(backgroundColor);
+    popOverShell.setLayout(new FillLayout());
 
     attachListeners();
   }
@@ -132,6 +134,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   PoppedOverItem getPoppedOverItem() {
     return poppedOverItem;
   }
+  Shell getPopOverShell() { return popOverShell; }
 
   public void checkSubclass() {
     //no-op

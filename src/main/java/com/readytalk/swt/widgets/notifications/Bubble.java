@@ -220,6 +220,8 @@ public class Bubble extends PopOverShell {
     disableAutoHide = false;
   }
 
+  void runBeforeShowPopOverShell() { }
+
   private void onDispose(Event event) {
     parentControl.removeListener(SWT.Dispose, parentListener);
     removeListener(SWT.Dispose, listener);
