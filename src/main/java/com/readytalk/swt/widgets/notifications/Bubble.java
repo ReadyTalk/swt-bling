@@ -33,6 +33,9 @@ import java.util.logging.Logger;
 public class Bubble extends PopOverShell {
   private static final Logger LOG = Logger.getLogger(Bubble.class.getName());
 
+  private static final RGB BORDER_COLOR = new RGB(204, 204, 204);
+  private static final int BORDER_THICKNESS = 1; //pixels
+
   static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
   private static final int TEXT_HEIGHT_PADDING = 5; //pixels
@@ -42,11 +45,13 @@ public class Bubble extends PopOverShell {
 
   private Listener listener;
   private String tooltipText;
+  private Listener parentListener;
+  private Rectangle borderRectangle;
+  private Point textSize;
 
+  private Color borderColor;
   private Color textColor;
   private Font boldFont;
-
-  private Listener parentListener;
 
   /**
    * Creates and attaches a bubble to a component that implements <code>CustomElementDataProvider</code>.
@@ -116,6 +121,7 @@ public class Bubble extends PopOverShell {
     this.tooltipText = maybeBreakLines(text);
 
     // Remember to clean up after yourself onDispose.
+    borderColor = new Color(getDisplay(), BORDER_COLOR);
     textColor = new Color(getDisplay(), TEXT_COLOR);
     if (useBoldFont) {
       Font font = getDisplay().getSystemFont();
@@ -128,7 +134,11 @@ public class Bubble extends PopOverShell {
   }
 
   Point getAppropriatePopOverSize() {
-    return getTextSize(tooltipText);
+    if (textSize == null) {
+      textSize = getTextSize(tooltipText);
+    }
+
+    return textSize;
   }
 
   private void registerBubble(PoppedOverItem poppedOverItem, BubbleTag ... tags) {
@@ -217,10 +227,17 @@ public class Bubble extends PopOverShell {
   }
 
   void resetWidget() {
+    textSize = null;
     disableAutoHide = false;
   }
 
-  void runBeforeShowPopOverShell() { }
+  void runBeforeShowPopOverShell() {
+    if (textSize == null) {
+      textSize = getTextSize(tooltipText);
+    }
+
+    borderRectangle = calculateBorderRectangle(textSize);
+  }
 
   private void onDispose(Event event) {
     parentControl.removeListener(SWT.Dispose, parentListener);
@@ -228,6 +245,7 @@ public class Bubble extends PopOverShell {
     notifyListeners(SWT.Dispose, event);
     event.type = SWT.None;
 
+    borderColor.dispose();
     textColor.dispose();
     if (boldFont != null) {
       boldFont.dispose();
@@ -237,6 +255,10 @@ public class Bubble extends PopOverShell {
 
   private void onPaint(Event event) {
     GC gc = event.gc;
+
+    gc.setForeground(borderColor);
+    gc.setLineWidth(BORDER_THICKNESS);
+    gc.drawRectangle(borderRectangle);
 
     if (boldFont != null) {
       gc.setFont(boldFont);
@@ -258,6 +280,12 @@ public class Bubble extends PopOverShell {
         e.result = tooltipText;
       }
     });
+  }
+
+  private Rectangle calculateBorderRectangle(Point textSize) {
+    return new Rectangle(0, 0,
+            textSize.x - BORDER_THICKNESS,
+            textSize.y - BORDER_THICKNESS);
   }
 
   String maybeBreakLines(String rawString) {

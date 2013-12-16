@@ -56,5 +56,7 @@ public class PopTart extends PopOverShell {
     return composite.getSize();
   }
 
+  void runBeforeShowPopOverShell() { }
+
   void resetWidget() { }
 }

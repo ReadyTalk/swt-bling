@@ -32,8 +32,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   enum PopOverShellPointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
   private static final RGB BACKGROUND_COLOR = new RGB(74, 74, 74);
-  private static final RGB BORDER_COLOR = new RGB(204, 204, 204);
-  private static final int BORDER_THICKNESS = 1; //pixels
   private static final int FADE_OUT_TIME = 200; //milliseconds
   private static final int FULLY_VISIBLE_ALPHA = 255; //fully opaque
   private static final int FULLY_HIDDEN_ALPHA = 0; //fully transparent
@@ -52,10 +50,9 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   private Shell parentShell;
   private PoppedOverItem poppedOverItem;
   private Listener popOverListener;
-  private Rectangle borderRectangle;
 
   private Color backgroundColor;
-  private Color borderColor;
+
   private Region popOverRegion;
 
   private boolean popOverShellIsFullyConfigured = false;
@@ -84,7 +81,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     parentShell = AncestryHelper.getShellFromControl(poppedOverItem.getControl());
 
     backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
-    borderColor = new Color(getDisplay(), BORDER_COLOR);
 
     popOverShell = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     popOverShell.setBackground(backgroundColor);
@@ -98,11 +94,12 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    * provide the <code>Region</code> via the abstract <code>getAppropriatePopOverRegion()</code> method.
    */
   public void show() {
+    runBeforeShowPopOverShell();
+
     Point popOverShellSize = getAppropriatePopOverSize();
     popOverRegion = new Region();
     popOverRegion.add(new Rectangle(0, 0, popOverShellSize.x, popOverShellSize.y));
 
-    borderRectangle = calculateBorderRectangle(popOverRegion.getBounds());
     Point location = getShellDisplayLocation(parentShell, poppedOverItem, popOverShellDisplayLocation,
             popOverShellPointCenteredOnParent, popOverRegion.getBounds());
 
@@ -127,6 +124,12 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   abstract Point getAppropriatePopOverSize();
 
   /**
+   * Implementers of this method run any logic that needs to be executed before the PopOverShell is shown to
+   * the user.
+   */
+  abstract void runBeforeShowPopOverShell();
+
+  /**
    * Implementers of this method should do any clean-up needed to reset the widget to its default state.
    */
   abstract void resetWidget();
@@ -147,23 +150,11 @@ public abstract class PopOverShell extends Widget implements Fadeable {
           case SWT.Dispose:
             onDispose(event);
             break;
-          case SWT.Paint:
-            onPaint(event);
-            break;
         }
       }
     };
 
     addListener(SWT.Dispose, popOverListener);
-    popOverShell.addListener(SWT.Paint, popOverListener);
-  }
-
-  private void onPaint(Event event) {
-    GC gc = event.gc;
-
-    gc.setForeground(borderColor);
-    gc.setLineWidth(BORDER_THICKNESS);
-    gc.drawRectangle(borderRectangle);
   }
 
   private void onDispose(Event event) {
@@ -173,7 +164,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     event.type = SWT.None;
 
     backgroundColor.dispose();
-    borderColor.dispose();
     popOverShell.dispose();
     popOverShell = null;
 
@@ -245,13 +235,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
 
     return appropriateDisplayLocation;
-  }
-
-  private Rectangle calculateBorderRectangle(Rectangle containingRectangle) {
-    return new Rectangle(containingRectangle.x,
-            containingRectangle.y,
-            containingRectangle.width - BORDER_THICKNESS,
-            containingRectangle.height - BORDER_THICKNESS);
   }
 
   /**
