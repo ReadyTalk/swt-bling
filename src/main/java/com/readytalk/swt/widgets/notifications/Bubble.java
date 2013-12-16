@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -45,7 +44,6 @@ public class Bubble extends PopOverShell {
 
   private Listener listener;
   private String tooltipText;
-  private Listener parentListener;
   private Rectangle borderRectangle;
   private Point textSize;
 
