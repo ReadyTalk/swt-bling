@@ -45,7 +45,7 @@ import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
  * aforementioned TextTypes and then painting them into the given boundary using 
  * the TextPainter options for guidance.  By default, TextPainter uses a 
  * PlainText tokenizer which does not recognize any text styling rules such as 
- * BOLD or ITALICS.
+ * BOLD or ITALIC.
  * </p>
  * <pre>
  * Example:
@@ -85,15 +85,18 @@ public class TextPainter {
   
   private Hyperlink activeHyperlink;
   private Rectangle bounds;
+  private boolean drawCalculatedBounds;
   private boolean clipping;
   private boolean drawBounds;
   private List<Hyperlink> hyperlinks;
   private int justification;
+  private int lineSpacing;
   private List<NavigationListener> navigationListeners;
   private Composite parent;
   private String text;
   private TextTokenizer textTokenizer;
   private List<TextToken> tokens;
+  private int verticalAlignment;
   private boolean wrapping;
 
   /**
@@ -123,6 +126,8 @@ public class TextPainter {
     hyperlinkColor = buildColor(100, 50, 200);
     boundaryColor = buildColor(255, 30, 30);
     justification = SWT.LEFT;
+    lineSpacing = 0;
+    verticalAlignment = SWT.TOP;
     FontData fontData = parent.getFont().getFontData()[0];
     setFont(fontData.getName(), fontData.getHeight());
     Point size = parent.getSize();
@@ -262,7 +267,18 @@ public class TextPainter {
     this.bounds = bounds;
     return this;
   }
-  
+
+  /**
+   * Sets the calculated boundary painting rule.  By default, set to false and the calculated boundary
+   * will not be painted.
+   *
+   * @return {@link TextPainter}
+   */
+  public TextPainter setDrawCalculatedBounds(boolean drawCalculatedBounds) {
+    this.drawCalculatedBounds = drawCalculatedBounds;
+    return this;
+  }
+
   /**
    * Sets the clipping paint rule.  By default, clipping is enabled.
    * 
@@ -281,6 +297,26 @@ public class TextPainter {
    */
   public TextPainter setDrawBounds(boolean drawBounds) {
     this.drawBounds = drawBounds;
+    return this;
+  }
+
+  /**
+   * Sets the horizontal alignment of text.
+   * @param justification
+   * @return
+   */
+  public TextPainter setJustification(int justification) {
+    this.justification = justification;
+    return this;
+  }
+
+  /**
+   * Sets the amount of space between lines.  The default is set to 0.
+   * @param lineSpacing
+   * @return
+   */
+  public TextPainter setLineSpacing(int lineSpacing) {
+    this.lineSpacing = lineSpacing;
     return this;
   }
   
@@ -380,6 +416,7 @@ public class TextPainter {
   }
   
   void configureForStyle(GC gc, TextToken token) {
+    gc.setForeground(foregroundColor);
     switch(token.getType()) {
     case BOLD:
       gc.setFont(boldFont);
@@ -404,112 +441,231 @@ public class TextPainter {
       gc.setForeground(foregroundColor);
       gc.setFont(font);
       break;
-    default:
-      gc.setForeground(foregroundColor);
-      break;
     }
   }
 
-  class PackLineResult {
-    int numberOfTokens;
-    int extraSpace;
-
-    PackLineResult(int numberOfTokens, int extraSpace) {
-      this.numberOfTokens = numberOfTokens;
-      this.extraSpace = extraSpace;
-    }
+  /**
+   * Calculates the rectangular bounds of the required to render the text
+   * without overflowing the bounds.
+   * @return Rectangle
+   */
+  public Rectangle calculateSize(GC gc) {
+    Rectangle bounds = conditionallyPaintText(gc, false);
+    return new Rectangle(0, 0, bounds.width - bounds.x, bounds.height - bounds.y);
   }
 
-  Rectangle calculateSize() {
-    Rectangle size = new Rectangle(0, 0, 0, 0);
+  class DrawData {
+    TextToken token;
+    Point extent;
 
-    return size;
-  }
-
-  PackLineResult packLine(GC gc, int startIndex) {
-    int x = 0;
-    int i = startIndex;
-    Point lastPosition = new Point(0, 0);
-
-    for (; i < tokens.size(); i++) {
-      TextToken token = tokens.get(i);
+    DrawData(GC gc, TextToken token) {
       configureForStyle(gc, token);
-      int nx = gc.textExtent(token.getText()).x;
-      if (nx + x > bounds.width) {
-        break;
-      }
-      x += nx;
+      this.token  = token;
+      this.extent = gc.textExtent(token.getText());
     }
-
-    return new PackLineResult(i - 1, bounds.width - x);
   }
 
+  List<DrawData> buildDrawDataList(GC gc) {
+    List<DrawData> list = new ArrayList<DrawData>();
+    for (int i = 0; i < tokens.size(); i++) {
+      list.add(new DrawData(gc, tokens.get(i)));
+    }
+    return list;
+  }
 
+  List<List<DrawData>> buildLines(GC gc) {
+    List<List<DrawData>> lines = new ArrayList<List<DrawData>>();
+    List<DrawData> line = new ArrayList<DrawData>();
+    lines.add(line);
+    List<DrawData> data = buildDrawDataList(gc);
+
+    int lineWidth = 0;
+
+    for (DrawData drawData:data) {
+      lineWidth += drawData.extent.x;
+      if (lineWidth > bounds.width) {
+        List<DrawData> newline = new ArrayList<DrawData>();
+        lines.add(newline);
+
+        // if there is only one token on the line and it is too
+        // wide to fit, force it onto the line
+        if (line.size() == 0) {
+          line.add(drawData);
+        } else {
+          newline.add(drawData);
+        }
+        line = newline;
+        lineWidth = drawData.extent.x;
+      } else {
+        line.add(drawData);
+      }
+    }
+    return lines;
+  }
+
+  /**
+   * Paints the text using the GC found in the given PaintEvent.  For example,
+   * one might call this from the parent Composite's paintControl event handler:
+   * <pre>
+   * {@code
+   *   ...
+   *   addPaintListener(new PaintListener() {
+   *     public void paintControl(PaintEvent e) {
+   *       textPainter.handlePaint(e);
+   *     }
+   *   });
+   * }
+   * </pre>
+   *
+   * @param e : {@link PaintEvent}
+   */
   public void handlePaint(final PaintEvent e) {
-    final GC gc = e.gc;
+    conditionallyPaintText(e.gc, true);
+  }
+
+  /**
+   * Paints text and/or returns a Rectangle representing the computed bounds
+   * of the text.  You may only want they rectangle if you are trying to lay the
+   * text out.
+   *
+   * @param gc
+   * @param paint
+   * @return Rectangle representing the computed bounds
+   */
+  Rectangle conditionallyPaintText(GC gc, boolean paint) {
     final Rectangle clip = gc.getClipping();
     final Color bg = gc.getBackground();
-    
+
     if (clipping) {
       gc.setClipping(this.bounds);
     }
-    
+
     hyperlinks.clear();
-    int numberOfTokensOnLine = 0;
-    PackLineResult linepack = packLine(gc, 0);
-    Point drawPosition = null;
+    int y = bounds.y;
+    List<List<DrawData>> lines = buildLines(gc);
 
-    switch (justification) {
-      case SWT.CENTER:
-        drawPosition = new Point(bounds.x + (linepack.extraSpace / 2), bounds.y);
-        break;
-      case SWT.RIGHT:
-        drawPosition = new Point(bounds.x+linepack.extraSpace, bounds.y);
-        break;
-      default:
-        drawPosition = new Point(bounds.x, bounds.y);
-    }
-
-    for (int i = 0; i < tokens.size(); i++) {
-      TextToken token = tokens.get(i);
-      boolean drawWhitespace = true;
-      configureForStyle(gc, token);
-      Point nextPosition = gc.textExtent(token.getText());
-
-      if (wrapping && (drawPosition.x + nextPosition.x > bounds.width + bounds.x) ) {
-        if (i > linepack.numberOfTokens) {
-          linepack = packLine(gc, i);
-        }
-        switch (justification) {
-          case SWT.CENTER:
-            drawPosition.x = bounds.x + (linepack.extraSpace / 2);
-            break;
-          case SWT.RIGHT:
-            drawPosition.x = bounds.x + linepack.extraSpace;
-            break;
-          default:
-            drawPosition.x = bounds.x;
-        }
-        drawPosition.y += nextPosition.y + 5;
-        drawWhitespace = false;
-      }
-      
-      if (token.getType() != TextType.WHITESPACE) {
-        addHyperlink(token, drawPosition, nextPosition);
-        gc.drawText(token.getText(), drawPosition.x, drawPosition.y, true);
-        drawPosition.x += nextPosition.x;
-      } else if (drawWhitespace) {
-        gc.drawText(token.getText(), drawPosition.x, drawPosition.y, true);
-        drawPosition.x += nextPosition.x;
+    for (int i = 0; i < lines.size(); i++) {
+      if(justification == SWT.RIGHT) {
+        y += drawRightJustified(gc, lines.get(i), y);
+      } else if (justification == SWT.LEFT) {
+        y += drawLeftJustified(gc, lines.get(i), y);
+      } else if (justification == SWT.CENTER) {
+        y += drawCenterJustified(gc, lines.get(i), y);
       }
     }
-    
+
     if (drawBounds) {
       gc.setForeground(boundaryColor);
       gc.drawRectangle(bounds);
     }
-    
+
+    Rectangle calculatedBounds = new Rectangle(bounds.x, bounds.y, bounds.width, y - bounds.y);
+    if (drawCalculatedBounds) {
+      gc.setForeground(new Color(gc.getDevice(), 0, 255, 0));
+      gc.drawRectangle(calculatedBounds);
+    }
+
     gc.setClipping(clip);
     gc.setBackground(bg);
+
+    return calculatedBounds;
+  }
+
+  int drawRightJustified(GC gc, List<DrawData> line, int y) {
+    int maxY = 0;
+    if (line.size() > 0) {
+      int startIndex = line.size() - 1;
+      DrawData drawData = line.get(startIndex);
+      if(drawData.token.getType() == TextType.WHITESPACE && line.size() > 1) {
+        startIndex--;
+      }
+
+      int x = bounds.width + bounds.x;
+      for (int i = startIndex; i >= 0; i--) {
+        drawData = line.get(i);
+        configureForStyle(gc, drawData.token);
+        gc.drawText(drawData.token.getText(), x - drawData.extent.x, y, true);
+        x -= drawData.extent.x;
+        if (drawData.extent.y > maxY) {
+          maxY = drawData.extent.y;
+        }
+      }
+    }
+    return maxY;
+  }
+
+  int drawCenterJustified(GC gc, List<DrawData> line, int y) {
+    int maxY = 0;
+
+    if (line.size() > 0) {
+      int width = 0;
+      int x = bounds.x;
+      int startIndex = getStartIndex(line);
+      int endIndex = getEndIndex(line);
+
+      // determine width of line while dropping the leading and trailing whitespace
+      for (int i = startIndex; i <= endIndex; i++) {
+        DrawData drawData = line.get(i);
+        width += drawData.extent.x;
+      }
+
+      x += (bounds.width - width) / 2;
+
+      for (int i = startIndex; i <= endIndex; i++) {
+        DrawData drawData = line.get(i);
+        configureForStyle(gc, drawData.token);
+        gc.drawText(drawData.token.getText(), x, y, true);
+        x += drawData.extent.x;
+        if (drawData.extent.y > maxY) {
+          maxY = drawData.extent.y;
+        }
+      }
+    }
+
+    return maxY;
+  }
+
+  int drawLeftJustified(GC gc, List<DrawData> line, int y) {
+    int maxY = 0;
+
+    if (line.size() > 0) {
+      int startIndex = getStartIndex(line);
+      int x = bounds.x;
+      for (int i = startIndex; i < line.size(); i++) {
+        DrawData drawData = line.get(i);
+        configureForStyle(gc, drawData.token);
+        gc.drawText(drawData.token.getText(), x, y, true);
+        x += drawData.extent.x;
+        if (drawData.extent.y > maxY) {
+          maxY = drawData.extent.y;
+        }
+      }
+    }
+
+    return maxY;
+  }
+
+  int getStartIndex(List<DrawData> line) {
+    int startIndex = 0;
+    for (int i = 0; i < line.size(); i++) {
+      DrawData drawData = line.get(i);
+      if (startIndex==0 && drawData.token.getType() != TextType.WHITESPACE) {
+        startIndex = i;
+        break;
+      }
+    }
+    return startIndex;
+  }
+
+  int getEndIndex(List<DrawData> line) {
+    int endIndex = 0;
+    for (int i = line.size()-1; i >= 0; i--) {
+      DrawData drawData = line.get(i);
+      if (endIndex==0 && drawData.token.getType() != TextType.WHITESPACE) {
+        endIndex = i;
+        break;
+      }
+    }
+    return endIndex;
   }
 }

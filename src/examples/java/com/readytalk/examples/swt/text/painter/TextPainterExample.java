@@ -35,24 +35,24 @@ public class TextPainterExample implements SwtBlingExample {
       super(parent, style);
       timer = new Timer();
 
-      final TextPainter eventHandler1 = new TextPainter(this).setText(
-          "This is clipped normal text \nABCDEFGHIJKLMNOPQRSTUVWXYZ")
-          .setBounds(new Rectangle(0, 0, 300, 25));
+//      final TextPainter eventHandler1 = new TextPainter(this).setText(
+//          "This is clipped normal text \nABCDEFGHIJKLMNOPQRSTUVWXYZ")
+//          .setBounds(new Rectangle(0, 0, 300, 25));
 
       final int width = 250;
-      Rectangle wikiTextBounds = new Rectangle(0, 50, width, 100);
-      TextTokenizer tokenizer = TextTokenizerFactory
-          .createTextTokenizer(TextTokenizerType.WIKI);
+      Rectangle wikiTextBounds = new Rectangle(20, 50, width, 100);
+      TextTokenizer tokenizer = TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI);
       final TextPainter eventHandler2 = new TextPainter(this)
           .setTokenizer(tokenizer)
           .setJustification(SWT.CENTER)
           .setText(
-              "aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa sThis '''wiki text''' is auto-wrapped and can display "
+                "'''Lorem ipsum''' dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut... "
               + "''Italic Text,'' '''Bold Text,''' and "
               + "'''''Bold and Italic Text'''''"
               + " naked url: http://www.google.com"
               + " wiki url: [http://www.readytalk.com ReadyTalk]"
               + " url: [http://www.readytalk.com]")
+          .setDrawCalculatedBounds(true)
           .setClipping(false).setBounds(wikiTextBounds).setDrawBounds(true)
           .setWrapping(true).addNavigationListener(new NavigationListener() {
             @Override
@@ -68,7 +68,7 @@ public class TextPainterExample implements SwtBlingExample {
         public void run() {
           counter += 0.01;
           int w = (int) (width * Math.sin(counter) / 3) + width;
-          eventHandler2.setBounds(new Rectangle(0, 50, w, 100));
+          eventHandler2.setBounds(new Rectangle(20, 50, w, 100));
           Display.getDefault().syncExec(new Runnable() {
             public void run() {
               if (!isDisposed()) {
@@ -82,7 +82,7 @@ public class TextPainterExample implements SwtBlingExample {
       addPaintListener(new PaintListener() {
         @Override
         public void paintControl(PaintEvent e) {
-          eventHandler1.handlePaint(e);
+//          eventHandler1.handlePaint(e);
           eventHandler2.handlePaint(e);
         }
       });
@@ -93,7 +93,7 @@ public class TextPainterExample implements SwtBlingExample {
   public TextPainterExample() { }
 
   public void run(Display display, Shell shell) {
-    shell.setSize(400, 250);
+    shell.setSize(400, 400);
 
     try {
       new TextCanvas(shell, SWT.NONE);
