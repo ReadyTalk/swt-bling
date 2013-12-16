@@ -404,14 +404,14 @@ public class TextPainter {
     navigationListeners.remove(listener);
   }
   
-  void addHyperlink(TextToken token, Point start, Point end) {
-    if (token.getType().equals(TextType.LINK_AND_NAMED_URL) 
-        || token.getType().equals(TextType.LINK_URL)
-        || token.getType().equals(TextType.NAKED_URL)
-        || token.getType().equals(TextType.PLAIN_URL)) {
+  void addIfHyperlink(DrawData drawData, int x, int y) {
+    if (drawData.token.getType().equals(TextType.LINK_AND_NAMED_URL)
+        || drawData.token.getType().equals(TextType.LINK_URL)
+        || drawData.token.getType().equals(TextType.NAKED_URL)
+        || drawData.token.getType().equals(TextType.PLAIN_URL)) {
       hyperlinks.add(
-          new Hyperlink(token, 
-              new Rectangle(start.x, start.y, end.x,  end.y)));
+          new Hyperlink(drawData.token,
+              new Rectangle(x, y, drawData.extent.x + x,  drawData.extent.y + y)));
     }
   }
   
@@ -585,6 +585,7 @@ public class TextPainter {
         drawData = line.get(i);
         configureForStyle(gc, drawData.token);
         gc.drawText(drawData.token.getText(), x - drawData.extent.x, y, true);
+        addIfHyperlink(drawData, x - drawData.extent.x, y);
         x -= drawData.extent.x;
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
@@ -599,7 +600,7 @@ public class TextPainter {
 
     if (line.size() > 0) {
       int width = 0;
-      int x = bounds.x;
+
       int startIndex = getStartIndex(line);
       int endIndex = getEndIndex(line);
 
@@ -609,12 +610,13 @@ public class TextPainter {
         width += drawData.extent.x;
       }
 
-      x += (bounds.width - width) / 2;
+      int x = bounds.x + ((bounds.width - width) / 2);
 
       for (int i = startIndex; i <= endIndex; i++) {
         DrawData drawData = line.get(i);
         configureForStyle(gc, drawData.token);
         gc.drawText(drawData.token.getText(), x, y, true);
+        addIfHyperlink(drawData, x, y);
         x += drawData.extent.x;
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
@@ -635,6 +637,7 @@ public class TextPainter {
         DrawData drawData = line.get(i);
         configureForStyle(gc, drawData.token);
         gc.drawText(drawData.token.getText(), x, y, true);
+        addIfHyperlink(drawData, x, y);
         x += drawData.extent.x;
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;

@@ -53,8 +53,11 @@ public class TextPainterExample implements SwtBlingExample {
               + " wiki url: [http://www.readytalk.com ReadyTalk]"
               + " url: [http://www.readytalk.com]")
           .setDrawCalculatedBounds(true)
-          .setClipping(false).setBounds(wikiTextBounds).setDrawBounds(true)
-          .setWrapping(true).addNavigationListener(new NavigationListener() {
+          .setClipping(false)
+          .setBounds(wikiTextBounds)
+          .setDrawBounds(true)
+          .setWrapping(true)
+          .addNavigationListener(new NavigationListener() {
             @Override
             public void navigate(NavigationEvent event) {
               System.out.println("Navigate to: " + event.getUrl());
