@@ -200,9 +200,6 @@ public class Bubble extends PopOverShell {
     listener = new Listener() {
       public void handleEvent(Event event) {
         switch (event.type) {
-          case SWT.Dispose:
-            onDispose(event);
-            break;
           case SWT.Paint:
             onPaint(event);
             break;
@@ -217,12 +214,6 @@ public class Bubble extends PopOverShell {
     popOverShell.addListener(SWT.Paint, listener);
     popOverShell.addListener(SWT.MouseDown, listener);
 
-    parentListener = new Listener() {
-      public void handleEvent(Event event) {
-        dispose();
-      }
-    };
-    parentControl.addListener(SWT.Dispose, parentListener);
     addAccessibilityHooks(parentControl);
   }
 
@@ -239,12 +230,7 @@ public class Bubble extends PopOverShell {
     borderRectangle = calculateBorderRectangle(textSize);
   }
 
-  private void onDispose(Event event) {
-    parentControl.removeListener(SWT.Dispose, parentListener);
-    removeListener(SWT.Dispose, listener);
-    notifyListeners(SWT.Dispose, event);
-    event.type = SWT.None;
-
+  void widgetDispose() {
     borderColor.dispose();
     textColor.dispose();
     if (boldFont != null) {

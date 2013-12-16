@@ -59,4 +59,6 @@ public class PopTart extends PopOverShell {
   void runBeforeShowPopOverShell() { }
 
   void resetWidget() { }
+
+  void widgetDispose() { }
 }

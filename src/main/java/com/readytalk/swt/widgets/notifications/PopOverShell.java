@@ -50,6 +50,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   private Shell parentShell;
   private PoppedOverItem poppedOverItem;
   private Listener popOverListener;
+  private Listener parentListener;
 
   private Color backgroundColor;
 
@@ -134,6 +135,13 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    */
   abstract void resetWidget();
 
+  /**
+   * Called when the parent <code>PopOverShell</code> is disposed. Make sure you clean up any leftover elements
+   * that need to be disposed. See https://github.com/ReadyTalk/swt-bling/wiki/Finding-SWT-Resource-Leaks-with-Sleak
+   * for more information on detecting leaks with Sleak.
+   */
+  abstract void widgetDispose();
+
   PoppedOverItem getPoppedOverItem() {
     return poppedOverItem;
   }
@@ -155,12 +163,20 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     };
 
     addListener(SWT.Dispose, popOverListener);
+
+    parentListener = new Listener() {
+      public void handleEvent(Event event) {
+        dispose();
+      }
+    };
+    parentControl.addListener(SWT.Dispose, parentListener);
   }
 
   private void onDispose(Event event) {
-    parentControl.removeListener(SWT.Dispose, popOverListener);
-    removeListener(SWT.Dispose, popOverListener);
-    notifyListeners(SWT.Dispose, event);
+    widgetDispose();
+
+    parentControl.removeListener(SWT.Dispose, parentListener);
+    removeListener(SWT.Dispose, parentListener);
     event.type = SWT.None;
 
     backgroundColor.dispose();
