@@ -614,10 +614,7 @@ public class TextPainter {
 
       for (int i = startIndex; i <= endIndex; i++) {
         DrawData drawData = line.get(i);
-        configureForStyle(gc, drawData.token);
-        gc.drawText(drawData.token.getText(), x, y, true);
-        addIfHyperlink(drawData, x, y);
-        x += drawData.extent.x;
+        x = drawTextToken(gc, y, x, drawData);
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
         }
@@ -635,10 +632,7 @@ public class TextPainter {
       int x = bounds.x;
       for (int i = startIndex; i < line.size(); i++) {
         DrawData drawData = line.get(i);
-        configureForStyle(gc, drawData.token);
-        gc.drawText(drawData.token.getText(), x, y, true);
-        addIfHyperlink(drawData, x, y);
-        x += drawData.extent.x;
+        x = drawTextToken(gc, y, x, drawData);
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
         }
@@ -646,6 +640,14 @@ public class TextPainter {
     }
 
     return maxY;
+  }
+
+  private int drawTextToken(GC gc, int y, int x, DrawData drawData) {
+    configureForStyle(gc, drawData.token);
+    gc.drawText(drawData.token.getText(), x, y, true);
+    addIfHyperlink(drawData, x, y);
+    x += drawData.extent.x;
+    return x;
   }
 
   int getStartIndex(List<DrawData> line) {
