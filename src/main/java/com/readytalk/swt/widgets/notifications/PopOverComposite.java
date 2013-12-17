@@ -13,13 +13,13 @@ import org.eclipse.swt.widgets.Shell;
  *   Most commonly, you'll use PopOverComposite like this:
  *   <code>
  *     Button button = new Button(shell, SWT.PUSH);
- *     PopOverComposite popTart = PopOverComposite.createPopOverComposite(button);
- *     Composite composite = new Composite(popTart.getPopOverCompositeShell, SWT.NONE);
+ *     PopOverComposite popOverComposite = PopOverComposite.createPopOverComposite(button);
+ *     Composite composite = new Composite(popOverComposite.getPopOverCompositeShell, SWT.NONE);
  *     // add components to the composite
- *     popTart.setComposite(composite);
+ *     popOverComposite.setComposite(composite);
  *     button.addSelectionListener(new SelectionAdapter() {
  *       public void widgetSelected(SelectionEvent e) {
- *         popTart.toggle();
+ *         popOverComposite.toggle();
  *       }
  *     });
  *   </code>
