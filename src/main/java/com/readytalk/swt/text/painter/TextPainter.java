@@ -449,7 +449,7 @@ public class TextPainter {
    * without overflowing the bounds.
    * @return Rectangle
    */
-  public Rectangle calculateSize(GC gc) {
+  public Rectangle computeSize(GC gc) {
     Rectangle bounds = conditionallyPaintText(gc, false);
     return new Rectangle(0, 0, bounds.width - bounds.x, bounds.height - bounds.y);
   }
@@ -483,7 +483,7 @@ public class TextPainter {
 
     for (DrawData drawData:data) {
       lineWidth += drawData.extent.x;
-      if (lineWidth > bounds.width) {
+      if (lineWidth > bounds.width && wrapping) {
         List<DrawData> newline = new ArrayList<DrawData>();
         lines.add(newline);
 

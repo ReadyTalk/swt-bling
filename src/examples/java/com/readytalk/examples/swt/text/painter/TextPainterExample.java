@@ -1,5 +1,7 @@
 package com.readytalk.examples.swt.text.painter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,7 +20,6 @@ import org.eclipse.swt.widgets.Shell;
 import com.readytalk.swt.text.navigation.NavigationEvent;
 import com.readytalk.swt.text.navigation.NavigationListener;
 import com.readytalk.swt.text.painter.TextPainter;
-import com.readytalk.swt.text.tokenizer.TextTokenizer;
 import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 
@@ -34,29 +35,54 @@ public class TextPainterExample implements SwtBlingExample {
 
       super(parent, style);
       timer = new Timer();
+      final List<TextPainter> painters = new ArrayList<TextPainter>();
 
-//      final TextPainter eventHandler1 = new TextPainter(this).setText(
-//          "This is clipped normal text \nABCDEFGHIJKLMNOPQRSTUVWXYZ")
-//          .setBounds(new Rectangle(0, 0, 300, 25));
+      painters.add( buildLabel(new Rectangle(20, 20, 150, 20), "Left Justified").setJustification(SWT.LEFT));
+      painters.add(buildWikiTextPainter(new Rectangle(20, 40, 150, 250), false).setJustification(SWT.LEFT));
 
-      final int width = 250;
-      Rectangle wikiTextBounds = new Rectangle(20, 50, width, 100);
-      TextTokenizer tokenizer = TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI);
-      final TextPainter eventHandler2 = new TextPainter(this)
-          .setTokenizer(tokenizer)
-          .setJustification(SWT.CENTER)
+      painters.add( buildLabel(new Rectangle(220, 20, 150, 20), "Centered").setJustification(SWT.CENTER));
+      painters.add( buildWikiTextPainter(new Rectangle(220, 40, 150, 250), false).setJustification(SWT.CENTER));
+
+      painters.add( buildLabel(new Rectangle(420, 20, 150, 20), "Right Justified").setJustification(SWT.RIGHT));
+      painters.add( buildWikiTextPainter(new Rectangle(420, 40, 150, 250), false).setJustification(SWT.RIGHT));
+
+      painters.add( buildLabel(new Rectangle(20, 260, 450, 20), "Left Justified with Modulated Width").setJustification(SWT.LEFT));
+      painters.add( buildWikiTextPainter(new Rectangle(20, 280, 150, 250), true).setJustification(SWT.LEFT));
+
+      addPaintListener(new PaintListener() {
+        @Override
+        public void paintControl(PaintEvent e) {
+          for (TextPainter painter: painters){
+            painter.handlePaint(e);
+          }
+        }
+      });
+    }
+
+    private TextPainter buildLabel(Rectangle bounds, String name) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
+      final TextPainter label = new TextPainter(this)
+          .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI))
+          .setText("'''"+name+"'''")
+          .setBounds(new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height));
+      return label;
+    }
+
+    private TextPainter buildWikiTextPainter(final Rectangle bounds, final boolean modulateWidth) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+      final int width = bounds.width;
+
+      final TextPainter painter = new TextPainter(this)
+          .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI))
           .setText(
-                "'''Lorem ipsum''' dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut... "
-              + "''Italic Text,'' '''Bold Text,''' and "
-              + "'''''Bold and Italic Text'''''"
-              + " naked url: http://www.google.com"
-              + " wiki url: [http://www.readytalk.com ReadyTalk]"
-              + " url: [http://www.readytalk.com]")
-          .setDrawCalculatedBounds(true)
-          .setClipping(false)
-          .setBounds(wikiTextBounds)
-          .setDrawBounds(true)
-          .setWrapping(true)
+              "'''Lorem ipsum''' dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut... "
+                  + "''Italic Text,'' '''Bold Text,''' and "
+                  + "'''''Bold and Italic Text'''''"
+                  + " naked url: http://www.google.com"
+                  + " wiki url: [http://www.readytalk.com ReadyTalk]"
+                  + " url: [http://www.readytalk.com]")
+          .setDrawCalculatedBounds(false)
+          .setClipping(true)
+          .setBounds(bounds)
+          .setDrawBounds(false)
           .addNavigationListener(new NavigationListener() {
             @Override
             public void navigate(NavigationEvent event) {
@@ -64,31 +90,27 @@ public class TextPainterExample implements SwtBlingExample {
             }
           });
 
-      timer.scheduleAtFixedRate(new TimerTask() {
-        double counter = 0.0;
+      if (modulateWidth) {
+        timer.scheduleAtFixedRate(new TimerTask() {
+          double counter = 0.0;
 
-        @Override
-        public void run() {
-          counter += 0.01;
-          int w = (int) (width * Math.sin(counter) / 3) + width;
-          eventHandler2.setBounds(new Rectangle(20, 50, w, 100));
-          Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-              if (!isDisposed()) {
-                redraw();
+          @Override
+          public void run() {
+            counter += 0.01;
+            int w = (int) (width * Math.sin(counter)) + width * 2;
+            bounds.width = w;
+            painter.setBounds(bounds);
+            Display.getDefault().syncExec(new Runnable() {
+              public void run() {
+                if (!isDisposed()) {
+                  redraw();
+                }
               }
-            }
-          });
-        }
-      }, 0, 40);
-
-      addPaintListener(new PaintListener() {
-        @Override
-        public void paintControl(PaintEvent e) {
-//          eventHandler1.handlePaint(e);
-          eventHandler2.handlePaint(e);
-        }
-      });
+            });
+          }
+        }, 0, 40);
+      }
+      return painter;
     }
   };
 
@@ -96,7 +118,7 @@ public class TextPainterExample implements SwtBlingExample {
   public TextPainterExample() { }
 
   public void run(Display display, Shell shell) {
-    shell.setSize(400, 400);
+    shell.setSize(600, 500);
 
     try {
       new TextCanvas(shell, SWT.NONE);
