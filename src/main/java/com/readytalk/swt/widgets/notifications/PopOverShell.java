@@ -283,6 +283,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
 
     try {
+      fadeEffectInProgress = true;
       FadeEffect fade = new FadeEffect.FadeEffectBuilder().
               setFadeable(this).
               setFadeCallback(new PopOverShellFadeCallback()).
@@ -291,7 +292,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
               setTargetAlpha(FULLY_HIDDEN_ALPHA).build();
 
       fade.startEffect();
-      fadeEffectInProgress = true;
     } catch (InvalidEffectArgumentException e) {
       LOG.warning("Invalid argument provided to FadeEffect.");
     }
