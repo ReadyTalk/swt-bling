@@ -2,10 +2,12 @@ package com.readytalk.examples.swt.widgets.notifications;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
+import com.readytalk.swt.widgets.buttons.SquareButton;
 import com.readytalk.swt.widgets.notifications.PopTart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -30,9 +32,39 @@ public class PopTartExample implements SwtBlingExample {
     });
 
     Composite composite = new Composite(popTart.getPopTartShell(), SWT.NONE);
-    composite.setLayout(new GridLayout());
-    Button popTartButton = new Button(composite, SWT.PUSH);
-    popTartButton.setText("This button is contained in the PopTart");
+    composite.setLayout(new GridLayout(2, true));
+
+    Image iconInformation = display.getSystemImage(SWT.ICON_INFORMATION);
+    Image iconError = display.getSystemImage(SWT.ICON_ERROR);
+    Image iconWarning = display.getSystemImage(SWT.ICON_WARNING);
+
+    new SquareButton.SquareButtonBuilder()
+            .setImage(iconInformation)
+            .setImagePosition(SquareButton.ImagePosition.LEFT_OF_TEXT)
+            .setText("This button provides you with some information.")
+            .setParent(composite)
+            .build();
+
+    new SquareButton.SquareButtonBuilder()
+            .setImage(iconWarning)
+            .setImagePosition(SquareButton.ImagePosition.LEFT_OF_TEXT)
+            .setText("You should be cautious clicking this button.")
+            .setParent(composite)
+            .build();
+
+    new SquareButton.SquareButtonBuilder()
+            .setImage(iconError)
+            .setImagePosition(SquareButton.ImagePosition.LEFT_OF_TEXT)
+            .setText("This button will produce an error.")
+            .setParent(composite)
+            .build();
+
+    new SquareButton.SquareButtonBuilder()
+            .setImage(iconError)
+            .setImagePosition(SquareButton.ImagePosition.LEFT_OF_TEXT)
+            .setText("This button is bad news.")
+            .setParent(composite)
+            .build();
 
     popTart.setComposite(composite);
 
