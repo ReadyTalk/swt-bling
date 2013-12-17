@@ -3,7 +3,7 @@ package com.readytalk.examples.swt.widgets.notifications;
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.widgets.buttons.SquareButton;
-import com.readytalk.swt.widgets.notifications.PopTart;
+import com.readytalk.swt.widgets.notifications.PopOverComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,23 +15,23 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class PopTartExample implements SwtBlingExample {
-  @RunnableExample(name="PopTart")
-  public PopTartExample() { }
+public class PopOverCompositeExample implements SwtBlingExample {
+  @RunnableExample(name="PopOverComposite")
+  public PopOverCompositeExample() { }
 
   public void run(Display display, Shell shell) {
     shell.setLayout(new FillLayout());
     Button button = new Button(shell, SWT.PUSH);
-    button.setText("Open PopTart");
+    button.setText("Open PopOverComposite");
 
-    final PopTart popTart = PopTart.createPopTart(button);
+    final PopOverComposite popOverComposite = PopOverComposite.createPopOverComposite(button);
     button.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
-        popTart.show();
+        popOverComposite.toggle();
       }
     });
 
-    Composite composite = new Composite(popTart.getPopTartShell(), SWT.NONE);
+    Composite composite = new Composite(popOverComposite.getPopOverCompositeShell(), SWT.NONE);
     composite.setLayout(new GridLayout(2, true));
 
     Image iconInformation = display.getSystemImage(SWT.ICON_INFORMATION);
@@ -66,7 +66,7 @@ public class PopTartExample implements SwtBlingExample {
             .setParent(composite)
             .build();
 
-    popTart.setComposite(composite);
+    popOverComposite.setComposite(composite);
 
     shell.pack();
     shell.open();

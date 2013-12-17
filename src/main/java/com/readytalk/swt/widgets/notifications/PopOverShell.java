@@ -118,6 +118,18 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   }
 
   /**
+   * Toggles visibility of the PopOverShell. If the PopOverShell is visible, it will fade it from the screen, otherwise
+   * it will pop it up.
+   */
+  public void toggle() {
+    if (isVisible() && !getIsFadeEffectInProgress()) {
+      fadeOut();
+    } else {
+      show();
+    }
+  }
+
+  /**
    * Implementers of this method return a Point describing the width and height the PopOverShell should be.
    * @return A Point object describing the appropriate PopOverSize. The x is the width and y is the height.
    */
