@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.readytalk.swt.text.navigation.NavigationListener;
-import com.readytalk.swt.text.painter.TextPainter;
 import com.readytalk.swt.text.tokenizer.TextTokenizer;
 import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 import com.readytalk.swt.text.tokenizer.TextTokenizerType;
@@ -32,9 +31,9 @@ public class TextPainterIntegTest {
   }
   
   @Test
-  public void setText_ConfiguredToTokenizePlainText_OneToken () {
+  public void setText_ConfiguredToTokenizePlainText_SeventyOneTokens () {
     painter.setText(PLAIN_TEXT);
-    assertEquals(1, painter.getTokens().size());
+    assertEquals(71, painter.getTokens().size());
   }
   
   @Test
