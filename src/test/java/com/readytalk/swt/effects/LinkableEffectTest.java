@@ -4,18 +4,19 @@ import com.readytalk.swt.util.Executor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class LinkableEffectTest {
 
-  @MockitoAnnotations.Mock
+  @Mock
   private Executor executor;
 
-  @MockitoAnnotations.Mock
+  @Mock
   private LinkableEffect parent;
 
-  @MockitoAnnotations.Mock
+  @Mock
   private LinkableEffect child;
 
   private int TIME_INTERVAL = 200;

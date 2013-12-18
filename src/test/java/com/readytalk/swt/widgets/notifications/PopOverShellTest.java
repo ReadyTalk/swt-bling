@@ -18,9 +18,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(Enclosed.class)
-public class BubbleTest {
+public class PopOverShellTest {
   @RunWith(Parameterized.class)
-  public static class BubblePlacementTests {
+  public static class PopOverShellPlacementTests {
     private static final int DISPLAY_WIDTH = 400;
     private static final int DISPLAY_HEIGHT = 400;
     private static final Point LOCATION_RELATIVE_TO_DISPLAY = new Point(0, 0);
@@ -35,18 +35,18 @@ public class BubbleTest {
     public void setUp() {
       MockitoAnnotations.initMocks(this);
 
-      when(bubble.configureBubbleIfBottomCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
-      when(bubble.configureBubbleIfRightmostTextCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
-      when(bubble.configureBubbleIfWouldBeCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(bubble.configurePopOverShellIfBottomCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(bubble.configurePopOverShellIfRightmostTextCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(bubble.configurePopOverShellIfWouldBeCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
     }
 
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
     public static List<Object[]> data() {
       return Arrays.asList(new Object[][]{
               { false, false,  getRectangleNotCutOff() },
-              { false, true, getRectangleForCutOff(BubbleCutOffPosition.RIGHT) },
-              { true, false, getRectangleForCutOff(BubbleCutOffPosition.BOTTOM) },
-              { true, true, getRectangleForCutOff(BubbleCutOffPosition.BOTTOM_AND_RIGHT) }
+              { false, true, getRectangleForCutOff(PopOverShellCutOffPosition.RIGHT) },
+              { true, false, getRectangleForCutOff(PopOverShellCutOffPosition.BOTTOM) },
+              { true, true, getRectangleForCutOff(PopOverShellCutOffPosition.BOTTOM_AND_RIGHT) }
       });
     }
 
@@ -54,26 +54,26 @@ public class BubbleTest {
     boolean rightCutOff;
     Rectangle bubbleRectangle;
 
-    public BubblePlacementTests(boolean bottomCutOff, boolean rightCutOff, Rectangle bubbleRectangle) {
+    public PopOverShellPlacementTests(boolean bottomCutOff, boolean rightCutOff, Rectangle bubbleRectangle) {
       this.bottomCutOff = bottomCutOff;
       this.rightCutOff = rightCutOff;
       this.bubbleRectangle = bubbleRectangle;
     }
 
     @Test
-    public void configureBubbleIfBottomCutOff_differingParameters_returnsCorrectWasConfiguredBoolean() {
-      assertEquals(bubble.configureBubbleIfBottomCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
+    public void configurePopOverShellIfBottomCutOff_differingParameters_returnsCorrectWasConfiguredBoolean() {
+      assertEquals(bubble.configurePopOverShellIfBottomCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
               bubbleRectangle), bottomCutOff);
     }
 
     @Test
-    public void configureBubbleIfRightmostTextCutOff_differingParameters_returnsCorrectWasConfiguredBoolean() {
-      assertEquals(bubble.configureBubbleIfRightmostTextCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
+    public void configurePopOverShellIfRightmostTextCutOff_differingParameters_returnsCorrectWasConfiguredBoolean() {
+      assertEquals(bubble.configurePopOverShellIfRightmostTextCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY,
               bubbleRectangle), rightCutOff);
     }
 
-    private enum BubbleCutOffPosition { BOTTOM, RIGHT, BOTTOM_AND_RIGHT }
-    private static Rectangle getRectangleForCutOff(BubbleCutOffPosition cutOffPosition) {
+    private enum PopOverShellCutOffPosition { BOTTOM, RIGHT, BOTTOM_AND_RIGHT }
+    private static Rectangle getRectangleForCutOff(PopOverShellCutOffPosition cutOffPosition) {
       switch (cutOffPosition) {
         case BOTTOM:
           return new Rectangle(LOCATION_RELATIVE_TO_DISPLAY.x, LOCATION_RELATIVE_TO_DISPLAY.y,
