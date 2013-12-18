@@ -1,6 +1,9 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
@@ -49,11 +52,11 @@ public class BubbleRegistry {
     addTags(widget, tags);
   }
 
-  void register(Bubblable bubblable, Bubble bubble, BubbleTag ... tags) {
-    BubbleRegistrant registrant = findRegistrant(bubblable);
+  void register(CustomElementDataProvider customElementDataProvider, Bubble bubble, BubbleTag ... tags) {
+    BubbleRegistrant registrant = findRegistrant(customElementDataProvider);
 
     if(registrant == null) {
-      registrant = new CustomWidgetBubbleRegistrant(bubblable, bubble, tags);
+      registrant = new CustomWidgetBubbleRegistrant(customElementDataProvider, bubble, tags);
       registrant.addMouseListener();
       registrants.add(registrant);
     }
@@ -257,23 +260,27 @@ public class BubbleRegistry {
   }
 
   static class CustomWidgetBubbleRegistrant extends BubbleRegistrant {
-    final Bubblable bubblable;
+    final CustomElementDataProvider customElementDataProvider;
     Listener mouseTrackListener;
 
-    CustomWidgetBubbleRegistrant(Bubblable bubblable, Bubble bubble, BubbleTag ... tags) {
+    CustomWidgetBubbleRegistrant(CustomElementDataProvider customElementDataProvider, Bubble bubble, BubbleTag ... tags) {
       super(bubble, tags);
-      this.bubblable = bubblable;
+      this.customElementDataProvider = customElementDataProvider;
     }
 
     Object getTarget() {
-      return bubblable;
+      return customElementDataProvider;
     }
 
     void addMouseListener() {
       if (mouseTrackListener == null) {
         mouseTrackListener = new Listener() {
           public void handleEvent(Event event) {
-            if (bubblable.getRectangleArea().contains(event.x, event.y)) {
+            Point size = customElementDataProvider.getSize();
+            Point location = customElementDataProvider.getLocation();
+            Rectangle elementRectangle = new Rectangle(location.x, location.y, size.x, size.y);
+
+            if (elementRectangle.contains(event.x, event.y)) {
               bubble.show();
             } else if (bubble.isVisible() && !bubble.getIsFadeEffectInProgress() && !bubble.isDisableAutoHide()) {
               bubble.fadeOut();
@@ -282,11 +289,11 @@ public class BubbleRegistry {
         };
       }
 
-      bubblable.getPaintedElement().addListener(SWT.MouseMove, mouseTrackListener);
+      customElementDataProvider.getPaintedElement().addListener(SWT.MouseMove, mouseTrackListener);
     }
 
     void removeMouseListener() {
-      bubblable.getPaintedElement().removeListener(SWT.MouseMove, mouseTrackListener);
+      customElementDataProvider.getPaintedElement().removeListener(SWT.MouseMove, mouseTrackListener);
     }
   }
 }
