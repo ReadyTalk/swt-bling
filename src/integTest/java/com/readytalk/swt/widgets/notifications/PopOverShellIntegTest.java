@@ -9,8 +9,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Before;
@@ -67,7 +65,7 @@ public class PopOverShellIntegTest {
   public static void main(String[] args) {
     initialize();
     shell.open();
-    shell.setLocation(1240, 729);
+    shell.setLocation(2540, 678);
 
 //    shell.addListener(SWT.Move, new Listener() {
 //      @Override
@@ -83,7 +81,8 @@ public class PopOverShellIntegTest {
 
   @RunWith(Parameterized.class)
   public static class PopOverShellPlacementTests {
-    private static final int SHELL_OFFSCREEN_PADDING = 10;
+    private static final int SHELL_OFFSCREEN_PADDING = 20;
+
     @Before
     public void setUp() {
       initialize();
@@ -98,19 +97,19 @@ public class PopOverShellIntegTest {
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
     public static List<Object[]> data() {
       return Arrays.asList(new Object[][]{
-//              {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
-//              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER},
-//              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
-//              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER}
+              {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
+              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER},
+              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverAboveOrBelowParent.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
+              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverAboveOrBelowParent.ABOVE_PARENT, PopOverShell.PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER}
       });
     }
 
     Point shellPoint;
-    PopOverShell.PopOverShellDisplayLocation expectedDisplayLocation;
-    PopOverShell.PopOverShellPointCenteredOnParent expectedCenteredOnParent;
+    PopOverShell.PopOverAboveOrBelowParent expectedDisplayLocation;
+    PopOverShell.PopOverCornerCenteredOnParent expectedCenteredOnParent;
 
     public PopOverShellPlacementTests(boolean bottomIsCutOff, boolean rightIsCutOff, Point shellPoint,
-                                      PopOverShell.PopOverShellDisplayLocation expectedDisplayLocation, PopOverShell.PopOverShellPointCenteredOnParent expectedCenteredOnParent) {
+                                      PopOverShell.PopOverAboveOrBelowParent expectedDisplayLocation, PopOverShell.PopOverCornerCenteredOnParent expectedCenteredOnParent) {
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
@@ -122,8 +121,8 @@ public class PopOverShellIntegTest {
       shell.setLocation(shellPoint);
       popOverShell.show();
 
-      assertEquals(popOverShell.popOverShellDisplayLocation, expectedDisplayLocation);
-      assertEquals(popOverShell.popOverShellPointCenteredOnParent, expectedCenteredOnParent);
+      assertEquals(popOverShell.popOverAboveOrBelowParent, expectedDisplayLocation);
+      assertEquals(popOverShell.popOverCornerCenteredOnParent, expectedCenteredOnParent);
     }
 
 
