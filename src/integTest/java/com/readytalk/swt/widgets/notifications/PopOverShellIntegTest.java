@@ -64,6 +64,7 @@ public class PopOverShellIntegTest {
 
   @RunWith(Parameterized.class)
   public static class PopOverShellPlacementTests {
+    private static final int SHELL_OFFSCREEN_PADDING = 10;
     @Before
     public void setUp() {
       initialize();
@@ -97,8 +98,8 @@ public class PopOverShellIntegTest {
 
     @Test
     public void configurePopOverShellIfWouldBeCutOff_differingParameters_shellHasCorrectParams() {
-      shell.setLocation(shellPoint);
       shell.open();
+      shell.setLocation(shellPoint);
       popOverShell.show();
 
       assertEquals(popOverShell.popOverShellDisplayLocation, expectedDisplayLocation);
@@ -119,15 +120,15 @@ public class PopOverShellIntegTest {
       switch (cutoffPosition) {
         case BOTTOM:
           appropriateShellLocation = new Point(displayBounds.width / 2,
-                  displayBounds.height - buttonSize.height);
+                  displayBounds.height - SHELL_OFFSCREEN_PADDING);
           break;
         case RIGHT:
-          appropriateShellLocation = new Point(displayBounds.width - buttonSize.width,
+          appropriateShellLocation = new Point(displayBounds.width - SHELL_OFFSCREEN_PADDING,
                   displayBounds.height / 2);
           break;
         case BOTTOM_RIGHT:
-          appropriateShellLocation = new Point(displayBounds.width - buttonSize.width,
-                  displayBounds.height - buttonSize.height);
+          appropriateShellLocation = new Point(displayBounds.width - SHELL_OFFSCREEN_PADDING,
+                  displayBounds.height - SHELL_OFFSCREEN_PADDING);
           break;
       }
 
