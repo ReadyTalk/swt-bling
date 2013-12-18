@@ -64,6 +64,8 @@ public class PopOverShellIntegTest {
 
   @RunWith(Parameterized.class)
   public static class PopOverShellPlacementTests {
+    private static final int SHELL_OFFSCREEN_PADDING = 20;
+
     @Before
     public void setUp() {
       initialize();
@@ -71,6 +73,7 @@ public class PopOverShellIntegTest {
 
     @After
     public void tearDown() {
+      popOverShell.hide();
       shell.close();
     }
 
@@ -78,18 +81,18 @@ public class PopOverShellIntegTest {
     public static List<Object[]> data() {
       return Arrays.asList(new Object[][]{
               {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
-              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER},
-              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
-              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER}
+              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER},
+              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverAboveOrBelowParent.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
+              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverAboveOrBelowParent.ABOVE_PARENT, PopOverShell.PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER}
       });
     }
 
     Point shellPoint;
-    PopOverShell.PopOverShellDisplayLocation expectedDisplayLocation;
-    PopOverShell.PopOverShellPointCenteredOnParent expectedCenteredOnParent;
+    PopOverShell.PopOverAboveOrBelowParent expectedDisplayLocation;
+    PopOverShell.PopOverCornerCenteredOnParent expectedCenteredOnParent;
 
     public PopOverShellPlacementTests(boolean bottomIsCutOff, boolean rightIsCutOff, Point shellPoint,
-                                      PopOverShell.PopOverShellDisplayLocation expectedDisplayLocation, PopOverShell.PopOverShellPointCenteredOnParent expectedCenteredOnParent) {
+                                      PopOverShell.PopOverAboveOrBelowParent expectedDisplayLocation, PopOverShell.PopOverCornerCenteredOnParent expectedCenteredOnParent) {
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
@@ -97,12 +100,12 @@ public class PopOverShellIntegTest {
 
     @Test
     public void configurePopOverShellIfWouldBeCutOff_differingParameters_shellHasCorrectParams() {
-      shell.setLocation(shellPoint);
       shell.open();
+      shell.setLocation(shellPoint);
       popOverShell.show();
 
-      assertEquals(popOverShell.popOverShellDisplayLocation, expectedDisplayLocation);
-      assertEquals(popOverShell.popOverShellPointCenteredOnParent, expectedCenteredOnParent);
+      assertEquals(popOverShell.popOverAboveOrBelowParent, expectedDisplayLocation);
+      assertEquals(popOverShell.popOverCornerCenteredOnParent, expectedCenteredOnParent);
     }
 
 
@@ -115,19 +118,18 @@ public class PopOverShellIntegTest {
       }
 
       Rectangle displayBounds = display.getClientArea();
-      Rectangle buttonSize = button.getBounds();
       switch (cutoffPosition) {
         case BOTTOM:
           appropriateShellLocation = new Point(displayBounds.width / 2,
-                  displayBounds.height - buttonSize.height);
+                  displayBounds.height - SHELL_OFFSCREEN_PADDING);
           break;
         case RIGHT:
-          appropriateShellLocation = new Point(displayBounds.width - buttonSize.width,
+          appropriateShellLocation = new Point(displayBounds.width - SHELL_OFFSCREEN_PADDING,
                   displayBounds.height / 2);
           break;
         case BOTTOM_RIGHT:
-          appropriateShellLocation = new Point(displayBounds.width - buttonSize.width,
-                  displayBounds.height - buttonSize.height);
+          appropriateShellLocation = new Point(displayBounds.width - SHELL_OFFSCREEN_PADDING,
+                  displayBounds.height - SHELL_OFFSCREEN_PADDING);
           break;
       }
 

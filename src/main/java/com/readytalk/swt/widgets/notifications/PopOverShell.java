@@ -27,19 +27,19 @@ import java.util.logging.Logger;
 public abstract class PopOverShell extends Widget implements Fadeable {
   private static final Logger LOG = Logger.getLogger(PopOverShell.class.getName());
 
-  enum PopOverShellDisplayLocation { BELOW_PARENT, ABOVE_PARENT }
-  enum PopOverShellPointCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
+  enum PopOverAboveOrBelowParent { BELOW_PARENT, ABOVE_PARENT }
+  enum PopOverCornerCenteredOnParent { TOP_RIGHT_CORNER, TOP_LEFT_CORNER }
 
   private static final RGB BACKGROUND_COLOR = new RGB(74, 74, 74);
   private static final int FADE_OUT_TIME = 200; //milliseconds
   private static final int FULLY_VISIBLE_ALPHA = 255; //fully opaque
   private static final int FULLY_HIDDEN_ALPHA = 0; //fully transparent
 
-  static final PopOverShellDisplayLocation DEFAULT_DISPLAY_LOCATION = PopOverShellDisplayLocation.BELOW_PARENT;
-  static final PopOverShellPointCenteredOnParent DEFAULT_POINT_CENTERED = PopOverShellPointCenteredOnParent.TOP_LEFT_CORNER;
+  static final PopOverAboveOrBelowParent DEFAULT_DISPLAY_LOCATION = PopOverAboveOrBelowParent.BELOW_PARENT;
+  static final PopOverCornerCenteredOnParent DEFAULT_POINT_CENTERED = PopOverCornerCenteredOnParent.TOP_LEFT_CORNER;
 
-  PopOverShellDisplayLocation popOverShellDisplayLocation = DEFAULT_DISPLAY_LOCATION;
-  PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent = DEFAULT_POINT_CENTERED;
+  PopOverAboveOrBelowParent popOverAboveOrBelowParent = DEFAULT_DISPLAY_LOCATION;
+  PopOverCornerCenteredOnParent popOverCornerCenteredOnParent = DEFAULT_POINT_CENTERED;
 
   private Object fadeLock = new Object();
 
@@ -55,7 +55,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
   private Region popOverRegion;
 
-  private boolean popOverShellIsFullyConfigured = false;
   private boolean fadeEffectInProgress = false;
 
   /**
@@ -100,15 +99,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverRegion = new Region();
     popOverRegion.add(new Rectangle(0, 0, popOverShellSize.x, popOverShellSize.y));
 
-    Point location = getShellDisplayLocation(parentShell, poppedOverItem, popOverShellDisplayLocation,
-            popOverShellPointCenteredOnParent, popOverRegion.getBounds());
-
-    while (!popOverShellIsFullyConfigured) {
-      popOverShellIsFullyConfigured = configurePopOverShellIfWouldBeCutOff(parentShell.getDisplay().getClientArea(),
-              location, popOverRegion.getBounds());
-      location = getShellDisplayLocation(parentShell, getPoppedOverItem(), popOverShellDisplayLocation,
-              popOverShellPointCenteredOnParent, popOverRegion.getBounds());
-    }
+    Point location = getPopOverShellLocation(parentShell, poppedOverItem, popOverRegion);
 
     popOverShell.setRegion(popOverRegion);
     popOverShell.setSize(popOverRegion.getBounds().width, popOverRegion.getBounds().height);
@@ -200,65 +191,128 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverRegion = null;
   }
 
-  boolean configurePopOverShellIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                                               Rectangle containingRectangle) {
-    if (configurePopOverShellIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
-      return false;
-    } else if  (configurePopOverShellIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
-      return false;
+  private Point getPopOverShellLocation(Shell parentShell, PoppedOverItem poppedOverItem, Region popOverRegion) {
+    Rectangle displayBounds = parentShell.getDisplay().getBounds();
+    Rectangle popOverBounds = popOverRegion.getBounds();
+    Point poppedOverItemLocationRelativeToDisplay =
+            getPoppedOverItemLocationRelativeToDisplay(parentShell, poppedOverItem);
+
+    // Guess on the location first
+    Point location = getPopOverDisplayPoint(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+            popOverCornerCenteredOnParent, popOverAboveOrBelowParent);
+
+
+    // Adjust as needed
+    if (isBottomCutOff(displayBounds, location, popOverBounds)) {
+      popOverAboveOrBelowParent = PopOverAboveOrBelowParent.ABOVE_PARENT;
+      location.y = getPopOverYLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+              popOverAboveOrBelowParent);
     }
 
-    return true;
+    if (isRightCutOff(displayBounds, location, popOverBounds)) {
+      popOverCornerCenteredOnParent = PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER;
+      location.x = getPopOverXLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+              popOverCornerCenteredOnParent);
+    }
+
+    if (isStillOffScreen(displayBounds, location, popOverBounds)) {
+      location = getPopOverLocationControlOffscreen(displayBounds, popOverRegion,
+              poppedOverItemLocationRelativeToDisplay, location);
+    }
+
+    return location;
   }
 
-  boolean configurePopOverShellIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                                              Rectangle containingRectangle) {
-    Point lowestYPosition = new Point(locationRelativeToDisplay.x, locationRelativeToDisplay.y + containingRectangle.height);
+  boolean isBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+                                              Rectangle popOverBounds) {
+    int lowestYPosition = locationRelativeToDisplay.y + popOverBounds.height;
 
-    if (!displayBounds.contains(lowestYPosition)) {
-      popOverShellDisplayLocation = PopOverShellDisplayLocation.ABOVE_PARENT;
+    if (!displayBounds.contains(new Point(0, lowestYPosition))) {
       return true;
     } else {
       return false;
     }
   }
 
-  boolean configurePopOverShellIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                                                     Rectangle containingRectangle) {
-    Point farthestXPosition = new Point(locationRelativeToDisplay.x + containingRectangle.width, locationRelativeToDisplay.y);
+  boolean isRightCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+                                                     Rectangle popOverBounds) {
+    int farthestXPosition = locationRelativeToDisplay.x + popOverBounds.width;
 
-    if (!displayBounds.contains(farthestXPosition)) {
-      popOverShellPointCenteredOnParent = PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER;
+    if (!displayBounds.contains(new Point(farthestXPosition, 0))) {
+      popOverCornerCenteredOnParent = PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER;
       return true;
     } else {
       return false;
     }
   }
 
-  private Point getShellDisplayLocation(Shell parentShell, PoppedOverItem poppedOverItem,
-                                        PopOverShellDisplayLocation aboveOrBelow,
-                                        PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent,
-                                        Rectangle popOverRectangle) {
-    Point poppedOverItemSize = poppedOverItem.getSize();
-    Point parentLocationRelativeToDisplay = parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
-    Point appropriateDisplayLocation = new Point(0, 0);
+  boolean isStillOffScreen(Rectangle displayBounds, Point locationRelativeToDisplay,
+                           Rectangle popOverBounds) {
+    Point currentPosition = new Point (locationRelativeToDisplay.x + popOverBounds.width,
+            locationRelativeToDisplay.y + popOverBounds.height);
+    if (!displayBounds.contains(currentPosition)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
+  private Point getPoppedOverItemLocationRelativeToDisplay(Shell parentShell, PoppedOverItem poppedOverItem) {
+    return parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
+  }
+
+  private Point getPopOverDisplayPoint(Rectangle popOverBounds,
+                                       PoppedOverItem poppedOverItem,
+                                       Point poppedOverItemLocationRelativeToDisplay,
+                                       PopOverCornerCenteredOnParent popOverCornerCenteredOnParent,
+                                       PopOverAboveOrBelowParent popOverAboveOrBelowParent) {
+    Point location = new Point(0, 0);
+    location.x = getPopOverXLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+            popOverCornerCenteredOnParent);
+    location.y = getPopOverYLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+            popOverAboveOrBelowParent);
+    return location;
+  }
+
+  private int getPopOverXLocation(Rectangle popOverBounds,
+                                  PoppedOverItem poppedOverItem,
+                                  Point poppedOverItemLocationRelativeToDisplay,
+                                  PopOverCornerCenteredOnParent popOverCornerCenteredOnParent) {
+    switch(popOverCornerCenteredOnParent) {
+      case TOP_LEFT_CORNER:
+        return poppedOverItemLocationRelativeToDisplay.x + (poppedOverItem.getSize().x / 2);
+      case TOP_RIGHT_CORNER:
+        return poppedOverItemLocationRelativeToDisplay.x - popOverBounds.width + (poppedOverItem.getSize().x / 2);
+      default:
+        return 0;
+    }
+  }
+
+  private int getPopOverYLocation(Rectangle popOverBounds,
+                                  PoppedOverItem poppedOverItem,
+                                  Point poppedOverItemLocationRelativeToDisplay,
+                                  PopOverAboveOrBelowParent aboveOrBelow) {
     switch (aboveOrBelow) {
       case ABOVE_PARENT:
-        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y - popOverRectangle.height;
-        break;
+        return poppedOverItemLocationRelativeToDisplay.y - popOverBounds.height;
       case BELOW_PARENT:
-        appropriateDisplayLocation.y = parentLocationRelativeToDisplay.y + poppedOverItemSize.y;
-        break;
+        return poppedOverItemLocationRelativeToDisplay.y + poppedOverItem.getSize().y;
+      default:
+        return 0;
     }
+  }
 
-    switch(popOverShellPointCenteredOnParent) {
-      case TOP_LEFT_CORNER:
-        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x + (poppedOverItemSize.x / 2);
-        break;
-      case TOP_RIGHT_CORNER:
-        appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x - popOverRectangle.width + (poppedOverItemSize.x / 2);
-        break;
+  private Point getPopOverLocationControlOffscreen(Rectangle displayBounds,
+                                                   Region popOverRegion,
+                                                   Point poppedOverItemLocationRelativeToDisplay,
+                                                   Point popOverOffscreenLocation) {
+    Point appropriateDisplayLocation = popOverOffscreenLocation;
+    Rectangle popOverRegionBounds = popOverRegion.getBounds();
+    if (!displayBounds.contains(new Point(poppedOverItemLocationRelativeToDisplay.x + popOverRegionBounds.width, 0))) {
+      appropriateDisplayLocation.x = displayBounds.width - popOverRegionBounds.width;
+    }
+    if (!displayBounds.contains(new Point(0, poppedOverItemLocationRelativeToDisplay.y + popOverRegionBounds.height))) {
+      appropriateDisplayLocation.y = displayBounds.height - popOverRegionBounds.height;
     }
 
     return appropriateDisplayLocation;
@@ -337,9 +391,8 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   }
 
   private void resetState() {
-    popOverShellDisplayLocation = DEFAULT_DISPLAY_LOCATION;
-    popOverShellPointCenteredOnParent = DEFAULT_POINT_CENTERED;
-    popOverShellIsFullyConfigured = false;
+    popOverAboveOrBelowParent = DEFAULT_DISPLAY_LOCATION;
+    popOverCornerCenteredOnParent = DEFAULT_POINT_CENTERED;
     fadeEffectInProgress = false;
   }
 
@@ -349,6 +402,11 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
+  /**
+   * A convenience structure for PopOverShell. We could be interacting with a <code>Control</code> (or descendant),
+   * or we could be interacting with a {@link CustomElementDataProvider}. This wrapper helps to provide some
+   * abstraction.
+   */
   public class PoppedOverItem {
     private Control control;
     private CustomElementDataProvider customElementDataProvider;
