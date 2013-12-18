@@ -9,6 +9,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Before;
@@ -62,6 +64,23 @@ public class PopOverShellIntegTest {
     }
   }
 
+  public static void main(String[] args) {
+    initialize();
+    shell.open();
+    shell.setLocation(1240, 729);
+
+//    shell.addListener(SWT.Move, new Listener() {
+//      @Override
+//      public void handleEvent(Event event) {
+//        System.out.println(shell.getBounds());
+//      }
+//    });
+
+    while (shell.isVisible()) {
+      display.readAndDispatch();
+    }
+  }
+
   @RunWith(Parameterized.class)
   public static class PopOverShellPlacementTests {
     private static final int SHELL_OFFSCREEN_PADDING = 10;
@@ -72,16 +91,17 @@ public class PopOverShellIntegTest {
 
     @After
     public void tearDown() {
+      popOverShell.hide();
       shell.close();
     }
 
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
     public static List<Object[]> data() {
       return Arrays.asList(new Object[][]{
-              {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
-              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER},
-              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
-              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER}
+//              {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
+//              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER},
+//              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
+//              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverShellDisplayLocation.ABOVE_PARENT, PopOverShell.PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER}
       });
     }
 

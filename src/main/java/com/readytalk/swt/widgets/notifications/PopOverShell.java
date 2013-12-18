@@ -40,6 +40,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
   PopOverShellDisplayLocation popOverShellDisplayLocation = DEFAULT_DISPLAY_LOCATION;
   PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent = DEFAULT_POINT_CENTERED;
+  boolean stillOffScreenAfterConfiguration = false;
 
   private Object fadeLock = new Object();
 
@@ -101,14 +102,35 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverRegion.add(new Rectangle(0, 0, popOverShellSize.x, popOverShellSize.y));
 
     Point location = getShellDisplayLocation(parentShell, poppedOverItem, popOverShellDisplayLocation,
-            popOverShellPointCenteredOnParent, popOverRegion.getBounds());
+            popOverShellPointCenteredOnParent, popOverRegion.getBounds(), parentShell.getDisplay().getBounds());
 
-    while (!popOverShellIsFullyConfigured) {
-      popOverShellIsFullyConfigured = configurePopOverShellIfWouldBeCutOff(parentShell.getDisplay().getClientArea(),
-              location, popOverRegion.getBounds());
+    if (isBottomCutOff(parentShell.getDisplay().getBounds(),
+            location, popOverRegion.getBounds())) {
+      popOverShellDisplayLocation = PopOverShellDisplayLocation.ABOVE_PARENT;
       location = getShellDisplayLocation(parentShell, getPoppedOverItem(), popOverShellDisplayLocation,
-              popOverShellPointCenteredOnParent, popOverRegion.getBounds());
+        popOverShellPointCenteredOnParent, popOverRegion.getBounds(), parentShell.getDisplay().getBounds());
     }
+
+    if (isRightCutOff(parentShell.getDisplay().getBounds(),
+            location, popOverRegion.getBounds())) {
+      popOverShellPointCenteredOnParent = PopOverShellPointCenteredOnParent.TOP_RIGHT_CORNER;
+      location = getShellDisplayLocation(parentShell, getPoppedOverItem(), popOverShellDisplayLocation,
+              popOverShellPointCenteredOnParent, popOverRegion.getBounds(), parentShell.getDisplay().getBounds());
+    }
+
+    if (isStillOffScreen(parentShell.getDisplay().getBounds(),
+            location, popOverRegion.getBounds())) {
+      stillOffScreenAfterConfiguration = true;
+      location = getShellDisplayLocation(parentShell, getPoppedOverItem(), popOverShellDisplayLocation,
+              popOverShellPointCenteredOnParent, popOverRegion.getBounds(), parentShell.getDisplay().getBounds());
+    }
+
+//    while (!popOverShellIsFullyConfigured) {
+//      popOverShellIsFullyConfigured = configurePopOverShellIfWouldBeCutOff(parentShell.getDisplay().getBounds(),
+//              location, popOverRegion.getBounds());
+//      location = getShellDisplayLocation(parentShell, getPoppedOverItem(), popOverShellDisplayLocation,
+//              popOverShellPointCenteredOnParent, popOverRegion.getBounds());
+//    }
 
     popOverShell.setRegion(popOverRegion);
     popOverShell.setSize(popOverRegion.getBounds().width, popOverRegion.getBounds().height);
@@ -200,30 +222,41 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverRegion = null;
   }
 
-  boolean configurePopOverShellIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                                               Rectangle containingRectangle) {
-    if (configurePopOverShellIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
-      return false;
-    } else if  (configurePopOverShellIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
-      return false;
-    }
+//  boolean configurePopOverShellIfWouldBeCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+//                                               Rectangle containingRectangle) {
+//    if (configurePopOverShellIfBottomCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
+//      return false;
+//    } else if  (configurePopOverShellIfRightmostTextCutOff(displayBounds, locationRelativeToDisplay, containingRectangle)) {
+//      return false;
+//    }
+//
+//    return true;
+//  }
 
-    return true;
-  }
 
-  boolean configurePopOverShellIfBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+  boolean isBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
                                               Rectangle containingRectangle) {
     Point lowestYPosition = new Point(locationRelativeToDisplay.x, locationRelativeToDisplay.y + containingRectangle.height);
 
     if (!displayBounds.contains(lowestYPosition)) {
-      popOverShellDisplayLocation = PopOverShellDisplayLocation.ABOVE_PARENT;
       return true;
     } else {
       return false;
     }
   }
 
-  boolean configurePopOverShellIfRightmostTextCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
+  boolean isStillOffScreen(Rectangle displayBounds, Point locationRelativeToDisplay,
+                           Rectangle containingRectangle) {
+    Point currentPosition = new Point (locationRelativeToDisplay.x + containingRectangle.width,
+            locationRelativeToDisplay.y + containingRectangle.height);
+    if (!displayBounds.contains(currentPosition)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  boolean isRightCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
                                                      Rectangle containingRectangle) {
     Point farthestXPosition = new Point(locationRelativeToDisplay.x + containingRectangle.width, locationRelativeToDisplay.y);
 
@@ -238,7 +271,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   private Point getShellDisplayLocation(Shell parentShell, PoppedOverItem poppedOverItem,
                                         PopOverShellDisplayLocation aboveOrBelow,
                                         PopOverShellPointCenteredOnParent popOverShellPointCenteredOnParent,
-                                        Rectangle popOverRectangle) {
+                                        Rectangle popOverRectangle, Rectangle displayBounds) {
     Point poppedOverItemSize = poppedOverItem.getSize();
     Point parentLocationRelativeToDisplay = parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
     Point appropriateDisplayLocation = new Point(0, 0);
@@ -259,6 +292,15 @@ public abstract class PopOverShell extends Widget implements Fadeable {
       case TOP_RIGHT_CORNER:
         appropriateDisplayLocation.x = parentLocationRelativeToDisplay.x - popOverRectangle.width + (poppedOverItemSize.x / 2);
         break;
+    }
+
+    if (stillOffScreenAfterConfiguration) {
+      if (!displayBounds.contains(new Point(parentLocationRelativeToDisplay.x + popOverRectangle.width, 0))) {
+        appropriateDisplayLocation.x = displayBounds.width - popOverRectangle.width;
+      }
+      if (!displayBounds.contains(new Point(0, parentLocationRelativeToDisplay.y + popOverRectangle.height))) {
+        appropriateDisplayLocation.y = displayBounds.height - popOverRectangle.height;
+      }
     }
 
     return appropriateDisplayLocation;
