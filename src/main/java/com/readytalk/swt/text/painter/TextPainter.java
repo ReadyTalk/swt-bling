@@ -304,7 +304,7 @@ public class TextPainter {
   /**
    * Sets the horizontal alignment of text.
    * @param justification
-   * @return
+   * @return {@link TextPainter}
    */
   public TextPainter setJustification(int justification) {
     this.justification = justification;
