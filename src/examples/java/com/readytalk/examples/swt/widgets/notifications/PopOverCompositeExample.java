@@ -32,7 +32,7 @@ public class PopOverCompositeExample implements SwtBlingExample {
     });
 
     Composite composite = new Composite(popOverComposite.getPopOverCompositeShell(), SWT.NONE);
-    composite.setLayout(new GridLayout(2, true));
+    composite.setLayout(new GridLayout(2, false));
 
     Image iconInformation = display.getSystemImage(SWT.ICON_INFORMATION);
     Image iconError = display.getSystemImage(SWT.ICON_ERROR);
