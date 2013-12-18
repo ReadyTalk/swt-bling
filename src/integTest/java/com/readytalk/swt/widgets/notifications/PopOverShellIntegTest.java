@@ -62,23 +62,6 @@ public class PopOverShellIntegTest {
     }
   }
 
-  public static void main(String[] args) {
-    initialize();
-    shell.open();
-    shell.setLocation(2540, 678);
-
-//    shell.addListener(SWT.Move, new Listener() {
-//      @Override
-//      public void handleEvent(Event event) {
-//        System.out.println(shell.getBounds());
-//      }
-//    });
-
-    while (shell.isVisible()) {
-      display.readAndDispatch();
-    }
-  }
-
   @RunWith(Parameterized.class)
   public static class PopOverShellPlacementTests {
     private static final int SHELL_OFFSCREEN_PADDING = 20;
@@ -135,7 +118,6 @@ public class PopOverShellIntegTest {
       }
 
       Rectangle displayBounds = display.getClientArea();
-      Rectangle buttonSize = button.getBounds();
       switch (cutoffPosition) {
         case BOTTOM:
           appropriateShellLocation = new Point(displayBounds.width / 2,
