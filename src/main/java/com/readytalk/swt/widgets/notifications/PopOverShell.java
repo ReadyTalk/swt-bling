@@ -108,37 +108,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverShell.setVisible(true);
   }
 
-  private Point getPopOverShellLocation(Shell parentShell, PoppedOverItem poppedOverItem, Region popOverRegion) {
-    Rectangle displayBounds = parentShell.getDisplay().getBounds();
-    Rectangle popOverBounds = popOverRegion.getBounds();
-    Point poppedOverItemLocationRelativeToDisplay =
-            getPoppedOverItemLocationRelativeToDisplay(parentShell, poppedOverItem);
-
-    // Guess on the location
-    Point location = getPopOverDisplayPoint(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
-            popOverCornerCenteredOnParent, popOverAboveOrBelowParent);
-
-
-    if (isBottomCutOff(displayBounds, location, popOverBounds)) {
-      popOverAboveOrBelowParent = PopOverAboveOrBelowParent.ABOVE_PARENT;
-      location.y = getPopOverYLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
-              popOverAboveOrBelowParent);
-    }
-
-    if (isRightCutOff(displayBounds, location, popOverBounds)) {
-      popOverCornerCenteredOnParent = PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER;
-      location.x = getPopOverXLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
-              popOverCornerCenteredOnParent);
-    }
-
-    if (isStillOffScreen(displayBounds, location, popOverBounds)) {
-      location = getPopOverLocationControlOffscreen(displayBounds, poppedOverItem, popOverRegion,
-              poppedOverItemLocationRelativeToDisplay, location);
-    }
-
-    return location;
-  }
-
   /**
    * Toggles visibility of the PopOverShell. If the PopOverShell is visible, it will fade it from the screen, otherwise
    * it will pop it up.
@@ -222,9 +191,41 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     popOverRegion = null;
   }
 
+  private Point getPopOverShellLocation(Shell parentShell, PoppedOverItem poppedOverItem, Region popOverRegion) {
+    Rectangle displayBounds = parentShell.getDisplay().getBounds();
+    Rectangle popOverBounds = popOverRegion.getBounds();
+    Point poppedOverItemLocationRelativeToDisplay =
+            getPoppedOverItemLocationRelativeToDisplay(parentShell, poppedOverItem);
+
+    // Guess on the location first
+    Point location = getPopOverDisplayPoint(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+            popOverCornerCenteredOnParent, popOverAboveOrBelowParent);
+
+
+    // Adjust as needed
+    if (isBottomCutOff(displayBounds, location, popOverBounds)) {
+      popOverAboveOrBelowParent = PopOverAboveOrBelowParent.ABOVE_PARENT;
+      location.y = getPopOverYLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+              popOverAboveOrBelowParent);
+    }
+
+    if (isRightCutOff(displayBounds, location, popOverBounds)) {
+      popOverCornerCenteredOnParent = PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER;
+      location.x = getPopOverXLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
+              popOverCornerCenteredOnParent);
+    }
+
+    if (isStillOffScreen(displayBounds, location, popOverBounds)) {
+      location = getPopOverLocationControlOffscreen(displayBounds, popOverRegion,
+              poppedOverItemLocationRelativeToDisplay, location);
+    }
+
+    return location;
+  }
+
   boolean isBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                                              Rectangle containingRectangle) {
-    int lowestYPosition = locationRelativeToDisplay.y + containingRectangle.height;
+                                              Rectangle popOverBounds) {
+    int lowestYPosition = locationRelativeToDisplay.y + popOverBounds.height;
 
     if (!displayBounds.contains(new Point(0, lowestYPosition))) {
       return true;
@@ -233,20 +234,9 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
-  boolean isStillOffScreen(Rectangle displayBounds, Point locationRelativeToDisplay,
-                           Rectangle containingRectangle) {
-    Point currentPosition = new Point (locationRelativeToDisplay.x + containingRectangle.width,
-            locationRelativeToDisplay.y + containingRectangle.height);
-    if (!displayBounds.contains(currentPosition)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   boolean isRightCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                                                     Rectangle containingRectangle) {
-    int farthestXPosition = locationRelativeToDisplay.x + containingRectangle.width;
+                                                     Rectangle popOverBounds) {
+    int farthestXPosition = locationRelativeToDisplay.x + popOverBounds.width;
 
     if (!displayBounds.contains(new Point(farthestXPosition, 0))) {
       popOverCornerCenteredOnParent = PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER;
@@ -256,22 +246,19 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
-  private Point getPoppedOverItemLocationRelativeToDisplay(Shell parentShell, PoppedOverItem poppedOverItem) {
-    return parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
+  boolean isStillOffScreen(Rectangle displayBounds, Point locationRelativeToDisplay,
+                           Rectangle popOverBounds) {
+    Point currentPosition = new Point (locationRelativeToDisplay.x + popOverBounds.width,
+            locationRelativeToDisplay.y + popOverBounds.height);
+    if (!displayBounds.contains(currentPosition)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  private int getPopOverYLocation(Rectangle popOverBounds,
-                                  PoppedOverItem poppedOverItem,
-                                  Point poppedOverItemLocationRelativeToDisplay,
-                                  PopOverAboveOrBelowParent aboveOrBelow) {
-    switch (aboveOrBelow) {
-      case ABOVE_PARENT:
-        return poppedOverItemLocationRelativeToDisplay.y - popOverBounds.height;
-      case BELOW_PARENT:
-        return poppedOverItemLocationRelativeToDisplay.y + poppedOverItem.getSize().y;
-      default:
-        return 0;
-    }
+  private Point getPoppedOverItemLocationRelativeToDisplay(Shell parentShell, PoppedOverItem poppedOverItem) {
+    return parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
   }
 
   private Point getPopOverDisplayPoint(Rectangle popOverBounds,
@@ -301,8 +288,21 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
+  private int getPopOverYLocation(Rectangle popOverBounds,
+                                  PoppedOverItem poppedOverItem,
+                                  Point poppedOverItemLocationRelativeToDisplay,
+                                  PopOverAboveOrBelowParent aboveOrBelow) {
+    switch (aboveOrBelow) {
+      case ABOVE_PARENT:
+        return poppedOverItemLocationRelativeToDisplay.y - popOverBounds.height;
+      case BELOW_PARENT:
+        return poppedOverItemLocationRelativeToDisplay.y + poppedOverItem.getSize().y;
+      default:
+        return 0;
+    }
+  }
+
   private Point getPopOverLocationControlOffscreen(Rectangle displayBounds,
-                                                   PoppedOverItem poppedOverItem,
                                                    Region popOverRegion,
                                                    Point poppedOverItemLocationRelativeToDisplay,
                                                    Point popOverOffscreenLocation) {
@@ -402,6 +402,11 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     }
   }
 
+  /**
+   * A convenience structure for PopOverShell. We could be interacting with a <code>Control</code> (or descendant),
+   * or we could be interacting with a {@link CustomElementDataProvider}. This wrapper helps to provide some
+   * abstraction.
+   */
   public class PoppedOverItem {
     private Control control;
     private CustomElementDataProvider customElementDataProvider;
