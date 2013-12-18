@@ -37,17 +37,17 @@ public class TextPainterExample implements SwtBlingExample {
       timer = new Timer();
       final List<TextPainter> painters = new ArrayList<TextPainter>();
 
-      painters.add( buildLabel(new Rectangle(20, 20, 150, 20), "Left Justified").setJustification(SWT.LEFT));
-      painters.add(buildWikiTextPainter(new Rectangle(20, 40, 150, 250), false).setJustification(SWT.LEFT));
+      painters.add( buildLabel(new Rectangle(20, 20, 200, 20), "Left Justified").setJustification(SWT.LEFT));
+      painters.add(buildWikiTextPainter(new Rectangle(20, 40, 200, 250), false).setJustification(SWT.LEFT));
 
-      painters.add( buildLabel(new Rectangle(220, 20, 150, 20), "Centered").setJustification(SWT.CENTER));
-      painters.add( buildWikiTextPainter(new Rectangle(220, 40, 150, 250), false).setJustification(SWT.CENTER));
+      painters.add( buildLabel(new Rectangle(240, 20, 200, 20), "Centered").setJustification(SWT.CENTER));
+      painters.add( buildWikiTextPainter(new Rectangle(240, 40, 200, 250), false).setJustification(SWT.CENTER));
 
-      painters.add( buildLabel(new Rectangle(420, 20, 150, 20), "Right Justified").setJustification(SWT.RIGHT));
-      painters.add( buildWikiTextPainter(new Rectangle(420, 40, 150, 250), false).setJustification(SWT.RIGHT));
+      painters.add( buildLabel(new Rectangle(460, 20, 200, 20), "Right Justified").setJustification(SWT.RIGHT));
+      painters.add( buildWikiTextPainter(new Rectangle(460, 40, 200, 250), false).setJustification(SWT.RIGHT));
 
-      painters.add( buildLabel(new Rectangle(20, 260, 450, 20), "Left Justified with Modulated Width").setJustification(SWT.LEFT));
-      painters.add( buildWikiTextPainter(new Rectangle(20, 280, 150, 250), true).setJustification(SWT.LEFT));
+      painters.add( buildLabel(new Rectangle(20, 300, 350, 20), "Left Justified with Modulated Width").setJustification(SWT.LEFT));
+      painters.add( buildWikiTextPainter(new Rectangle(20, 320, 200, 250), true).setJustification(SWT.LEFT));
 
       addPaintListener(new PaintListener() {
         @Override
@@ -73,12 +73,12 @@ public class TextPainterExample implements SwtBlingExample {
       final TextPainter painter = new TextPainter(this)
           .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI))
           .setText(
-              "'''Lorem ipsum''' dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut... "
-                  + "''Italic Text,'' '''Bold Text,''' and "
-                  + "'''''Bold and Italic Text'''''"
-                  + " naked url: http://www.google.com"
-                  + " wiki url: [http://www.readytalk.com ReadyTalk]"
-                  + " url: [http://www.readytalk.com]")
+               "''Williamsburg biodiesel cornhole tote bag. Butcher mlkshk Tumblr, Pinterest sweater'' "
+              + "'''pickled pop-up. Deep v tattooed forage pickled tofu.''' "
+              + "'''''Gastropub post-ironic Banksy, Vice swag Tumblr gentrify street''''' "
+              + "drinking. Skateboard, [http://www.austin.com Austin] Helvetica hoodie "
+              + "distillery Cray. Meh scenester http://www.sustainable.com mixtape "
+              + "Etsy McSweeney's slow-carb [http://www.shorditch.com Shoreditch].  Gluten-free pickled pug.")
           .setDrawCalculatedBounds(false)
           .setClipping(true)
           .setBounds(bounds)
@@ -118,7 +118,7 @@ public class TextPainterExample implements SwtBlingExample {
   public TextPainterExample() { }
 
   public void run(Display display, Shell shell) {
-    shell.setSize(600, 500);
+    shell.setSize(700, 500);
 
     try {
       new TextCanvas(shell, SWT.NONE);

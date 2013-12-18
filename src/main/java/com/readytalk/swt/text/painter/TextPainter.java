@@ -90,7 +90,7 @@ public class TextPainter {
   private boolean drawBounds;
   private List<Hyperlink> hyperlinks;
   private int justification;
-  private int lineSpacing;
+  private float lineSpacing;
   private List<NavigationListener> navigationListeners;
   private Composite parent;
   private String text;
@@ -126,7 +126,7 @@ public class TextPainter {
     hyperlinkColor = buildColor(100, 50, 200);
     boundaryColor = buildColor(255, 30, 30);
     justification = SWT.LEFT;
-    lineSpacing = 0;
+    lineSpacing = 1.0f;
     verticalAlignment = SWT.TOP;
     FontData fontData = parent.getFont().getFontData()[0];
     setFont(fontData.getName(), fontData.getHeight());
@@ -311,11 +311,11 @@ public class TextPainter {
   }
 
   /**
-   * Sets the amount of space between lines.  The default is set to 0.
+   * A factor for the amount of space between lines.  The default is set to 1.0.
    * @param lineSpacing
-   * @return
+   * @return  {@link TextPainter}
    */
-  public TextPainter setLineSpacing(int lineSpacing) {
+  public TextPainter setLineSpacing(float lineSpacing) {
     this.lineSpacing = lineSpacing;
     return this;
   }
@@ -445,9 +445,10 @@ public class TextPainter {
   }
 
   /**
-   * Calculates the rectangular bounds of the required to render the text
-   * without overflowing the bounds.
-   * @return Rectangle
+   * Calculates the bounds required to render the text.  This value is constrained by the configured bounds, the amount
+   * of text given, the type of tokenizer used, the fonts used, and whether it is to be rendered wrapped or not.
+   *
+   * @return Rectangle representing the size required to paint the text as configured.
    */
   public Rectangle computeSize(GC gc) {
     Rectangle bounds = conditionallyPaintText(gc, false);
