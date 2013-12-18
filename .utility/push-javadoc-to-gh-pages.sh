@@ -2,7 +2,7 @@
 # This script was originally written by maxiaohao in the aws-mock GitHub project.
 # https://github.com/treelogic-swe/aws-mock/
 
-if [ "$TRAVIS_JDK_VERSION" == "oraclejdk7" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+if [ "$TRAVIS_REPO_SLUG" == "ReadyTalk/swt-bling" ] && [ "$TRAVIS_JDK_VERSION" == "oraclejdk7" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
 
   echo -e "Start to publish lastest Javadoc to gh-pages...\n"
 
