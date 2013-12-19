@@ -225,36 +225,39 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
   boolean isBottomCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
                                               Rectangle popOverBounds) {
+    boolean isBottomCutOff = false;
     int lowestYPosition = locationRelativeToDisplay.y + popOverBounds.height;
 
     if (!displayBounds.contains(new Point(0, lowestYPosition))) {
-      return true;
-    } else {
-      return false;
+      isBottomCutOff = true;
     }
+
+    return isBottomCutOff;
   }
 
   boolean isRightCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
                                                      Rectangle popOverBounds) {
+    boolean isRightCutOff = false;
     int farthestXPosition = locationRelativeToDisplay.x + popOverBounds.width;
 
     if (!displayBounds.contains(new Point(farthestXPosition, 0))) {
       popOverCornerCenteredOnParent = PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER;
-      return true;
-    } else {
-      return false;
+      isRightCutOff = true;
     }
+
+    return isRightCutOff;
   }
 
   boolean isStillOffScreen(Rectangle displayBounds, Point locationRelativeToDisplay,
                            Rectangle popOverBounds) {
+    boolean isStillOffScreen = false;
     Point currentPosition = new Point (locationRelativeToDisplay.x + popOverBounds.width,
             locationRelativeToDisplay.y + popOverBounds.height);
     if (!displayBounds.contains(currentPosition)) {
-      return true;
-    } else {
-      return false;
+      isStillOffScreen = true;
     }
+
+    return isStillOffScreen;
   }
 
   private Point getPoppedOverItemLocationRelativeToDisplay(Shell parentShell, PoppedOverItem poppedOverItem) {
@@ -278,28 +281,34 @@ public abstract class PopOverShell extends Widget implements Fadeable {
                                   PoppedOverItem poppedOverItem,
                                   Point poppedOverItemLocationRelativeToDisplay,
                                   PopOverCornerCenteredOnParent popOverCornerCenteredOnParent) {
+    int popOverX = 0;
     switch(popOverCornerCenteredOnParent) {
       case TOP_LEFT_CORNER:
-        return poppedOverItemLocationRelativeToDisplay.x + (poppedOverItem.getSize().x / 2);
+        popOverX = poppedOverItemLocationRelativeToDisplay.x + (poppedOverItem.getSize().x / 2);
+        break;
       case TOP_RIGHT_CORNER:
-        return poppedOverItemLocationRelativeToDisplay.x - popOverBounds.width + (poppedOverItem.getSize().x / 2);
-      default:
-        return 0;
+        popOverX = poppedOverItemLocationRelativeToDisplay.x - popOverBounds.width + (poppedOverItem.getSize().x / 2);
+        break;
     }
+
+    return popOverX;
   }
 
   private int getPopOverYLocation(Rectangle popOverBounds,
                                   PoppedOverItem poppedOverItem,
                                   Point poppedOverItemLocationRelativeToDisplay,
                                   PopOverAboveOrBelowParent aboveOrBelow) {
+    int popOverY = 0;
     switch (aboveOrBelow) {
       case ABOVE_PARENT:
-        return poppedOverItemLocationRelativeToDisplay.y - popOverBounds.height;
+        popOverY = poppedOverItemLocationRelativeToDisplay.y - popOverBounds.height;
+        break;
       case BELOW_PARENT:
-        return poppedOverItemLocationRelativeToDisplay.y + poppedOverItem.getSize().y;
-      default:
-        return 0;
+        popOverY = poppedOverItemLocationRelativeToDisplay.y + poppedOverItem.getSize().y;
+        break;
     }
+
+    return popOverY;
   }
 
   private Point getPopOverLocationControlOffscreen(Rectangle displayBounds,
@@ -366,11 +375,12 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    */
   public boolean fadeComplete(int targetAlpha) {
     synchronized (fadeLock) {
+      boolean isFadeComplete = false;
       if (popOverShell.getAlpha() == targetAlpha) {
-        return true;
-      } else {
-        return false;
+        isFadeComplete =  true;
       }
+
+      return isFadeComplete;
     }
   }
 
