@@ -170,12 +170,10 @@ public class Bubble extends PopOverShell {
   }
 
   /**
-   * Remove the Bubble from the Component.<br/>
-   * Note, this will also dispose the Bubble. Future interactions with this Bubble will result in Widget Diposed exceptions.
+   * Remove the Bubble from the Registry.
    */
   public void deactivateBubble() {
     BubbleRegistry.getInstance().unregister(getPoppedOverItem().getControlOrCustomElement());
-    dispose();
   }
 
   /**
@@ -229,6 +227,7 @@ public class Bubble extends PopOverShell {
   }
 
   void widgetDispose() {
+    deactivateBubble();
     borderColor.dispose();
     textColor.dispose();
     if (boldFont != null) {
