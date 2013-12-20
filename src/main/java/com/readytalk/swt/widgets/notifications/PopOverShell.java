@@ -81,7 +81,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
     backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
 
-    popOverShell = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
+    popOverShell = new Shell(parentShell, SWT.NO_TRIM);
     popOverShell.setBackground(backgroundColor);
     popOverShell.setLayout(new FillLayout());
 
