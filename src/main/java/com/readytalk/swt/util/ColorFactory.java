@@ -55,14 +55,10 @@ public class ColorFactory {
   public static Color getColor(Device device, RGB rgb) {
     Color color = colorMap.get(rgb);
     if (color == null || color.isDisposed()) {
-      color = buildColor(device, rgb);
+      color = new Color(device, rgb);
       colorMap.put(rgb, color);
     }
     return color;
-  }
-
-  static Color buildColor(Device device, RGB rgb) {
-    return buildColor(device, rgb);
   }
 
   /**
