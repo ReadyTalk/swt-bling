@@ -3,6 +3,7 @@ package com.readytalk.swt.text.painter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.readytalk.swt.util.ColorFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -123,8 +124,8 @@ public class TextPainter {
     wrapping = true;
     textTokenizer = TextTokenizerFactory.createDefault();
     foregroundColor = parent.getForeground();
-    hyperlinkColor = buildColor(100, 50, 200);
-    boundaryColor = buildColor(255, 30, 30);
+    hyperlinkColor = ColorFactory.getColor(100, 50, 200);
+    boundaryColor = ColorFactory.getColor(255, 30, 30);
     justification = SWT.LEFT;
     lineSpacing = 1.0f;
     verticalAlignment = SWT.TOP;
@@ -171,9 +172,6 @@ public class TextPainter {
    * receiver and all its descendants.
    */
   public void dispose() {
-    boundaryColor.dispose();
-    foregroundColor.dispose();
-    hyperlinkColor.dispose();
     font.dispose();
     boldFont.dispose();
     italicFont.dispose();
@@ -211,12 +209,9 @@ public class TextPainter {
     return this;
   }
   
-  private Color buildColor(final int r, final int g, final int b) {
-    return new Color(parent.getDisplay(), r, g, b);
-  }
-  
   /**
    * Sets the boundary color.  By default, it is set to (255, 30, 30).
+   * Colors are managed by the color factory.
    * 
    * @param r : an int representing the red component
    * @param g : an int representing the green component
@@ -224,14 +219,14 @@ public class TextPainter {
    * @return {@link TextPainter}
    */
   public TextPainter setBoundaryColor(final int r, final int g, final int b) {
-    boundaryColor.dispose();
-    boundaryColor = buildColor(r, g, b);
+    boundaryColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   
   /**
    * Sets the text color.  By default, it clones the parent Composite's 
-   * foreground color upon construction.
+   * foreground color upon construction.  Colors are managed by the
+   * color factory.
    * 
    * @param r : an int representing the red component
    * @param g : an int representing the green component
@@ -239,13 +234,13 @@ public class TextPainter {
    * @return {@link TextPainter}
    */
   public TextPainter setForeground(final int r, final int g, final int b) {
-    foregroundColor.dispose();
-    foregroundColor = buildColor(r, g, b);
+    foregroundColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   
   /**
    * Sets the hyperlink text color.  By default, it is set to (100, 50, 200).
+   * Colors are managed by the color factory.
    * 
    * @param r : an int representing the red component
    * @param g : an int representing the green component
@@ -253,8 +248,7 @@ public class TextPainter {
    * @return {@link TextPainter}
    */
   public TextPainter setHyperlinkColor(final int r, final int g, final int b) {
-    hyperlinkColor.dispose();
-    hyperlinkColor = buildColor(r, g, b);
+    hyperlinkColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   

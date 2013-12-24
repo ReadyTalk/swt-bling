@@ -1,14 +1,7 @@
 package com.readytalk.swt.util;
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
-import java.lang.ref.Reference;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.WeakHashMap;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
@@ -23,37 +16,10 @@ import org.eclipse.swt.widgets.Display;
  */
 public class ColorFactory {
 
-  private static final int FIRST_DISPOSE_DELAY = 1000;
-  private static final int DISPOSE_PERIOD = 1000;
-  static Map<RGB, WeakReference<Color>> colorMap;
-  static ReferenceQueue<Color> colorReferenceQueue;
-  static Timer timer = new Timer();
-  static TimerTask resourceDisposerTask = new TimerTask() {
-    @Override
-    public void run() {
-      synchronized (colorReferenceQueue) {
-        try {
-          Reference<? extends Color> ref;
-          while ((ref = colorReferenceQueue.remove()) != null) {
-            Color color = ref.get();
-            colorMap.remove(color.getRGB());
-            if (color != null && !color.isDisposed()) {
-              color.dispose();
-            }
-          }
-        } catch (Exception e) {
-          // TODO Don't know what to do with this yet.... figure it out.
-          e.printStackTrace();
-        }
-      }
-    }
-  };
+  static Map<RGB, Color> colorMap;
 
   static {
-    colorMap = Collections.synchronizedMap(new WeakHashMap<RGB, WeakReference<Color>>());
-    colorReferenceQueue = new ReferenceQueue<Color>();
-    timer = new Timer();
-    timer.scheduleAtFixedRate(resourceDisposerTask, FIRST_DISPOSE_DELAY, DISPOSE_PERIOD);
+    colorMap = new HashMap<RGB, Color>();
   }
 
   // this should use the current display
@@ -87,24 +53,16 @@ public class ColorFactory {
    * @return A possibly shared Color object with the specified rgb values
    */
   public static Color getColor(Device device, RGB rgb) {
-    WeakReference<Color> ref = colorMap.get(rgb);
-    if (ref == null || ref.get() == null) {
-      Color returnval = buildColor(device, rgb);
-      return returnval;
+    Color color = colorMap.get(rgb);
+    if (color == null || color.isDisposed()) {
+      color = buildColor(device, rgb);
+      colorMap.put(rgb, color);
     }
-    return ref.get();
+    return color;
   }
 
   static Color buildColor(Device device, RGB rgb) {
-    Color color = new Color(device, rgb);
-
-    WeakReference weakref = new WeakReference(color, colorReferenceQueue);
-    synchronized (colorReferenceQueue) {
-      weakref.enqueue();
-    }
-
-    colorMap.put(rgb, weakref);
-    return color;
+    return buildColor(device, rgb);
   }
 
   /**
@@ -112,19 +70,9 @@ public class ColorFactory {
    * so use this with care.
    */
   public static void disposeAll() {
-    for (WeakReference<Color> current: colorMap.values()) {
-      current.get().dispose();
+    for (Color color: colorMap.values()) {
+      color.dispose();
     }
     colorMap.clear();
-  }
-
-  static int getColorCount() {
-    int refct = 0;
-    for (WeakReference<Color> ref: colorMap.values()) {
-      if(ref.get()!=null) {
-        refct++;
-      }
-    }
-    return refct;
   }
 }

@@ -24,32 +24,47 @@ public class ColorFactoryTest {
   }
 
   @Test
-  public void garbageCollection_DisposesColors() throws InterruptedException {
-
-    ArrayList<Color> list =  new ArrayList<Color>();
-    DeviceData info = shell.getDisplay().getDeviceData();
-
-    // Fifty Shades of Gray
-    for (int i = 0; i < 50; i++) {
-      list.add(ColorFactory.getColor(shell.getDisplay(), i, i, i));
-      info = shell.getDisplay().getDeviceData();
-      System.out.println(info.objects.length);
-    }
-
-    for (int i = 0; i < 10; i++) {
-      list.remove(i);
-      System.gc();
-      Thread.sleep(100);
-      info = shell.getDisplay().getDeviceData();
-      System.out.println("Cleared to " + info.objects.length);
-    }
-
-    list.clear();
-    System.gc();
+  public  void garbageCollection_DisposesColors() throws InterruptedException {
+    DeviceData info;
+    createColors(10, 10, 10);
     Thread.sleep(1000);
     info = shell.getDisplay().getDeviceData();
     System.out.println("> Cleared to " + info.objects.length);
 
+
+    for (int i = 0; i < 4; i++) {
+      Thread.sleep(1000);
+      info = shell.getDisplay().getDeviceData();
+      System.gc();
+      System.runFinalization();
+      System.out.println("Cleared to " + info.objects.length);
+      System.out.println("Free Memory  :" + Runtime.getRuntime().freeMemory());
+      System.out.println("Total Memory :" + Runtime.getRuntime().totalMemory());
+      System.out.println("Max Memory   :" + Runtime.getRuntime().maxMemory());
+      createColors(i*50, 10, 10);
+    }
   }
 
+  void createColors(int R, int G, int B) throws InterruptedException {
+    DeviceData info;
+
+    // Fifty Shades of Gray
+    for (int r = 0; r < R; r++) {
+      for (int g = 0; g < G; g++) {
+        for (int b = 0; b < B; b++) {
+          ColorFactory.getColor(shell.getDisplay(), r, g, b);
+        }
+      }
+      System.gc();
+      System.runFinalization();
+    }
+
+    info = shell.getDisplay().getDeviceData();
+    System.out.println(info.objects.length);
+    System.out.println("Free Memory  :" + Runtime.getRuntime().freeMemory());
+    System.out.println("Total Memory :" + Runtime.getRuntime().totalMemory());
+    System.out.println("Max Memory   :" + Runtime.getRuntime().maxMemory());
+
+
+  }
 }

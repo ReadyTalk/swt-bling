@@ -4,6 +4,7 @@ import com.readytalk.swt.effects.FadeEffect;
 import com.readytalk.swt.effects.FadeEffect.Fadeable;
 import com.readytalk.swt.effects.InvalidEffectArgumentException;
 import com.readytalk.swt.helpers.AncestryHelper;
+import com.readytalk.swt.util.ColorFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -80,7 +81,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     this.parentControl = parentControl;
     parentShell = AncestryHelper.getShellFromControl(poppedOverItem.getControl());
 
-    backgroundColor = new Color(getDisplay(), BACKGROUND_COLOR);
+    backgroundColor = ColorFactory.getColor(getDisplay(), BACKGROUND_COLOR);
 
     popOverShell = new Shell(parentShell, SWT.ON_TOP | SWT.NO_TRIM);
     popOverShell.setBackground(backgroundColor);
@@ -190,7 +191,6 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     removeListener(SWT.Dispose, parentListener);
     event.type = SWT.None;
 
-    backgroundColor.dispose();
     popOverShell.dispose();
     popOverShell = null;
 

@@ -1,5 +1,6 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.util.ColorFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
@@ -119,8 +120,8 @@ public class Bubble extends PopOverShell {
     this.tooltipText = maybeBreakLines(text);
 
     // Remember to clean up after yourself onDispose.
-    borderColor = new Color(getDisplay(), BORDER_COLOR);
-    textColor = new Color(getDisplay(), TEXT_COLOR);
+    borderColor = ColorFactory.getColor(getDisplay(), BORDER_COLOR);
+    textColor = ColorFactory.getColor(getDisplay(), TEXT_COLOR);
     if (useBoldFont) {
       Font font = getDisplay().getSystemFont();
       FontData fontData = font.getFontData()[0];
@@ -229,8 +230,6 @@ public class Bubble extends PopOverShell {
   }
 
   void widgetDispose() {
-    borderColor.dispose();
-    textColor.dispose();
     if (boldFont != null) {
       boldFont.dispose();
     }
