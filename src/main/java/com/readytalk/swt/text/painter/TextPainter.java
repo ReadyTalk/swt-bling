@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.readytalk.swt.util.ColorFactory;
+import com.readytalk.swt.util.FontFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -172,11 +173,6 @@ public class TextPainter {
    * receiver and all its descendants.
    */
   public void dispose() {
-    font.dispose();
-    boldFont.dispose();
-    italicFont.dispose();
-    underlineFont.dispose();
-    boldAndItalicFont.dispose();
     handCursor.dispose();
   }
   
@@ -187,25 +183,13 @@ public class TextPainter {
   public List<TextToken> getTokens() {
     return tokens;
   }
-  
-  private Font buildFont(final String name, final int height, final int style) {
-    return new Font(parent.getDisplay(), name, height, style);
-  }
-  
+
   private TextPainter setFont(final String name, final int height) {
-    if (font != null) {
-      font.dispose();
-      boldFont.dispose();
-      italicFont.dispose();
-      underlineFont.dispose();
-      boldAndItalicFont.dispose();
-    }
- 
-    font = buildFont(name, height, SWT.NORMAL);
-    boldFont = buildFont(name, height, SWT.BOLD);
-    italicFont = buildFont(name, height, SWT.ITALIC);
-    underlineFont = buildFont(name, height, SWT.UNDERLINE_LINK);
-    boldAndItalicFont = buildFont(name, height, SWT.ITALIC|SWT.BOLD);
+    font = FontFactory.getFont(this.parent.getDisplay(), height, SWT.NORMAL, name);
+    boldFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.BOLD, name);
+    italicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC, name);
+    underlineFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.UNDERLINE_LINK, name);
+    boldAndItalicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC|SWT.BOLD, name);
     return this;
   }
   
