@@ -557,6 +557,16 @@ public class TextPainter {
   }
 
   /**
+   * Paints the text using the GC you pass.
+   * Remember, if you create a GC you must always <code>dispose()</code> it.
+   *
+   * @param gc : {@link GC}
+   */
+  public void handlePaint(final GC gc) {
+    conditionallyPaintText(gc, true);
+  }
+
+  /**
    * Paints text and/or returns a Rectangle representing the computed bounds
    * of the text.  You may only want they rectangle if you are trying to lay the
    * text out.
