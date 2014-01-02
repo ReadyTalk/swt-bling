@@ -228,6 +228,7 @@ public class Bubble extends PopOverShell {
   }
 
   void widgetDispose() {
+    deactivateBubble();
     if (boldFont != null) {
       boldFont.dispose();
     }
