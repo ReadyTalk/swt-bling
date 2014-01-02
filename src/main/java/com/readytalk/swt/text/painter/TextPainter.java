@@ -541,7 +541,7 @@ public class TextPainter {
 
     Rectangle calculatedBounds = new Rectangle(bounds.x, bounds.y, bounds.width, y - bounds.y);
     if (drawCalculatedBounds) {
-      gc.setForeground(new Color(gc.getDevice(), 0, 255, 0));
+      gc.setForeground(ColorFactory.getColor(gc.getDevice(), 0, 255, 0));
       gc.drawRectangle(calculatedBounds);
     }
 

@@ -1,5 +1,6 @@
 package com.readytalk.swt.widgets.buttons;
 
+import com.readytalk.swt.util.ColorFactory;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -106,8 +107,6 @@ public class SquareButton extends Canvas {
   protected boolean horizontallyCenterContents = false;
   protected boolean verticallyCenterContents = true;
 
-  protected HashMap<String, Color> colorRegistry = new HashMap<String, Color>();
-
   protected SquareButton(Composite parent, int style) {
     super(parent, style | SWT.NO_BACKGROUND);
     this.setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -118,9 +117,7 @@ public class SquareButton extends Canvas {
 
 
   protected void widgetDisposed(DisposeEvent e) {
-    for (Map.Entry<String, Color> entry : colorRegistry.entrySet()) {
-      entry.getValue().dispose();
-    }
+
   }
 
 
@@ -275,35 +272,26 @@ public class SquareButton extends Canvas {
 
 
   protected void setDefaultColors() {
-    fontColor = getSavedColor(0, 0, 0);
-    hoverFontColor = getSavedColor(0, 0, 0);
-    clickedFontColor = getSavedColor(255, 255, 255);
-    inactiveFontColor = getSavedColor(187, 187, 187);
-    selectedFontColor = getSavedColor(160, 107, 38);
-    borderColor = getSavedColor(187, 187, 187);
-    hoverBorderColor = getSavedColor(147, 147, 147);
-    clickedBorderColor = getSavedColor(147, 147, 147);
-    inactiveBorderColor = getSavedColor(200, 200, 200);
-    selectedBorderColor = getSavedColor(160, 107, 38);
-    backgroundColor = getSavedColor(248, 248, 248);
-    backgroundColor2 = getSavedColor(228, 228, 228);
-    clickedColor = getSavedColor(120, 120, 120);
-    clickedColor2 = getSavedColor(150, 150, 150);
-    hoverColor = getSavedColor(248, 248, 248);
-    hoverColor2 = getSavedColor(228, 228, 228);
-    inactiveColor = getSavedColor(248, 248, 248);
-    inactiveColor2 = getSavedColor(228, 228, 228);
-    selectedColor = getSavedColor(238, 238, 238);
-    selectedColor2 = getSavedColor(218, 218, 218);
-  }
-
-
-  protected Color getSavedColor(int r, int g, int b) {
-    String colorString = "SB_DEFAULT:" + r + "-" + g + "-" + b;
-    if (!colorRegistry.containsKey(colorString)) {
-      colorRegistry.put(colorString, new Color(null,r, g, b));
-    }
-    return colorRegistry.get(colorString);
+    fontColor = ColorFactory.getColor(0, 0, 0);
+    hoverFontColor = ColorFactory.getColor(0, 0, 0);
+    clickedFontColor = ColorFactory.getColor(255, 255, 255);
+    inactiveFontColor = ColorFactory.getColor(187, 187, 187);
+    selectedFontColor = ColorFactory.getColor(160, 107, 38);
+    borderColor = ColorFactory.getColor(187, 187, 187);
+    hoverBorderColor = ColorFactory.getColor(147, 147, 147);
+    clickedBorderColor = ColorFactory.getColor(147, 147, 147);
+    inactiveBorderColor = ColorFactory.getColor(200, 200, 200);
+    selectedBorderColor = ColorFactory.getColor(160, 107, 38);
+    backgroundColor = ColorFactory.getColor(248, 248, 248);
+    backgroundColor2 = ColorFactory.getColor(228, 228, 228);
+    clickedColor = ColorFactory.getColor(120, 120, 120);
+    clickedColor2 = ColorFactory.getColor(150, 150, 150);
+    hoverColor = ColorFactory.getColor(248, 248, 248);
+    hoverColor2 = ColorFactory.getColor(228, 228, 228);
+    inactiveColor = ColorFactory.getColor(248, 248, 248);
+    inactiveColor2 = ColorFactory.getColor(228, 228, 228);
+    selectedColor = ColorFactory.getColor(238, 238, 238);
+    selectedColor2 = ColorFactory.getColor(218, 218, 218);
   }
 
   protected void setNormalColor() {

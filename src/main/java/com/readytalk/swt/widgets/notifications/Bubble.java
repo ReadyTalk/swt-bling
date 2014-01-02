@@ -1,7 +1,6 @@
 package com.readytalk.swt.widgets.notifications;
 
 import com.readytalk.swt.util.ColorFactory;
-import com.readytalk.swt.util.FontFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;

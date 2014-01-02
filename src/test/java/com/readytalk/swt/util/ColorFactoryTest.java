@@ -1,12 +1,11 @@
 package com.readytalk.swt.util;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,57 +13,73 @@ import org.junit.Test;
 public class ColorFactoryTest {
 
   private Shell shell;
+  private Display display;
 
   @Before
   public void setup() throws Exception {
     DeviceData data = new DeviceData();
     data.tracking = true;
-    Display display = new Display(data);
+    display = new Display(data);
     shell = new Shell(display);
   }
 
-  @Test
-  public  void garbageCollection_DisposesColors() throws InterruptedException {
-    DeviceData info;
-    createColors(10, 10, 10);
-    Thread.sleep(1000);
-    info = shell.getDisplay().getDeviceData();
-    System.out.println("> Cleared to " + info.objects.length);
-
-
-    for (int i = 0; i < 4; i++) {
-      Thread.sleep(1000);
-      info = shell.getDisplay().getDeviceData();
-      System.gc();
-      System.runFinalization();
-      System.out.println("Cleared to " + info.objects.length);
-      System.out.println("Free Memory  :" + Runtime.getRuntime().freeMemory());
-      System.out.println("Total Memory :" + Runtime.getRuntime().totalMemory());
-      System.out.println("Max Memory   :" + Runtime.getRuntime().maxMemory());
-      createColors(i*50, 10, 10);
-    }
+  @After
+  public void tearDown() throws Exception {
+    display.dispose();
+    ColorFactory.disposeAll();
   }
 
-  void createColors(int R, int G, int B) throws InterruptedException {
-    DeviceData info;
+  @Test
+  public void getColor_CreatesColor_OneObjectAddedToDeviceDataObjects() {
+    int numberOfItemsBefore = shell.getDisplay().getDeviceData().objects.length;
+    ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    Assert.assertEquals(numberOfItemsBefore+1, shell.getDisplay().getDeviceData().objects.length);
+  }
 
-    // Fifty Shades of Gray
-    for (int r = 0; r < R; r++) {
-      for (int g = 0; g < G; g++) {
-        for (int b = 0; b < B; b++) {
-          ColorFactory.getColor(shell.getDisplay(), r, g, b);
-        }
-      }
-      System.gc();
-      System.runFinalization();
-    }
+  @Test
+  public void getColor_CreateAndDisposeColor_NoAdditionalObjectInoDeviceDataObjects() {
+    int numberOfItemsBefore = shell.getDisplay().getDeviceData().objects.length;
+    ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    ColorFactory.disposeAll();
+    Assert.assertEquals(shell.getDisplay().getDeviceData().objects.length, numberOfItemsBefore);
+  }
 
-    info = shell.getDisplay().getDeviceData();
-    System.out.println(info.objects.length);
-    System.out.println("Free Memory  :" + Runtime.getRuntime().freeMemory());
-    System.out.println("Total Memory :" + Runtime.getRuntime().totalMemory());
-    System.out.println("Max Memory   :" + Runtime.getRuntime().maxMemory());
+  @Test
+  public void getColor_CreateThreeDifferentColors_ColorMapSizeIs3() {
+    ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    ColorFactory.getColor(shell.getDisplay(), 255, 214, 55);
+    ColorFactory.getColor(shell.getDisplay(), 255, 94, 55);
+    Assert.assertEquals(3, ColorFactory.colorMap.size());
+  }
 
+  @Test
+  public void getColor_CreateAndDisposeColor_ColorMapSizeIs0() {
+    ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    ColorFactory.disposeAll();
+    Assert.assertEquals(0, ColorFactory.colorMap.size());
+  }
 
+  @Test
+  public void getColor_CreateColorViaDeviceAndInts_ReturnsExpectedColor() {
+    Color c = ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    Assert.assertEquals(c.getRGB(), new RGB(23, 34, 45));
+  }
+
+  @Test
+  public void getColor_CreateColorViaRGB_ReturnsExpectedColor() {
+    RGB rgb = new RGB(23, 34, 45);
+    Color c = ColorFactory.getColor(shell.getDisplay(),rgb);
+    Assert.assertEquals(c.getRGB(), rgb);
+  }
+
+  @Test
+  public void getColor_CreateColorViaInts_ReturnsExpectedColor() {
+    Color c = ColorFactory.getColor(33, 34, 45);
+    Assert.assertEquals(c.getRGB(), new RGB(33, 34, 45));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void getColor_CreateColorViaNegativeInts_ThrowsIllegalArgumentException() {
+    ColorFactory.getColor(-33, -34, -45);
   }
 }
