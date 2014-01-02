@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -71,7 +72,7 @@ import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 public class TextPainter {
   
   private Color boundaryColor;
-  private Color foregroundColor;
+  private Color textColor;
   private Color hyperlinkColor;
   
   private Cursor handCursor;
@@ -122,7 +123,7 @@ public class TextPainter {
     clipping = true;
     wrapping = true;
     textTokenizer = TextTokenizerFactory.createDefault();
-    foregroundColor = parent.getForeground();
+    textColor = parent.getForeground();
     hyperlinkColor = buildColor(100, 50, 200);
     boundaryColor = buildColor(255, 30, 30);
     justification = SWT.LEFT;
@@ -172,7 +173,7 @@ public class TextPainter {
    */
   public void dispose() {
     boundaryColor.dispose();
-    foregroundColor.dispose();
+    textColor.dispose();
     hyperlinkColor.dispose();
     font.dispose();
     boldFont.dispose();
@@ -238,9 +239,39 @@ public class TextPainter {
    * @param b : an int representing the blue component
    * @return {@link TextPainter}
    */
-  public TextPainter setForeground(final int r, final int g, final int b) {
-    foregroundColor.dispose();
-    foregroundColor = buildColor(r, g, b);
+  public TextPainter setTextColor(final int r, final int g, final int b) {
+    textColor.dispose();
+    textColor = buildColor(r, g, b);
+    return this;
+  }
+
+  /**
+   * Sets the text color.  By default, it clones the parent Composite's
+   * foreground color upon construction.
+   *
+   * @param rgb : an RGB value for the text color
+   * @return {@link TextPainter}
+   */
+  public TextPainter setTextColor(final RGB rgb) {
+    textColor.dispose();
+    textColor = buildColor(rgb.red, rgb.green, rgb.blue);
+    return this;
+  }
+
+  /**
+   * @deprecated
+   * Sets the text color.  By default, it clones the parent Composite's
+   * foreground color upon construction.
+   *
+   * @param r : an int representing the red component
+   * @param g : an int representing the green component
+   * @param b : an int representing the blue component
+   * @return {@link TextPainter}
+   */
+  @Deprecated
+  public TextPainter setForegroundColor(final int r, final int g, final int b) {
+    textColor.dispose();
+    textColor = buildColor(r, g, b);
     return this;
   }
   
@@ -417,7 +448,7 @@ public class TextPainter {
   }
   
   void configureForStyle(GC gc, TextToken token) {
-    gc.setForeground(foregroundColor);
+    gc.setForeground(textColor);
     switch(token.getType()) {
     case BOLD:
       gc.setFont(boldFont);
@@ -439,7 +470,7 @@ public class TextPainter {
       gc.setFont(underlineFont);
       break;
     case TEXT:
-      gc.setForeground(foregroundColor);
+      gc.setForeground(textColor);
       gc.setFont(font);
       break;
     }
