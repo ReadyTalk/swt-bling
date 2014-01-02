@@ -5,6 +5,13 @@ Behold, swt-bling!  A project that will help you enhance your mundane [swt](http
 Don't fret, fellow SWT-user for swt-bling is surely the answer to ~~all of~~ *some of* your problems.
 
 ##Widgets
+###[PopOverComposite](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/widgets/notifications/PopOverComposite.html)
+PopOverComposite is a very simple ```Shell``` that can be popped over any SWT widget that inherits from ```Control``` or implements the [CustomElementDataProvider](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/widgets/CustomElementDataProvider.html) interface.
+You can pass any ```Composite``` to the widget. PopOverComposite uses a simple FillLayout to fill the ```Shell``` with the ```Composite``` you pass.
+<p align="center">
+  <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/popOverComposite.png" alt="PopOverComposite Widget" />
+</p>
+
 ###[Bubble](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/widgets/notifications/Bubble.html)
 Bubble is a ToolTip that is far more customizable than the [ToolTip](http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fswt%2Fwidgets%2FToolTip.html) provided by SWT.
 Bubble can be applied to any SWT widget that inherits from ```Control```.
@@ -12,7 +19,7 @@ Bubble can be applied to any SWT widget that inherits from ```Control```.
   <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/bubble.png" alt="Bubble Widget" />
 </p>
 
-You can also apply Bubbles to any element that implements the ```CustomElementDataProvider``` interface (useful for apply ToolTips to elements drawn with ```GC```).
+You can also apply Bubbles to any element that implements the [CustomElementDataProvider](http://oss.readytalk.com/swt-bling/javadoc/com/readytalk/swt/widgets/CustomElementDataProvider.html) interface (useful for apply ToolTips to elements drawn with ```GC```).
 
 <p align="center">
   <img src="https://raw.github.com/ReadyTalk/swt-bling/gh-pages/images/widgets/customBubble.png" alt="Custom Bubble Widget" />
@@ -33,9 +40,10 @@ TextPainter is a utility class used to render text onto a ```Composite``` within
 TextPainter can understand a subset of WikiText formatting, which makes it easy to use Wiki formatting within SWT.
 
 ##Examples
-Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a `runExample<WidgetName>`. For instance:
+Want to see a widget in action? We provide simple example apps for each of our widgets. To launch them, simply call a `runExample<WidgetName>`. For instance: ```./gradlew runExampleSquareButton```.
+For a list of examples, run:
 ```
-./gradlew runExampleSquareButton
+./gradlew runExample
 ```
 
 ##Artifacts

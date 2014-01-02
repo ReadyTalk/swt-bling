@@ -97,7 +97,6 @@ public class BubbleRegistryIntegTest {
     Assert.assertTrue(bottomBubble.getIsFadeEffectInProgress());
   }
 
-  @Ignore("This test works everywhere but XVFB. Tracked by issue #27")
   @Test
   public void test_show_all() {
     bubbleRegistry.showAllBubbles();
@@ -107,7 +106,6 @@ public class BubbleRegistryIntegTest {
     Assert.assertTrue(bottomBubble.isVisible());
   }
 
-  @Ignore("This test works everywhere but XVFB. Tracked by issue #27")
   @Test
   public void test_hide_all() {
     bubbleRegistry.showAllBubbles();
