@@ -322,7 +322,10 @@ public class Bubble extends PopOverShell {
   }
 
   private Point getTextExtent(TextPainter textPainter) {
-    textPainter.setBounds(new Rectangle(0, 0, 100, 100));
+    // This reduces the 1600 width we're getting to 100.
+    // This is the source of the enhancement request.
+    // textPainter.setBounds(new Rectangle(0, 0, 100, 100));
+
     GC gc = new GC(getDisplay());
     Rectangle textExtent = textPainter.computeSize(gc);
     gc.dispose();
