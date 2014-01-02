@@ -2,6 +2,7 @@ package com.readytalk.examples.swt.widgets.buttons;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
+import com.readytalk.swt.util.ColorFactory;
 import com.readytalk.swt.widgets.buttons.SquareButton;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -21,11 +22,11 @@ public class SquareButtonExample implements SwtBlingExample {
 
   public void run(Display display, Shell shell) {
     /* Colors */
-    final Color offBlack = new Color(display, 74, 74, 74);
-    final Color lightGray = new Color(display, 204, 204, 204);
-    final Color lighterGray = new Color(display, 232, 232, 232);
-    final Color lightestGray = new Color(display, 239, 239, 239);
-    final Color white = new Color(display, 255, 255, 255);
+    final Color offBlack = ColorFactory.getColor(display, 74, 74, 74);
+    final Color lightGray = ColorFactory.getColor(display, 204, 204, 204);
+    final Color lighterGray = ColorFactory.getColor(display, 232, 232, 232);
+    final Color lightestGray = ColorFactory.getColor(display, 239, 239, 239);
+    final Color white = ColorFactory.getColor(display, 255, 255, 255);
 
     /* SquareButton */
     String buttonText = "SquareButton";
@@ -62,11 +63,7 @@ public class SquareButtonExample implements SwtBlingExample {
 
     shell.addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent e) {
-        offBlack.dispose();
-        lightGray.dispose();
-        lighterGray.dispose();
-        lightestGray.dispose();
-        white.dispose();
+        ColorFactory.disposeAll();
       }
     });
   }
