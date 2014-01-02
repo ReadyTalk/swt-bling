@@ -27,7 +27,7 @@ public class FontFactory {
 
 
   private static String defaultName;
-  private static Map<FontData, Font> fontMap;
+  static final Map<FontData, Font> fontMap;
 
   static {
     fontMap = new HashMap<FontData, Font>();
@@ -45,7 +45,7 @@ public class FontFactory {
 
   // converts a "size" metric to the nearest system-dependent
   // "point" metric - based on DPIs
-  private static int fontPoint(Device dev, int size) {
+  private static int fontPoint(final Device dev, final int size) {
     int systemDPI = dev.getDPI().y;
     double ratio = (double)FONT_DPI / systemDPI;
     return (int)(ratio * size);
@@ -58,7 +58,7 @@ public class FontFactory {
    * @param dev Device object off of which to create the font.
    * @return
    */
-  public static Font getFont(Device dev) {
+  public static Font getFont(final Device dev) {
     return getFont(dev, DEFAULT_SIZE, SWT.NORMAL, defaultName);
   }
 
@@ -69,7 +69,7 @@ public class FontFactory {
    * @param dev Device object off of which to create the font.
    * @return
    */
-  public static Font getFont(Device dev, int size) {
+  public static Font getFont(final Device dev, final int size) {
     return getFont(dev, size, SWT.NORMAL, defaultName);
   }
 
@@ -82,7 +82,7 @@ public class FontFactory {
    *
    * @return
    */
-  public static Font getFont(Device dev, int size, int style) {
+  public static Font getFont(final Device dev, final int size, final int style) {
     return getFont(dev, size, style, defaultName);
   }
 
@@ -93,7 +93,7 @@ public class FontFactory {
    *
    * @return
    */
-  public static Font getFont(int size, int style) {
+  public static Font getFont(final int size, final int style) {
     return getFont(Display.getCurrent(), size, style);
   }
 
@@ -104,8 +104,7 @@ public class FontFactory {
    * @param dev Device object off of which to create the font.
    * @return
    */
-  public static Font getFont(Device dev, int size, int style,
-                             String name) {
+  public static Font getFont(final Device dev, final int size, final int style, String name) {
     Font font;
     FontData data = new FontData(name, size, style);
     if (fontMap.containsKey(data)) {

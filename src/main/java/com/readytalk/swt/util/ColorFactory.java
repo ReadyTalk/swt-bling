@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * ColorFactory is meant as a central repository for getting colors so that we don't allocate
+ * This is meant as a central repository for getting colors so that we don't allocate
  * duplicates everywhere, which greatly decreases the number of colors we allocate.
  * This currently doesn't do any reference counting or anything else, which we should
  * probably implement in the future.
