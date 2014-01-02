@@ -15,8 +15,20 @@ public class TextTokenizerFactory {
    * @return {@link TextTokenizer}
    */
   public static TextTokenizer createTextTokenizer(TextTokenizerType type) 
-      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-    return (TextTokenizer) Class.forName(type.classname).newInstance();
+      throws RuntimeException {
+    TextTokenizer textTokenizer;
+
+    try {
+      textTokenizer = (TextTokenizer) Class.forName(type.classname).newInstance();
+    } catch (InstantiationException e) {
+      throw new RuntimeException("InstantiationException caught creating TextTokenizerType " + type + e.getStackTrace());
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("IllegalAccessException caught creating TextTokenizerType " + type + e.getStackTrace());
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException("ClassNotFoundException caught creating TextTokenizerType " + type + e.getStackTrace());
+    }
+
+    return textTokenizer;
   }
   
   /**

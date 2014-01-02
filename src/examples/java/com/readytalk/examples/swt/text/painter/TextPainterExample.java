@@ -29,10 +29,7 @@ public class TextPainterExample implements SwtBlingExample {
 
     Timer timer;
 
-    public TextCanvas(Composite parent, int style)
-        throws InstantiationException, IllegalAccessException,
-        ClassNotFoundException {
-
+    public TextCanvas(Composite parent, int style){
       super(parent, style);
       timer = new Timer();
       final List<TextPainter> painters = new ArrayList<TextPainter>();
@@ -59,7 +56,7 @@ public class TextPainterExample implements SwtBlingExample {
       });
     }
 
-    private TextPainter buildLabel(Rectangle bounds, String name) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
+    private TextPainter buildLabel(Rectangle bounds, String name) {
       final TextPainter label = new TextPainter(this)
           .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI))
           .setText("'''"+name+"'''")
@@ -67,7 +64,7 @@ public class TextPainterExample implements SwtBlingExample {
       return label;
     }
 
-    private TextPainter buildWikiTextPainter(final Rectangle bounds, final boolean modulateWidth) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    private TextPainter buildWikiTextPainter(final Rectangle bounds, final boolean modulateWidth) {
       final int width = bounds.width;
 
       final TextPainter painter = new TextPainter(this)
@@ -120,15 +117,7 @@ public class TextPainterExample implements SwtBlingExample {
   public void run(Display display, Shell shell) {
     shell.setSize(700, 500);
 
-    try {
-      new TextCanvas(shell, SWT.NONE);
-    } catch (InstantiationException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
+    new TextCanvas(shell, SWT.NONE);
 
     FillLayout fillLayout = new FillLayout();
     shell.setLayout(fillLayout);
