@@ -1,14 +1,8 @@
+tasks.idea.dependsOn ragel
+
 idea {
   module {
     excludeDirs -= file('build')
-
-    file('build').eachDir {
-      if (it.getName() != ('generated-src')) {
-        excludeDirs += it
-      }
-    }
-
     sourceDirs += file('build/generated-src/java')
-    scopes.COMPILE.plus += configurations.examplesCompile
   }
 }
