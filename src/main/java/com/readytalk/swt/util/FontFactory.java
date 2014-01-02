@@ -56,7 +56,7 @@ public class FontFactory {
    * should not dispose the font returned by this function call, as the owner is
    * FontFactory.
    * @param dev Device object off of which to create the font.
-   * @return
+   * @return Font
    */
   public static Font getFont(final Device dev) {
     return getFont(dev, DEFAULT_SIZE, SWT.NORMAL, defaultName);
@@ -67,7 +67,7 @@ public class FontFactory {
    * should not dispose the font returned by this function call, as the owner is
    * FontFactory.
    * @param dev Device object off of which to create the font.
-   * @return
+   * @return Font
    */
   public static Font getFont(final Device dev, final int size) {
     return getFont(dev, size, SWT.NORMAL, defaultName);
@@ -80,7 +80,7 @@ public class FontFactory {
    *
    * @param dev Device object off of which to create the font.
    *
-   * @return
+   * @return Font
    */
   public static Font getFont(final Device dev, final int size, final int style) {
     return getFont(dev, size, style, defaultName);
@@ -91,7 +91,7 @@ public class FontFactory {
    * should not dispose the font returned by this function call, as the owner is
    * FontFactory.
    *
-   * @return
+   * @return Font
    */
   public static Font getFont(final int size, final int style) {
     return getFont(Display.getCurrent(), size, style);
@@ -102,7 +102,7 @@ public class FontFactory {
    * should not dispose the font returned by this function call, as the owner is
    * FontFactory.
    * @param dev Device object off of which to create the font.
-   * @return
+   * @return Font
    */
   public static Font getFont(final Device dev, final int size, final int style, String name) {
     Font font;
