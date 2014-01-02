@@ -1,5 +1,8 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.text.painter.TextPainter;
+import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
+import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
@@ -50,6 +53,8 @@ public class Bubble extends PopOverShell {
   private Color borderColor;
   private Color textColor;
   private Font boldFont;
+
+  private TextPainter textPainter;
 
   /**
    * Creates and attaches a bubble to a component that implements <code>CustomElementDataProvider</code>.
@@ -118,6 +123,11 @@ public class Bubble extends PopOverShell {
 
     this.tooltipText = maybeBreakLines(text);
 
+    textPainter = new TextPainter(getPopOverShell())
+            .setText(tooltipText)
+            .setTextColor(TEXT_COLOR)
+            .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI));
+
     // Remember to clean up after yourself onDispose.
     borderColor = new Color(getDisplay(), BORDER_COLOR);
     textColor = new Color(getDisplay(), TEXT_COLOR);
@@ -133,7 +143,7 @@ public class Bubble extends PopOverShell {
 
   Point getAppropriatePopOverSize() {
     if (textSize == null) {
-      textSize = getTextSize(tooltipText);
+      textSize = getTextExtent(textPainter);
     }
 
     return textSize;
@@ -220,10 +230,11 @@ public class Bubble extends PopOverShell {
 
   void runBeforeShowPopOverShell() {
     if (textSize == null) {
-      textSize = getTextSize(tooltipText);
+      textSize = getTextExtent(textPainter);
     }
 
     borderRectangle = calculateBorderRectangle(textSize);
+    textPainter.setBounds(new Rectangle(TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2, textSize.x, textSize.y));
   }
 
   void widgetDispose() {
@@ -243,12 +254,14 @@ public class Bubble extends PopOverShell {
     gc.setLineWidth(BORDER_THICKNESS);
     gc.drawRectangle(borderRectangle);
 
-    if (boldFont != null) {
-      gc.setFont(boldFont);
-    }
 
-    gc.setForeground(textColor);
-    gc.drawText(tooltipText, TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2);
+    textPainter.handlePaint(event.gc);
+//    if (boldFont != null) {
+//      gc.setFont(boldFont);
+//    }
+//
+//    gc.setForeground(textColor);
+//    gc.drawText(tooltipText, TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2);
   }
 
   private void onMouseDown(Event event) {
@@ -308,17 +321,12 @@ public class Bubble extends PopOverShell {
     return returnString;
   }
 
-  private Point getTextSize(String text) {
+  private Point getTextExtent(TextPainter textPainter) {
+    textPainter.setBounds(new Rectangle(0, 0, 100, 100));
     GC gc = new GC(getDisplay());
-    if (boldFont != null) {
-      gc.setFont(boldFont);
-    }
-
-    Point textExtent = gc.textExtent(text, SWT.DRAW_DELIMITER);
-    textExtent.x = textExtent.x + TEXT_WIDTH_PADDING;
-    textExtent.y = textExtent.y + TEXT_HEIGHT_PADDING;
-
+    Rectangle textExtent = textPainter.computeSize(gc);
     gc.dispose();
-    return textExtent;
+
+    return new Point(textExtent.width + TEXT_WIDTH_PADDING, textExtent.height + TEXT_HEIGHT_PADDING);
   }
 }

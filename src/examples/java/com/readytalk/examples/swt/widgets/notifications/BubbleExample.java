@@ -30,7 +30,8 @@ public class BubbleExample implements SwtBlingExample {
 
     Button displayNewBubbles = new Button(composite, SWT.PUSH);
     displayNewBubbles.setText("Display Bubbles Tag NEW");
-    Bubble.createBubble(displayNewBubbles, "Click here to display all Bubbles of type \"NEW\"");
+//    Bubble.createBubble(displayNewBubbles, "Click here to display all Bubbles of type \"NEW\"");
+    Bubble.createBubble(displayNewBubbles, "'''Click here to display all''' Bubbles of type \"NEW\"");
     displayNewBubbles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         bubbleRegistry.showBubblesByTags(BubbleTag.NEW);
