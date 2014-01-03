@@ -136,10 +136,5 @@ public class TextPainterExample implements SwtBlingExample {
     FillLayout fillLayout = new FillLayout();
     shell.setLayout(fillLayout);
     shell.open();
-    shell.addDisposeListener(new DisposeListener() {
-      public void widgetDisposed(DisposeEvent e) {
-        ColorFactory.disposeAll();
-      }
-    });
   }
 }

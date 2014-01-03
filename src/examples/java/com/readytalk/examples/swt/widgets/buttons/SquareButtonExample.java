@@ -60,11 +60,5 @@ public class SquareButtonExample implements SwtBlingExample {
     // This is needed remove focus from the Button by default.
     Composite composite2 = new Composite(shell, SWT.NONE);
     composite2.setFocus();
-
-    shell.addDisposeListener(new DisposeListener() {
-      public void widgetDisposed(DisposeEvent e) {
-        ColorFactory.disposeAll();
-      }
-    });
   }
 }
