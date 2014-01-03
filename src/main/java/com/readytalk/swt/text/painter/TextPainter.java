@@ -487,6 +487,37 @@ public class TextPainter {
     return new Rectangle(0, 0, bounds.width - bounds.x, bounds.height - bounds.y);
   }
 
+  /**
+   * Calculates the bounds the text is attempting to occupy; it only takes the text and assigned styles into account.
+   * Please take note this is subtly different than computeSize; computeSize takes the widget bounds and wrapping into
+   * into in addition to the text and the assigned styles.
+   *
+   * @return Rectangle representing the bounds the text represents
+   */
+  public Rectangle precomputeSize(GC gc) {
+    List<List<DrawData>> lines = buildLines(gc);
+    int maxX = 0;
+    int maxY = 0;
+    for (List<DrawData> drawDataList: lines) {
+      int y = 0;
+      int x = 0;
+      for (DrawData drawData: drawDataList) {
+        x += drawData.extent.x;
+        if (y < drawData.extent.y &&  !TextType.NEWLINE.equals(drawData.token.getType())) {
+          y = drawData.extent.y;
+        }
+      }
+
+      if (x > maxX) {
+        maxX = x;
+      }
+      maxY += y;
+      System.out.println(maxX + ":" +maxY);
+    }
+
+    return new Rectangle(0, 0, maxX, maxY);
+  }
+
   class DrawData {
     TextToken token;
     Point extent;
@@ -516,7 +547,10 @@ public class TextPainter {
 
     for (DrawData drawData:data) {
       lineWidth += drawData.extent.x;
-      if (lineWidth > bounds.width && wrapping) {
+
+      if ((lineWidth > bounds.width && wrapping)
+         || TextType.NEWLINE.equals(drawData.token.getType())) {
+
         List<DrawData> newline = new ArrayList<DrawData>();
         lines.add(newline);
 

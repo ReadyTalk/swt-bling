@@ -51,7 +51,8 @@ dependencies {
 
 task ragel(type:Exec) {
   ext.sourcePath = 'generated-src/java/com/readytalk/swt/text/tokenizer'
-  ext.sourceName = 'WikiTextTokenizer.java'
+  ext.wikiTextSourceName = 'WikiTextTokenizer.java'
+  ext.formattedTextSourceName = 'FormattedTextTokenizer.java'
   ext.destDir = new File(buildDir, sourcePath)
   workingDir = 'src/main/resources/ragel'
   ext.runRagel = false
@@ -83,7 +84,8 @@ task ragel(type:Exec) {
       logger.warn('') 
     }
     
-    commandLine path, '-J', '-o', file(destDir.getPath() + '/' + sourceName), sourceName + '.rl'
+    commandLine path, '-J', '-o', file(destDir.getPath() + '/' + wikiTextSourceName), wikiTextSourceName + '.rl'
+    commandLine path, '-J', '-o', file(destDir.getPath() + '/' + formattedTextSourceName), formattedTextSourceName + '.rl'
   }
 }
 

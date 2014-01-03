@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
+import com.readytalk.swt.widgets.notifications.Bubble;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -31,6 +32,7 @@ public class TextPainterExample implements SwtBlingExample {
 
     public TextCanvas(Composite parent, int style){
       super(parent, style);
+      final TextCanvas textCanvasInstance = this;
       timer = new Timer();
       final List<TextPainter> painters = new ArrayList<TextPainter>();
 
@@ -47,8 +49,17 @@ public class TextPainterExample implements SwtBlingExample {
       painters.add( buildWikiTextPainter(new Rectangle(20, 320, 200, 250), true).setJustification(SWT.LEFT));
 
       addPaintListener(new PaintListener() {
+        TextPainter lazyPainter;
+
         @Override
         public void paintControl(PaintEvent e) {
+          if(lazyPainter==null) {
+            lazyPainter = new TextPainter(textCanvasInstance).setText("'''Header'''\nSome other text goes here a a a aa a a aa a a a a .").setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED));
+            Rectangle bounds = lazyPainter.precomputeSize(e.gc);
+            bounds.y += 600;
+            lazyPainter.setBounds(bounds).setDrawBounds(true);
+            painters.add(lazyPainter);
+          }
           for (TextPainter painter: painters){
             painter.handlePaint(e);
           }
@@ -115,10 +126,8 @@ public class TextPainterExample implements SwtBlingExample {
   public TextPainterExample() { }
 
   public void run(Display display, Shell shell) {
-    shell.setSize(700, 500);
-
+    shell.setSize(700, 700);
     new TextCanvas(shell, SWT.NONE);
-
     FillLayout fillLayout = new FillLayout();
     shell.setLayout(fillLayout);
     shell.open();
