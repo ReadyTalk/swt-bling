@@ -97,8 +97,9 @@ public class TextPainterExample implements SwtBlingExample {
               + "Etsy McSweeney's slow-carb [http://www.shorditch.com Shoreditch].  Gluten-free pickled pug.")
           .setDrawCalculatedBounds(false)
           .setClipping(true)
+          .setPadding(5, 10, 30, 10)
           .setBounds(bounds)
-          .setDrawBounds(false)
+          .setDrawBounds(true)
           .addNavigationListener(new NavigationListener() {
             @Override
             public void navigate(NavigationEvent event) {
