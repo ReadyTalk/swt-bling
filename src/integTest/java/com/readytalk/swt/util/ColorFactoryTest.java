@@ -47,6 +47,23 @@ public class ColorFactoryTest {
   }
 
   @Test
+  public void getColor_CreateTwoSameColor_OnlyOneObjectAddedToDeviceDataObjects() {
+    ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    int numberOfItemsBefore = shell.getDisplay().getDeviceData().objects.length;
+    ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    Assert.assertEquals(shell.getDisplay().getDeviceData().objects.length, numberOfItemsBefore);
+  }
+
+  @Test
+  public void getColor_CreateTwoSameColor_GetSameObjectFromColorMap() {
+    Color a = ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+    Color b = ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
+
+    // Equals may compare RGB values in some cases; so we look at the original object hashcode
+    Assert.assertEquals(System.identityHashCode(a), System.identityHashCode(b));
+  }
+
+  @Test
   public void getColor_CreateThreeDifferentColors_ColorMapSizeIs3() {
     ColorFactory.getColor(shell.getDisplay(), 23, 34, 45);
     ColorFactory.getColor(shell.getDisplay(), 255, 214, 55);
