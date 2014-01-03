@@ -2,6 +2,7 @@ package com.readytalk.swt.util;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
@@ -44,6 +45,21 @@ public class FontFactoryTest {
     FontFactory.getFont(shell.getDisplay());
     FontFactory.disposeAll();
     Assert.assertEquals(shell.getDisplay().getDeviceData().objects.length, numberOfItemsBefore);
+  }
+
+  @Test
+  public void getFont_CreateTwoFonts_OnlyOneAdditionalObjectInoDeviceDataObjects() {
+    FontFactory.getFont(shell.getDisplay());
+    int numberOfItemsBefore = shell.getDisplay().getDeviceData().objects.length;
+    FontFactory.getFont(shell.getDisplay());
+    Assert.assertEquals(shell.getDisplay().getDeviceData().objects.length, numberOfItemsBefore);
+  }
+
+  @Test
+  public void getFont_CreateTwoFonts_GetTheSameFontObjectBackFromFontMap() {
+    Font a = FontFactory.getFont(shell.getDisplay());
+    Font b =FontFactory.getFont(shell.getDisplay());
+    Assert.assertEquals(System.identityHashCode(a), System.identityHashCode(b));
   }
 
   @Test
