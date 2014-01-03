@@ -53,13 +53,21 @@ public class TextPainterExample implements SwtBlingExample {
 
         @Override
         public void paintControl(PaintEvent e) {
+
           if(lazyPainter==null) {
-            lazyPainter = new TextPainter(textCanvasInstance).setText("'''Header'''\nSome other text goes here a a a aa a a aa a a a a .").setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED));
+            lazyPainter = new TextPainter(textCanvasInstance)
+                .setText("'''Header'''\nSome other text goes here a a a aa a a aa a a a a .")
+                .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
+                .setPadding(10, 10, 10, 10);
+
             Rectangle bounds = lazyPainter.precomputeSize(e.gc);
+
+            // move the text into its final position
             bounds.y += 600;
             lazyPainter.setBounds(bounds).setDrawBounds(true);
             painters.add(lazyPainter);
           }
+
           for (TextPainter painter: painters){
             painter.handlePaint(e);
           }

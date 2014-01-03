@@ -93,6 +93,10 @@ public class TextPainter {
   private int justification;
   private float lineSpacing;
   private List<NavigationListener> navigationListeners;
+  private int paddingBottom;
+  private int paddingLeft;
+  private int paddingRight;
+  private int paddingTop;
   private Composite parent;
   private String text;
   private TextTokenizer textTokenizer;
@@ -133,7 +137,11 @@ public class TextPainter {
     setFont(fontData.getName(), fontData.getHeight());
     Point size = parent.getSize();
     bounds = new Rectangle(0, 0, size.x, size.y);
-    navigationListeners = new ArrayList<NavigationListener>(); 
+    navigationListeners = new ArrayList<NavigationListener>();
+    paddingBottom = 0;
+    paddingLeft = 0;
+    paddingRight = 0;
+    paddingTop = 0;
     hyperlinks = new ArrayList<Hyperlink>();
   
     parent.addMouseMoveListener(new MouseMoveListener() {
@@ -351,6 +359,22 @@ public class TextPainter {
     this.lineSpacing = lineSpacing;
     return this;
   }
+
+  /**
+   * Sets the inset padding for the text.  This may effect layout in some instances.
+   * @param top
+   * @param bottom
+   * @param left
+   * @param right
+   * @return {@link TextPainter}
+   */
+  public TextPainter setPadding(final int top, final int bottom, final int left, final int right) {
+    this.paddingTop    = top;
+    this.paddingBottom = bottom;
+    this.paddingLeft   = left;
+    this.paddingRight  = right;
+    return this;
+  }
   
   void tokenizeText() {
     tokens = textTokenizer.tokenize(text);
@@ -488,16 +512,18 @@ public class TextPainter {
   }
 
   /**
-   * Calculates the bounds the text is attempting to occupy; it only takes the text and assigned styles into account.
-   * Please take note this is subtly different than computeSize; computeSize takes the widget bounds and wrapping into
-   * into in addition to the text and the assigned styles.
+   * Calculates the bounds the text is attempting to occupy; it only takes the text, assigned styles, & padding into
+   * account.  Please take note this is subtly different than computeSize; computeSize takes the widget bounds and
+   * wrapping into into in addition to the text and the assigned styles.
    *
    * @return Rectangle representing the bounds the text represents
    */
   public Rectangle precomputeSize(GC gc) {
+
     List<List<DrawData>> lines = buildLines(gc);
     int maxX = 0;
     int maxY = 0;
+
     for (List<DrawData> drawDataList: lines) {
       int y = 0;
       int x = 0;
@@ -515,7 +541,7 @@ public class TextPainter {
       System.out.println(maxX + ":" +maxY);
     }
 
-    return new Rectangle(0, 0, maxX, maxY);
+    return new Rectangle(0, 0, maxX + paddingLeft + paddingRight, maxY + paddingBottom + paddingTop);
   }
 
   class DrawData {
@@ -548,7 +574,7 @@ public class TextPainter {
     for (DrawData drawData:data) {
       lineWidth += drawData.extent.x;
 
-      if ((lineWidth > bounds.width && wrapping)
+      if ((lineWidth > bounds.width - (paddingRight + paddingLeft) && wrapping)
          || TextType.NEWLINE.equals(drawData.token.getType())) {
 
         List<DrawData> newline = new ArrayList<DrawData>();
@@ -618,7 +644,7 @@ public class TextPainter {
     }
 
     hyperlinks.clear();
-    int y = bounds.y;
+    int y = bounds.y + paddingTop;
     List<List<DrawData>> lines = buildLines(gc);
 
     for (int i = 0; i < lines.size(); i++) {
@@ -650,6 +676,7 @@ public class TextPainter {
 
   int drawRightJustified(GC gc, List<DrawData> line, int y) {
     int maxY = 0;
+
     if (line.size() > 0) {
       int startIndex = line.size() - 1;
       DrawData drawData = line.get(startIndex);
@@ -657,7 +684,8 @@ public class TextPainter {
         startIndex--;
       }
 
-      int x = bounds.width + bounds.x;
+      int x = bounds.width + bounds.x - paddingRight;
+
       for (int i = startIndex; i >= 0; i--) {
         drawData = line.get(i);
         configureForStyle(gc, drawData.token);
@@ -687,7 +715,7 @@ public class TextPainter {
         width += drawData.extent.x;
       }
 
-      int x = bounds.x + ((bounds.width - width) / 2);
+      int x = bounds.x + ((bounds.width - paddingRight - width) / 2);
 
       for (int i = startIndex; i <= endIndex; i++) {
         DrawData drawData = line.get(i);
@@ -706,7 +734,7 @@ public class TextPainter {
 
     if (line.size() > 0) {
       int startIndex = getStartIndex(line);
-      int x = bounds.x;
+      int x = bounds.x + paddingLeft;
       for (int i = startIndex; i < line.size(); i++) {
         DrawData drawData = line.get(i);
         x = drawTextToken(gc, y, x, drawData);
