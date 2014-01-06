@@ -375,6 +375,18 @@ public class TextPainter {
    */
   public TextPainter setText(final String text) {
     this.text = text;
+    textTokenizer.reset();
+    tokenizeText();
+    return this;
+  }
+
+  /**
+   * Appends the text passed to the previously defined text
+   *
+   * @return {@link TextPainter}
+   */
+  public TextPainter appendText(final String appendText) {
+    this.text = text + appendText;
     tokenizeText();
     return this;
   }
@@ -631,10 +643,6 @@ public class TextPainter {
     final Color bg = gc.getBackground();
 
     if (clipping) {
-//      gc.setClipping(new Rectangle(bounds.x + paddingLeft,
-//          bounds.y + paddingTop,
-//          bounds.width - paddingRight,
-//          bounds.height - paddingBottom));
       gc.setClipping(this.bounds);
     }
 
