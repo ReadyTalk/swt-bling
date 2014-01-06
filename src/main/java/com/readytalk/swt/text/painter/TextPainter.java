@@ -652,11 +652,11 @@ public class TextPainter {
 
     for (int i = 0; i < lines.size(); i++) {
       if(justification == SWT.RIGHT) {
-        y += drawRightJustified(gc, lines.get(i), y);
+        y += drawRightJustified(gc, paint, lines.get(i), y);
       } else if (justification == SWT.LEFT) {
-        y += drawLeftJustified(gc, lines.get(i), y);
+        y += drawLeftJustified(gc, paint, lines.get(i), y);
       } else if (justification == SWT.CENTER) {
-        y += drawCenterJustified(gc, lines.get(i), y);
+        y += drawCenterJustified(gc, paint, lines.get(i), y);
       }
     }
 
@@ -677,7 +677,7 @@ public class TextPainter {
     return calculatedBounds;
   }
 
-  int drawRightJustified(final GC gc, List<DrawData> line, final int y) {
+  int drawRightJustified(GC gc, boolean paint, List<DrawData> line, int y) {
     int maxY = 0;
 
     if (line.size() > 0) {
@@ -692,8 +692,10 @@ public class TextPainter {
       for (int i = startIndex; i >= 0; i--) {
         drawData = line.get(i);
         configureForStyle(gc, drawData.token);
-        gc.drawText(drawData.token.getText(), x - drawData.extent.x, y, true);
-        addIfHyperlink(drawData, x - drawData.extent.x, y);
+        if (paint) {
+            gc.drawText(drawData.token.getText(), x - drawData.extent.x, y, true);
+            addIfHyperlink(drawData, x - drawData.extent.x, y);
+        }
         x -= drawData.extent.x;
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
@@ -703,7 +705,7 @@ public class TextPainter {
     return maxY;
   }
 
-  int drawCenterJustified(final GC gc, final List<DrawData> line, final int y) {
+  int drawCenterJustified(GC gc, boolean paint, List<DrawData> line, int y) {
     int maxY = 0;
 
     if (line.size() > 0) {
@@ -714,7 +716,7 @@ public class TextPainter {
       int x = bounds.x + ((bounds.width + paddingLeft - paddingRight - width) / 2);
       for (int i = startIndex; i <= endIndex; i++) {
         DrawData drawData = line.get(i);
-        x = drawTextToken(gc, y, x, drawData);
+        x = drawTextToken(gc, paint, y, x, drawData);
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
         }
@@ -724,7 +726,7 @@ public class TextPainter {
     return maxY;
   }
 
-  int drawLeftJustified(final GC gc, final List<DrawData> line, final int y) {
+  int drawLeftJustified(GC gc, boolean paint, List<DrawData> line, int y) {
     int maxY = 0;
 
     if (line.size() > 0) {
@@ -732,7 +734,7 @@ public class TextPainter {
       int x = bounds.x + paddingLeft;
       for (int i = startIndex; i < line.size(); i++) {
         DrawData drawData = line.get(i);
-        x = drawTextToken(gc, y, x, drawData);
+        x = drawTextToken(gc, paint, y, x, drawData);
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
         }
@@ -742,10 +744,12 @@ public class TextPainter {
     return maxY;
   }
 
-  private int drawTextToken(final GC gc, final int y, int x, final DrawData drawData) {
+  private int drawTextToken(GC gc, boolean paint, int y, int x, DrawData drawData) {
     configureForStyle(gc, drawData.token);
-    gc.drawText(drawData.token.getText(), x, y, true);
-    addIfHyperlink(drawData, x, y);
+    if (paint) {
+      gc.drawText(drawData.token.getText(), x, y, true);
+      addIfHyperlink(drawData, x, y);
+    }
     x += drawData.extent.x;
     return x;
   }
