@@ -121,13 +121,17 @@ public class Bubble extends PopOverShell {
       throw new IllegalArgumentException("Bubble text cannot be null.");
     }
 
-    this.tooltipText = maybeBreakLines(text);
-
     textPainter = new TextPainter(getPopOverShell())
-            .setText(tooltipText)
+            .setText(text)
             .setTextColor(TEXT_COLOR)
             .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
             .setPadding(TEXT_TOP_AND_BOTTOM_PADDING, TEXT_TOP_AND_BOTTOM_PADDING, TEXT_LEFT_AND_RIGHT_PADDING, TEXT_LEFT_AND_RIGHT_PADDING);
+
+    // TextPainter does the calculations to see if we need to break the lines, thus we set the raw string,
+    // do the calculations and then set the text again. If we don't break the String this is a no-op.
+    this.tooltipText = maybeBreakLines(textPainter);
+    textPainter.setText(tooltipText);
+
 
     // Remember to clean up after yourself onDispose.
     borderColor = new Color(getDisplay(), BORDER_COLOR);
@@ -284,15 +288,15 @@ public class Bubble extends PopOverShell {
             textSize.y - BORDER_THICKNESS);
   }
 
-  String maybeBreakLines(String rawString) {
+  String maybeBreakLines(TextPainter textPainter) {
     GC gc = new GC(getDisplay());
-    if (boldFont != null) {
-      gc.setFont(boldFont);
-    }
 
     String returnString;
-    Point textExtent = gc.textExtent(rawString, SWT.DRAW_DELIMITER);
-    if (textExtent.x > MAX_STRING_LENGTH && !rawString.contains("\n")) {
+    Rectangle size = textPainter.precomputeSize(gc);
+    String rawString = textPainter.getText();
+
+    if (size.width > MAX_STRING_LENGTH && !rawString.contains("\n")) {
+
       StringBuilder sb = new StringBuilder();
       String[] words = rawString.split(" ");
       int spaceInPixels = gc.textExtent(" ").x;

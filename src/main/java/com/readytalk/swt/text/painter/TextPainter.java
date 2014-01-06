@@ -198,6 +198,15 @@ public class TextPainter {
   public List<TextToken> getTokens() {
     return tokens;
   }
+
+  /**
+   * Returns the raw text passed to TextPainter via the setText() call.
+   *
+   * @return the raw text passed in the setText() call.
+   */
+  public String getText() {
+    return text;
+  }
   
   private Font buildFont(final String name, final int height, final int style) {
     return new Font(parent.getDisplay(), name, height, style);
@@ -541,7 +550,6 @@ public class TextPainter {
         maxX = x;
       }
       maxY += y;
-      System.out.println(maxX + ":" +maxY);
     }
 
     return new Rectangle(0, 0, maxX + paddingLeft + paddingRight, maxY + paddingBottom + paddingTop);
