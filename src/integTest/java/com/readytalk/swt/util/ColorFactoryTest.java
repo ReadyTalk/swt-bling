@@ -25,7 +25,9 @@ public class ColorFactoryTest {
 
   @After
   public void tearDown() throws Exception {
-    display.dispose();
+    if (display != null) {
+      display.dispose();
+    }
     ColorFactory.disposeAll();
   }
 

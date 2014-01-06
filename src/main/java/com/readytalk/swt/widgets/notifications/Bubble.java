@@ -1,6 +1,7 @@
 package com.readytalk.swt.widgets.notifications;
 
 import com.readytalk.swt.util.ColorFactory;
+import com.readytalk.swt.util.FontFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
@@ -125,7 +126,7 @@ public class Bubble extends PopOverShell {
     if (useBoldFont) {
       Font font = getDisplay().getSystemFont();
       FontData fontData = font.getFontData()[0];
-      boldFont = new Font(getDisplay(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+      boldFont = FontFactory.getFont(getDisplay(), fontData.getHeight(), SWT.BOLD, fontData.getName());
     }
 
     attachListeners();
@@ -229,9 +230,6 @@ public class Bubble extends PopOverShell {
 
   void widgetDispose() {
     deactivateBubble();
-    if (boldFont != null) {
-      boldFont.dispose();
-    }
     boldFont = null;
   }
 

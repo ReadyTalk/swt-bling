@@ -2,6 +2,7 @@ package com.readytalk.examples.swt;
 
 import com.readytalk.examples.swt.util.Sleak;
 import com.readytalk.swt.util.ColorFactory;
+import com.readytalk.swt.util.FontFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.widgets.Display;
@@ -50,6 +51,7 @@ public class Examples {
               switch (event.type) {
                 case SWT.Dispose:
                   ColorFactory.disposeAll();
+                  FontFactory.disposeAll();
                   break;
               }
             }
