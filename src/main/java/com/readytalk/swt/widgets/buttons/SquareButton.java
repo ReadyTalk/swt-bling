@@ -82,7 +82,7 @@ public class SquareButton extends Canvas {
   protected int innerMarginWidth = 8;
   protected int innerMarginHeight = 4;
   protected int borderWidth = 1;
-  protected int imagePadding = 5; //5;
+  protected int imagePadding = 5;
   protected boolean roundedCorners = true;
   protected int cornerRadius = 5;
   protected boolean isFocused = false;
@@ -103,7 +103,7 @@ public class SquareButton extends Canvas {
   }
   protected ImagePosition imagePosition = ImagePosition.LEFT_OF_TEXT;
 
-  protected boolean horizontallyCenterContents = false;
+  protected boolean horizontallyCenterContents = true;
   protected boolean verticallyCenterContents = true;
 
   protected HashMap<String, Color> colorRegistry = new HashMap<String, Color>();
@@ -352,6 +352,21 @@ public class SquareButton extends Canvas {
     if (redrawFlag) { redraw(); }
   }
 
+  @Override
+  public void setLayoutData(Object layoutData) {
+    /*
+     * set height and width hints... pin the sides if we have set layout data to something that it would care about
+     */
+    customLayout = true;
+    super.setLayoutData(layoutData);
+  }
+
+  boolean customLayout = false;
+
+  @Override
+  public Rectangle getClientArea() {
+    return super.getClientArea();
+  }
 
   protected void paintControl(PaintEvent paintEvent) {
     if (currentColor == null) {
@@ -441,6 +456,10 @@ public class SquareButton extends Canvas {
     ContentOriginSet contentOriginSet = getContentsOrigin(buttonRectangle);
     Point textOrigin = contentOriginSet.getTextOrigin();
     Point imageOrigin = contentOriginSet.getImageOrigin();
+
+    log.info("Client area width is " + buttonRectangle.width + ", " + buttonRectangle.height);
+    log.info("Text origin is: " + textOrigin.x + ", " + textOrigin.y);
+    log.info("Image origin is: " + imageOrigin.x + ", " + imageOrigin.y);
 
     /*
      * Order of drawing matters... if the image is above or to the left,
@@ -1213,7 +1232,7 @@ public class SquareButton extends Canvas {
     protected Font font;
     protected Image image;
     protected ImagePosition imagePosition = ImagePosition.LEFT_OF_TEXT; // this is the default value of course
-    protected boolean horizontallyCenterContents = false;
+    protected boolean horizontallyCenterContents = true;
     protected boolean verticallyCenterContents = true;
     protected int imagePadding;
     protected int cornerRadius;
