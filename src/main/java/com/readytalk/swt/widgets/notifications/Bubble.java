@@ -40,8 +40,8 @@ public class Bubble extends PopOverShell {
 
   static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
-  private static final int TEXT_HEIGHT_PADDING = 5; //pixels
-  private static final int TEXT_WIDTH_PADDING = 10; //pixels
+  private static final int TEXT_TOP_AND_BOTTOM_PADDING = 2; //pixels
+  private static final int TEXT_LEFT_AND_RIGHT_PADDING = 5; //pixels
 
   private boolean disableAutoHide;
 
@@ -126,7 +126,8 @@ public class Bubble extends PopOverShell {
     textPainter = new TextPainter(getPopOverShell())
             .setText(tooltipText)
             .setTextColor(TEXT_COLOR)
-            .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED));
+            .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
+            .setPadding(TEXT_TOP_AND_BOTTOM_PADDING, TEXT_TOP_AND_BOTTOM_PADDING, TEXT_LEFT_AND_RIGHT_PADDING, TEXT_LEFT_AND_RIGHT_PADDING);
 
     // Remember to clean up after yourself onDispose.
     borderColor = new Color(getDisplay(), BORDER_COLOR);
@@ -234,7 +235,6 @@ public class Bubble extends PopOverShell {
     }
 
     borderRectangle = calculateBorderRectangle(textSize);
-    textPainter.setBounds(new Rectangle(TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2, textSize.x, textSize.y));
   }
 
   void widgetDispose() {
@@ -261,7 +261,7 @@ public class Bubble extends PopOverShell {
 //    }
 //
 //    gc.setForeground(textColor);
-//    gc.drawText(tooltipText, TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2);
+//    gc.drawText(tooltipText, TEXT_LEFT_AND_RIGHT_PADDING / 2, TEXT_TOP_AND_BOTTOM_PADDING / 2);
   }
 
   private void onMouseDown(Event event) {
@@ -326,6 +326,6 @@ public class Bubble extends PopOverShell {
     Rectangle textExtent = textPainter.precomputeSize(gc);
     gc.dispose();
 
-    return new Point(textExtent.width + TEXT_WIDTH_PADDING, textExtent.height + TEXT_HEIGHT_PADDING);
+    return new Point(textExtent.width, textExtent.height);
   }
 }
