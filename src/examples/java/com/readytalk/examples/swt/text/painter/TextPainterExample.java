@@ -7,7 +7,10 @@ import java.util.TimerTask;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
+import com.readytalk.swt.util.ColorFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Rectangle;

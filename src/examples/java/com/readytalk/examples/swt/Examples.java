@@ -1,8 +1,12 @@
 package com.readytalk.examples.swt;
 
 import com.readytalk.examples.swt.util.Sleak;
+import com.readytalk.swt.util.ColorFactory;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -41,6 +45,15 @@ public class Examples {
           Display display = createDisplay(debug);
           Shell exampleShell = new Shell(display);
           SwtBlingExample example = (SwtBlingExample) constructor.newInstance();
+          exampleShell.addListener(SWT.Dispose, new Listener() {
+            public void handleEvent(Event event) {
+              switch (event.type) {
+                case SWT.Dispose:
+                  ColorFactory.disposeAll();
+                  break;
+              }
+            }
+          });
 
           Sleak sleak = null;
           if (debug) {
