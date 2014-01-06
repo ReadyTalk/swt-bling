@@ -7,7 +7,6 @@ import java.util.TimerTask;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
-import com.readytalk.swt.widgets.notifications.Bubble;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;

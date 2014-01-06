@@ -3,6 +3,8 @@ package com.readytalk.swt.widgets.notifications;
 import com.readytalk.swt.text.painter.TextPainter;
 import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 import com.readytalk.swt.text.tokenizer.TextTokenizerType;
+import com.readytalk.swt.util.ColorFactory;
+import com.readytalk.swt.util.FontFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
@@ -134,12 +136,12 @@ public class Bubble extends PopOverShell {
 
 
     // Remember to clean up after yourself onDispose.
-    borderColor = new Color(getDisplay(), BORDER_COLOR);
-    textColor = new Color(getDisplay(), TEXT_COLOR);
+    borderColor = ColorFactory.getColor(getDisplay(), BORDER_COLOR);
+    textColor = ColorFactory.getColor(getDisplay(), TEXT_COLOR);
     if (useBoldFont) {
       Font font = getDisplay().getSystemFont();
       FontData fontData = font.getFontData()[0];
-      boldFont = new Font(getDisplay(), fontData.getName(), fontData.getHeight(), SWT.BOLD);
+      boldFont = FontFactory.getFont(getDisplay(), fontData.getHeight(), SWT.BOLD, fontData.getName());
     }
 
     attachListeners();
@@ -243,11 +245,6 @@ public class Bubble extends PopOverShell {
 
   void widgetDispose() {
     deactivateBubble();
-    borderColor.dispose();
-    textColor.dispose();
-    if (boldFont != null) {
-      boldFont.dispose();
-    }
     boldFont = null;
   }
 

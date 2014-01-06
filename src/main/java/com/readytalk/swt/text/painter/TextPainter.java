@@ -3,6 +3,8 @@ package com.readytalk.swt.text.painter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.readytalk.swt.util.ColorFactory;
+import com.readytalk.swt.util.FontFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -128,8 +130,8 @@ public class TextPainter {
     wrapping = true;
     textTokenizer = TextTokenizerFactory.createDefault();
     textColor = parent.getForeground();
-    hyperlinkColor = buildColor(100, 50, 200);
-    boundaryColor = buildColor(255, 30, 30);
+    hyperlinkColor = ColorFactory.getColor(100, 50, 200);
+    boundaryColor = ColorFactory.getColor(255, 30, 30);
     justification = SWT.LEFT;
     lineSpacing = 1.0f;
     verticalAlignment = SWT.TOP;
@@ -180,14 +182,6 @@ public class TextPainter {
    * receiver and all its descendants.
    */
   public void dispose() {
-    boundaryColor.dispose();
-    textColor.dispose();
-    hyperlinkColor.dispose();
-    font.dispose();
-    boldFont.dispose();
-    italicFont.dispose();
-    underlineFont.dispose();
-    boldAndItalicFont.dispose();
     handCursor.dispose();
   }
   
@@ -207,34 +201,19 @@ public class TextPainter {
   public String getText() {
     return text;
   }
-  
-  private Font buildFont(final String name, final int height, final int style) {
-    return new Font(parent.getDisplay(), name, height, style);
-  }
-  
-  private TextPainter setFont(final String name, final int height) {
-    if (font != null) {
-      font.dispose();
-      boldFont.dispose();
-      italicFont.dispose();
-      underlineFont.dispose();
-      boldAndItalicFont.dispose();
-    }
 
-    font = buildFont(name, height, SWT.NORMAL);
-    boldFont = buildFont(name, height, SWT.BOLD);
-    italicFont = buildFont(name, height, SWT.ITALIC);
-    underlineFont = buildFont(name, height, SWT.UNDERLINE_LINK);
-    boldAndItalicFont = buildFont(name, height, SWT.ITALIC|SWT.BOLD);
+  private TextPainter setFont(final String name, final int height) {
+    font = FontFactory.getFont(this.parent.getDisplay(), height, SWT.NORMAL, name);
+    boldFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.BOLD, name);
+    italicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC, name);
+    underlineFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.UNDERLINE_LINK, name);
+    boldAndItalicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC|SWT.BOLD, name);
     return this;
-  }
-  
-  private Color buildColor(final int r, final int g, final int b) {
-    return new Color(parent.getDisplay(), r, g, b);
   }
   
   /**
    * Sets the boundary color.  By default, it is set to (255, 30, 30).
+   * Colors are managed by the color factory.
    * 
    * @param r : an int representing the red component
    * @param g : an int representing the green component
@@ -242,14 +221,14 @@ public class TextPainter {
    * @return {@link TextPainter}
    */
   public TextPainter setBoundaryColor(final int r, final int g, final int b) {
-    boundaryColor.dispose();
-    boundaryColor = buildColor(r, g, b);
+    boundaryColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   
   /**
    * Sets the text color.  By default, it clones the parent Composite's 
-   * foreground color upon construction.
+   * foreground color upon construction.  Colors are managed by the
+   * color factory.
    * 
    * @param r : an int representing the red component
    * @param g : an int representing the green component
@@ -258,7 +237,7 @@ public class TextPainter {
    */
   public TextPainter setTextColor(final int r, final int g, final int b) {
     textColor.dispose();
-    textColor = buildColor(r, g, b);
+    textColor = ColorFactory.getColor(r, g, b);
     return this;
   }
 
@@ -271,7 +250,7 @@ public class TextPainter {
    */
   public TextPainter setTextColor(final RGB rgb) {
     textColor.dispose();
-    textColor = buildColor(rgb.red, rgb.green, rgb.blue);
+    textColor = ColorFactory.getColor(rgb.red, rgb.green, rgb.blue);
     return this;
   }
 
@@ -288,12 +267,13 @@ public class TextPainter {
   @Deprecated
   public TextPainter setForegroundColor(final int r, final int g, final int b) {
     textColor.dispose();
-    textColor = buildColor(r, g, b);
+    textColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   
   /**
    * Sets the hyperlink text color.  By default, it is set to (100, 50, 200).
+   * Colors are managed by the color factory.
    * 
    * @param r : an int representing the red component
    * @param g : an int representing the green component
@@ -301,8 +281,7 @@ public class TextPainter {
    * @return {@link TextPainter}
    */
   public TextPainter setHyperlinkColor(final int r, final int g, final int b) {
-    hyperlinkColor.dispose();
-    hyperlinkColor = buildColor(r, g, b);
+    hyperlinkColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   
@@ -680,7 +659,7 @@ public class TextPainter {
 
     Rectangle calculatedBounds = new Rectangle(bounds.x, bounds.y, bounds.width, y - bounds.y);
     if (drawCalculatedBounds) {
-      gc.setForeground(new Color(gc.getDevice(), 0, 255, 0));
+      gc.setForeground(ColorFactory.getColor(gc.getDevice(), 0, 255, 0));
       gc.drawRectangle(calculatedBounds);
     }
 
