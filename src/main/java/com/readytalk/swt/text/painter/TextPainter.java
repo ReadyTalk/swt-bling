@@ -508,7 +508,7 @@ public class TextPainter {
    */
   public Rectangle computeSize(final GC gc) {
     Rectangle bounds = conditionallyPaintText(gc, false);
-    return new Rectangle(0, 0, bounds.width - bounds.x, bounds.height - bounds.y);
+    return new Rectangle(0, 0, bounds.width, bounds.height);
   }
 
   /**
