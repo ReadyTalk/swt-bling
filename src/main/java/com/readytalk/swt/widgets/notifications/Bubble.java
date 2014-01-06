@@ -126,7 +126,7 @@ public class Bubble extends PopOverShell {
     textPainter = new TextPainter(getPopOverShell())
             .setText(tooltipText)
             .setTextColor(TEXT_COLOR)
-            .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI));
+            .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED));
 
     // Remember to clean up after yourself onDispose.
     borderColor = new Color(getDisplay(), BORDER_COLOR);
@@ -322,12 +322,8 @@ public class Bubble extends PopOverShell {
   }
 
   private Point getTextExtent(TextPainter textPainter) {
-    // This reduces the 1600 width we're getting to 100.
-    // This is the source of the enhancement request.
-    // textPainter.setBounds(new Rectangle(0, 0, 100, 100));
-
     GC gc = new GC(getDisplay());
-    Rectangle textExtent = textPainter.computeSize(gc);
+    Rectangle textExtent = textPainter.precomputeSize(gc);
     gc.dispose();
 
     return new Point(textExtent.width + TEXT_WIDTH_PADDING, textExtent.height + TEXT_HEIGHT_PADDING);
