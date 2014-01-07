@@ -75,7 +75,7 @@ public class FormattedTextTokenizer implements TextTokenizer {
       int p = 0, pe = data.length, te, ts, cs, act;
        
       %%{ 
-      machine WikiTextScanner;
+      machine FormattedTextScanner;
       part              = (any - (space|'\''))+;
     	word              = part ('\''|part)*;
     	url               = ('http'|'https'|'file') '://' (any - space)+;
