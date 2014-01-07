@@ -76,37 +76,39 @@ public class FormattedTextTokenizer implements TextTokenizer {
        
       %%{ 
       machine WikiTextScanner;
-    	word              = (any - (space|'\''))+;
+      part              = (any - (space|'\''))+;
+    	word              = part ('\''|part)*;
     	url               = ('http'|'https'|'file') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
     	boldAndItalicText = '\'\'\'\'\'';
     	boldText          = '\'\'\'';
     	italicText        = '\'\'';
 
+
     	main := |*
     	  link              => { scanLink(splice(data, ts, te)); };
     	  url               => { 
     		  String url = spliceToString(data, ts, te);
     		  try {
-    			tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
-			  } catch (MalformedURLException exception) {
-				tokens.add(new TextToken(TextType.TEXT, text));
-			  }
+    			  tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
+			    } catch (MalformedURLException exception) {
+				    tokens.add(new TextToken(TextType.TEXT, text));
+			    }
     	  };
-    	  word              => { 
-    		switch(styleState) {
-    			case SWT.BOLD:
-    				emit(TextType.BOLD, data, ts, te);
-    				break;
-    			case SWT.ITALIC:
-    				emit(TextType.ITALIC, data, ts, te);
-    				break;
-    			case SWT.BOLD|SWT.ITALIC:
-    				emit(TextType.BOLD_AND_ITALIC, data, ts, te);
-    				break;
-    			default:
-    				emit(TextType.TEXT, data, ts, te);
-    		}
+    	  word             => {
+          switch(styleState) {
+            case SWT.BOLD:
+              emit(TextType.BOLD, data, ts, te);
+              break;
+            case SWT.ITALIC:
+              emit(TextType.ITALIC, data, ts, te);
+              break;
+            case SWT.BOLD|SWT.ITALIC:
+              emit(TextType.BOLD_AND_ITALIC, data, ts, te);
+              break;
+            default:
+              emit(TextType.TEXT, data, ts, te);
+          }
     	  };
     	  boldAndItalicText => { styleState ^= SWT.BOLD|SWT.ITALIC; };
     	  boldText          => { styleState ^= SWT.BOLD; };

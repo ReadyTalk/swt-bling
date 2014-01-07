@@ -55,8 +55,9 @@ public class TextPainterExample implements SwtBlingExample {
 
           if(lazyPainter==null) {
             lazyPainter = new TextPainter(textCanvasInstance)
-                .setText("'''Header'''\nSome other text goes here a a a aa a a aa a a a a .")
+                .setText("This is a really long description where no line breaks are \nprovided. We will automatically break these lines for you, so\n that users aren't overwhelmed by a long single line.")
                 .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
+                .setWrapping(false)
                 .setPadding(10, 10, 10, 10);
 
             Rectangle bounds = lazyPainter.precomputeSize(e.gc);
@@ -96,9 +97,8 @@ public class TextPainterExample implements SwtBlingExample {
               + "Etsy McSweeney's slow-carb [http://www.shorditch.com Shoreditch].  Gluten-free pickled pug.")
           .setDrawCalculatedBounds(false)
           .setClipping(true)
-          .setPadding(5, 10, 30, 10)
           .setBounds(bounds)
-          .setDrawBounds(true)
+          .setDrawBounds(false)
           .addNavigationListener(new NavigationListener() {
             @Override
             public void navigate(NavigationEvent event) {

@@ -532,7 +532,7 @@ public class TextPainter {
       for (int i = startIndex; i <= endIndex; i++) {
         DrawData drawData = line.get(i);
         x += drawData.extent.x;
-        if (y < drawData.extent.y &&  !TextType.NEWLINE.equals(drawData.token.getType())) {
+        if (y < drawData.extent.y && !TextType.NEWLINE.equals(drawData.token.getType())) {
           y = drawData.extent.y;
         }
       }
@@ -582,12 +582,14 @@ public class TextPainter {
         List<DrawData> newline = new ArrayList<DrawData>();
         lines.add(newline);
 
-        // if there is only one token on the line and it is too
-        // wide to fit, force it onto the line
-        if (line.size() == 0) {
-          line.add(drawData);
-        } else {
-          newline.add(drawData);
+        if (!TextType.NEWLINE.equals(drawData.token.getType())){
+          // if there is only one token on the line and it is too
+          // wide to fit, force it onto the line
+          if (line.size() == 0) {
+            line.add(drawData);
+          } else {
+            newline.add(drawData);
+          }
         }
 
         line = newline;

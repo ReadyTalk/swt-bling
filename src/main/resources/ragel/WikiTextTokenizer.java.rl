@@ -70,8 +70,9 @@ public class WikiTextTokenizer implements TextTokenizer {
       int p = 0, pe = data.length, te, ts, cs, act;
        
       %%{ 
-        machine WikiTextScanner;   
-    	word              = (any - (space|'\''))+;
+      machine WikiTextScanner;
+      part              = (any - (space|'\''))+;
+      word              = part ('\''|part)*;
     	url               = ('http'|'https'|'file') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
     	boldAndItalicText = '\'\'\'\'\'';
