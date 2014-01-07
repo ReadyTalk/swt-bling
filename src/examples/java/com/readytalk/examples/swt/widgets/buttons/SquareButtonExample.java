@@ -37,17 +37,18 @@ public class SquareButtonExample implements SwtBlingExample {
 
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
-    composite.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
     FillLayout fillLayout = new FillLayout();
     fillLayout.type = SWT.VERTICAL;
     composite.setLayout(fillLayout);
 
     Composite topComposite = new Composite(composite, SWT.NONE);
     topComposite.setLayout(new FillLayout());
-    topComposite.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+    Composite middleComposite = new Composite(composite, SWT.NONE);
+    GridLayout gridLayout = new GridLayout();
+    gridLayout.numColumns = 1;
+    middleComposite.setLayout(gridLayout);
     Composite bottomComposite = new Composite(composite, SWT.NONE);
     bottomComposite.setLayout(new FormLayout());
-    bottomComposite.setBackground(display.getSystemColor(SWT.COLOR_MAGENTA));
 
     SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(topComposite)
@@ -58,6 +59,32 @@ public class SquareButtonExample implements SwtBlingExample {
             .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
             .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
     SquareButton button = builder.build();
+
+    builder = new SquareButton.SquareButtonBuilder();
+    builder .setParent(middleComposite)
+        .setText(buttonText)
+        .setImage(buttonImage)
+        .setImagePosition(BUTTON_IMAGE_POSITION)
+        .setCornerRadius(CORNER_RADIUS)
+        .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
+        .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
+    SquareButton horizontallyStretchingButton = builder.build();
+    GridData gridData = new GridData();
+    gridData.grabExcessHorizontalSpace = true;
+    horizontallyStretchingButton.setLayoutData(gridData);
+
+    builder = new SquareButton.SquareButtonBuilder();
+    builder .setParent(middleComposite)
+        .setText(buttonText)
+        .setImage(buttonImage)
+        .setImagePosition(BUTTON_IMAGE_POSITION)
+        .setCornerRadius(CORNER_RADIUS)
+        .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
+        .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
+    SquareButton verticallyStretchingButton = builder.build();
+    gridData = new GridData();
+    gridData.grabExcessVerticalSpace = true;
+    verticallyStretchingButton.setLayoutData(gridData);
 
     String bigButtonText = "Big SquareButton";
     Image bigButtonImage = display.getSystemImage(SWT.ICON_QUESTION);
@@ -86,7 +113,7 @@ public class SquareButtonExample implements SwtBlingExample {
     bigButton.setLayoutData(formData);
 
 
-    shell.setSize(200, 200);
+    shell.setSize(200, 500);
     shell.open();
 
     shell.addDisposeListener(new DisposeListener() {

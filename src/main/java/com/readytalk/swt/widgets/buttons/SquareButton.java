@@ -17,6 +17,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -95,6 +97,8 @@ public class SquareButton extends Canvas {
   public static final int BG_IMAGE_CENTER = 3;
   public static final int BG_IMAGE_FIT = 4;
   protected int backgroundImageStyle = 0;
+  protected boolean fillVerticalSpace = false;
+  protected boolean fillHorizontalSpace = false;
 
   public enum ImagePosition {
     ABOVE_TEXT,
@@ -357,11 +361,19 @@ public class SquareButton extends Canvas {
     /*
      * set height and width hints... pin the sides if we have set layout data to something that it would care about
      */
-    customLayout = true;
+    if(layoutData instanceof FormData) {
+      fillVerticalSpace = true;
+      fillHorizontalSpace = true; // we don't want to pack contents if they are using a form
+    } else if(layoutData instanceof GridData) {
+      GridData gridData = (GridData)layoutData;
+      fillVerticalSpace = gridData.grabExcessVerticalSpace;
+      fillHorizontalSpace = gridData.grabExcessHorizontalSpace;
+    } else {
+      fillVerticalSpace = true;
+      fillHorizontalSpace = true;
+    }
     super.setLayoutData(layoutData);
   }
-
-  boolean customLayout = false;
 
   @Override
   public Rectangle getClientArea() {
@@ -456,10 +468,6 @@ public class SquareButton extends Canvas {
     ContentOriginSet contentOriginSet = getContentsOrigin(buttonRectangle);
     Point textOrigin = contentOriginSet.getTextOrigin();
     Point imageOrigin = contentOriginSet.getImageOrigin();
-
-    log.info("Client area width is " + buttonRectangle.width + ", " + buttonRectangle.height);
-    log.info("Text origin is: " + textOrigin.x + ", " + textOrigin.y);
-    log.info("Image origin is: " + imageOrigin.x + ", " + imageOrigin.y);
 
     /*
      * Order of drawing matters... if the image is above or to the left,
@@ -772,7 +780,9 @@ public class SquareButton extends Canvas {
   }
 
   public Point computeSize() {
-    return computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
+    Rectangle clientArea = getClientArea();
+    return computeSize((fillHorizontalSpace) ? clientArea.width : SWT.DEFAULT,
+        (fillVerticalSpace) ? clientArea.height : SWT.DEFAULT, false);
   }
 
   public Point computeSize(int widthHint, int heightHint, boolean changed) {
@@ -781,8 +791,10 @@ public class SquareButton extends Canvas {
             (lastWidth > 0) && (lastHeight > 0)) {
       size = new Point(lastWidth, lastHeight);
     } else {
-      int width = (widthHint != SWT.DEFAULT) ? widthHint : getWidthOfContents() + (innerMarginWidth * 2);
-      int height = (heightHint != SWT.DEFAULT) ? heightHint : getHeightOfContents() + (innerMarginHeight * 2);
+      int estimatedWidth = getWidthOfContents() + (innerMarginWidth * 2);
+      int estimatedHeight = getHeightOfContents() + (innerMarginHeight * 2);
+      int width = (widthHint != SWT.DEFAULT && widthHint > estimatedWidth) ? widthHint : estimatedWidth;
+      int height = (heightHint != SWT.DEFAULT && heightHint > estimatedHeight) ? heightHint : estimatedHeight;
 
       /*
        * In this case, it's possible that the background image will be small and
@@ -1092,9 +1104,9 @@ public class SquareButton extends Canvas {
 
   public void setClickedColors(SquareButtonColorGroup squareButtonColorGroup) {
     setClickedColors(squareButtonColorGroup.getTopBackgroundColor(),
-            squareButtonColorGroup.getBottomBackgroundColor(),
-            squareButtonColorGroup.getBorderColor(),
-            squareButtonColorGroup.getFontColor());
+        squareButtonColorGroup.getBottomBackgroundColor(),
+        squareButtonColorGroup.getBorderColor(),
+        squareButtonColorGroup.getFontColor());
   }
 
   /**
@@ -1119,9 +1131,9 @@ public class SquareButton extends Canvas {
    */
   public void setSelectedColors(SquareButtonColorGroup squareButtonColorGroup) {
     setSelectedColors(squareButtonColorGroup.getTopBackgroundColor(),
-            squareButtonColorGroup.getBottomBackgroundColor(),
-            squareButtonColorGroup.getBorderColor(),
-            squareButtonColorGroup.getFontColor());
+        squareButtonColorGroup.getBottomBackgroundColor(),
+        squareButtonColorGroup.getBorderColor(),
+        squareButtonColorGroup.getFontColor());
   }
 
   /**
@@ -1146,9 +1158,9 @@ public class SquareButton extends Canvas {
    */
   public void setInactiveColors(SquareButtonColorGroup squareButtonColorGroup) {
     setInactiveColors(squareButtonColorGroup.getTopBackgroundColor(),
-            squareButtonColorGroup.getBottomBackgroundColor(),
-            squareButtonColorGroup.getBorderColor(),
-            squareButtonColorGroup.getFontColor());
+        squareButtonColorGroup.getBottomBackgroundColor(),
+        squareButtonColorGroup.getBorderColor(),
+        squareButtonColorGroup.getFontColor());
   }
 
   public int getCornerRadius() {
@@ -1166,6 +1178,22 @@ public class SquareButton extends Canvas {
                 e.result = name;
               }
             });
+  }
+
+  public boolean isFillVerticalSpace() {
+    return fillVerticalSpace;
+  }
+
+  public void setFillVerticalSpace(boolean fillVerticalSpace) {
+    this.fillVerticalSpace = fillVerticalSpace;
+  }
+
+  public boolean isFillHorizontalSpace() {
+    return fillHorizontalSpace;
+  }
+
+  public void setFillHorizontalSpace(boolean fillHorizontalSpace) {
+    this.fillHorizontalSpace = fillHorizontalSpace;
   }
 
   public static class SquareButtonColorGroup {
@@ -1234,6 +1262,8 @@ public class SquareButton extends Canvas {
     protected ImagePosition imagePosition = ImagePosition.LEFT_OF_TEXT; // this is the default value of course
     protected boolean horizontallyCenterContents = true;
     protected boolean verticallyCenterContents = true;
+    protected boolean fillVerticalSpace = false;
+    protected boolean fillHorizontalSpace = false;
     protected int imagePadding;
     protected int cornerRadius;
     protected SquareButtonColorGroup defaultColors;
@@ -1329,6 +1359,16 @@ public class SquareButton extends Canvas {
       return this;
     }
 
+    public SquareButtonBuilder setFillVerticalSpace(boolean fillVerticalSpace) {
+      this.fillVerticalSpace = fillVerticalSpace;
+      return this;
+    }
+
+    public SquareButtonBuilder setFillHorizontalSpace(boolean fillHorizontalSpace) {
+      this.fillHorizontalSpace = fillHorizontalSpace;
+      return this;
+    }
+
     public SquareButton build() throws IllegalArgumentException {
       SquareButton button = null;
 
@@ -1353,6 +1393,8 @@ public class SquareButton extends Canvas {
       button.setImagePosition(imagePosition);
       button.setHorizontallyCenterContents(horizontallyCenterContents);
       button.setVerticallyCenterContents(verticallyCenterContents);
+      button.setFillVerticalSpace(fillVerticalSpace);
+      button.setFillHorizontalSpace(fillHorizontalSpace);
 
       if(imagePadding != 0) {
         button.setImagePadding(imagePadding);
