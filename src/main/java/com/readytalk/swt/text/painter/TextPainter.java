@@ -514,7 +514,7 @@ public class TextPainter {
   /**
    * Calculates the bounds the text is attempting to occupy; it only takes the text, assigned styles, & padding into
    * account.  Please take note this is subtly different than computeSize; computeSize takes the widget bounds and
-   * wrapping into into in addition to the text and the assigned styles.
+   * wrapping into account in addition to the text and the assigned styles.
    *
    * @return Rectangle representing the bounds the text represents
    */
