@@ -40,8 +40,8 @@ public class Bubble extends PopOverShell {
 
   static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
-  private static final int TEXT_TOP_AND_BOTTOM_PADDING = 10; //pixels
-  private static final int TEXT_LEFT_AND_RIGHT_PADDING = 15; //pixels
+  private static final int TEXT_TOP_AND_BOTTOM_PADDING = 2; //pixels
+  private static final int TEXT_LEFT_AND_RIGHT_PADDING = 5; //pixels
 
   private boolean disableAutoHide;
 
