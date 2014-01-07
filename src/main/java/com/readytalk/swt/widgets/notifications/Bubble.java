@@ -51,7 +51,6 @@ public class Bubble extends PopOverShell {
   private Point textSize;
 
   private Color borderColor;
-  private Color textColor;
 
   private TextPainter textPainter;
 
@@ -146,7 +145,6 @@ public class Bubble extends PopOverShell {
 
     // Remember to clean up after yourself onDispose.
     borderColor = ColorFactory.getColor(getDisplay(), BORDER_COLOR);
-    textColor = ColorFactory.getColor(getDisplay(), TEXT_COLOR);
 
     attachListeners();
     registerBubble(getPoppedOverItem(), tags);
