@@ -71,7 +71,7 @@ task ragel() {
       ragelOutputDir.mkdirs()
     } else {
       logger.warn('')
-      logger.warn('The Ragel finite-state machine compiler could not be found on the ragelPath.')
+      logger.warn('The Ragel finite-state machine compiler could not be found on the path.')
       logger.warn('This must be installed for compilation to succeed.')
       logger.warn('To install:')
       logger.warn('  - Debian & Debian Variants: sudo apt-get install ragel')
