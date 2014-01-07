@@ -64,7 +64,7 @@ public class BubbleExample implements SwtBlingExample {
     Bubble.createBubble(labelExample, "This is a longer description of what the short label explains");
 
     ProgressBar progress = new ProgressBar(composite, SWT.INDETERMINATE);
-    Bubble.createBubble(progress, "This is a really long description where no line breaks are provided. " +
+    Bubble.createBubble(progress, "This is a really long description\n where no line breaks are provided. " +
             "We will automatically break these lines for you, so that users aren't overwhelmed by a long single line.");
 
     Label boldLabel = new Label(composite, SWT.NONE);

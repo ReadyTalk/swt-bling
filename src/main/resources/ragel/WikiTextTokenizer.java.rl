@@ -71,8 +71,8 @@ public class WikiTextTokenizer implements TextTokenizer {
        
       %%{ 
       machine WikiTextScanner;
-      part              = (any - (space|'\''))+;
-      word              = part ('\''|part)*;
+      word              = (any - (space|'\''))+;
+      apostrophe        = '\'';
     	url               = ('http'|'https'|'file') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
     	boldAndItalicText = '\'\'\'\'\'';
@@ -84,11 +84,12 @@ public class WikiTextTokenizer implements TextTokenizer {
     	  url               => { 
     		  String url = spliceToString(data, ts, te);
     		  try {
-    			tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
-			  } catch (MalformedURLException exception) {
-				tokens.add(new TextToken(TextType.TEXT, text));
-			  }
+    			  tokens.add(new TextToken(TextType.NAKED_URL, url).setUrl(new URL(url)));
+			    } catch (MalformedURLException exception) {
+				    tokens.add(new TextToken(TextType.TEXT, text));
+			    }
     	  };
+        apostrophe       => {emit(TextType.TEXT, data, ts, te);};
     	  word              => { 
     		switch(styleState) {
     			case SWT.BOLD:

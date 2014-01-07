@@ -14,7 +14,7 @@ import com.readytalk.swt.text.painter.TextType;
  * This parser will automatically build via the gradle build process.  If you want to 
  * rebuild this parser by hand, run the following command:
  * 
- *    ragel -J WikiTextTokenizer.java.rl -o WikiTextTokenizer.java
+ *    ragel -J FormattedTextTokenizer.java.rl -o FormattedTextTokenizer.java
  */
 public class FormattedTextTokenizer implements TextTokenizer {
 	
@@ -76,8 +76,8 @@ public class FormattedTextTokenizer implements TextTokenizer {
        
       %%{ 
       machine FormattedTextScanner;
-      part              = (any - (space|'\''))+;
-    	word              = part ('\''|part)*;
+    	word              = (any - (space|'\''))+;
+      apostrophe        = '\'';
     	url               = ('http'|'https'|'file') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
     	boldAndItalicText = '\'\'\'\'\'';
@@ -95,6 +95,7 @@ public class FormattedTextTokenizer implements TextTokenizer {
 				    tokens.add(new TextToken(TextType.TEXT, text));
 			    }
     	  };
+        apostrophe       => {emit(TextType.TEXT, data, ts, te);};
     	  word             => {
           switch(styleState) {
             case SWT.BOLD:
