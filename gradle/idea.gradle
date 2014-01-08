@@ -1,4 +1,4 @@
-tasks.idea.dependsOn ragel
+tasks.idea.dependsOn build
 
 idea {
   module {
