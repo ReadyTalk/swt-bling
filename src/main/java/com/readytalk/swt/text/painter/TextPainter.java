@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -73,7 +74,7 @@ import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 public class TextPainter {
   
   private Color boundaryColor;
-  private Color foregroundColor;
+  private Color textColor;
   private Color hyperlinkColor;
   
   private Cursor handCursor;
@@ -94,6 +95,10 @@ public class TextPainter {
   private int justification;
   private float lineSpacing;
   private List<NavigationListener> navigationListeners;
+  private int paddingBottom;
+  private int paddingLeft;
+  private int paddingRight;
+  private int paddingTop;
   private Composite parent;
   private String text;
   private TextTokenizer textTokenizer;
@@ -124,7 +129,7 @@ public class TextPainter {
     clipping = true;
     wrapping = true;
     textTokenizer = TextTokenizerFactory.createDefault();
-    foregroundColor = parent.getForeground();
+    textColor = parent.getForeground();
     hyperlinkColor = ColorFactory.getColor(100, 50, 200);
     boundaryColor = ColorFactory.getColor(255, 30, 30);
     justification = SWT.LEFT;
@@ -134,7 +139,11 @@ public class TextPainter {
     setFont(fontData.getName(), fontData.getHeight());
     Point size = parent.getSize();
     bounds = new Rectangle(0, 0, size.x, size.y);
-    navigationListeners = new ArrayList<NavigationListener>(); 
+    navigationListeners = new ArrayList<NavigationListener>();
+    paddingBottom = 0;
+    paddingLeft = 0;
+    paddingRight = 0;
+    paddingTop = 0;
     hyperlinks = new ArrayList<Hyperlink>();
   
     parent.addMouseMoveListener(new MouseMoveListener() {
@@ -184,6 +193,15 @@ public class TextPainter {
     return tokens;
   }
 
+  /**
+   * Returns the raw text passed to TextPainter via the setText() call.
+   *
+   * @return the raw text passed in the setText() call.
+   */
+  public String getText() {
+    return text;
+  }
+
   private TextPainter setFont(final String name, final int height) {
     font = FontFactory.getFont(this.parent.getDisplay(), height, SWT.NORMAL, name);
     boldFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.BOLD, name);
@@ -217,8 +235,39 @@ public class TextPainter {
    * @param b : an int representing the blue component
    * @return {@link TextPainter}
    */
-  public TextPainter setForeground(final int r, final int g, final int b) {
-    foregroundColor = ColorFactory.getColor(r, g, b);
+  public TextPainter setTextColor(final int r, final int g, final int b) {
+    textColor.dispose();
+    textColor = ColorFactory.getColor(r, g, b);
+    return this;
+  }
+
+  /**
+   * Sets the text color.  By default, it clones the parent Composite's
+   * foreground color upon construction.
+   *
+   * @param rgb : an RGB value for the text color
+   * @return {@link TextPainter}
+   */
+  public TextPainter setTextColor(final RGB rgb) {
+    textColor.dispose();
+    textColor = ColorFactory.getColor(rgb.red, rgb.green, rgb.blue);
+    return this;
+  }
+
+  /**
+   * @deprecated
+   * Sets the text color.  By default, it clones the parent Composite's
+   * foreground color upon construction.
+   *
+   * @param r : an int representing the red component
+   * @param g : an int representing the green component
+   * @param b : an int representing the blue component
+   * @return {@link TextPainter}
+   */
+  @Deprecated
+  public TextPainter setForegroundColor(final int r, final int g, final int b) {
+    textColor.dispose();
+    textColor = ColorFactory.getColor(r, g, b);
     return this;
   }
   
@@ -274,7 +323,7 @@ public class TextPainter {
    * 
    * @return {@link TextPainter}
    */
-  public TextPainter setDrawBounds(boolean drawBounds) {
+  public TextPainter setDrawBounds(final boolean drawBounds) {
     this.drawBounds = drawBounds;
     return this;
   }
@@ -284,7 +333,7 @@ public class TextPainter {
    * @param justification
    * @return {@link TextPainter}
    */
-  public TextPainter setJustification(int justification) {
+  public TextPainter setJustification(final int justification) {
     this.justification = justification;
     return this;
   }
@@ -294,8 +343,24 @@ public class TextPainter {
    * @param lineSpacing
    * @return  {@link TextPainter}
    */
-  public TextPainter setLineSpacing(float lineSpacing) {
+  public TextPainter setLineSpacing(final float lineSpacing) {
     this.lineSpacing = lineSpacing;
+    return this;
+  }
+
+  /**
+   * Sets the inset padding for the text.  This may effect layout in some instances.
+   * @param top
+   * @param bottom
+   * @param left
+   * @param right
+   * @return {@link TextPainter}
+   */
+  public TextPainter setPadding(final int top, final int bottom, final int left, final int right) {
+    this.paddingTop    = top;
+    this.paddingBottom = bottom;
+    this.paddingLeft   = left;
+    this.paddingRight  = right;
     return this;
   }
   
@@ -310,6 +375,18 @@ public class TextPainter {
    */
   public TextPainter setText(final String text) {
     this.text = text;
+    textTokenizer.reset();
+    tokenizeText();
+    return this;
+  }
+
+  /**
+   * Appends the text passed to the previously defined text
+   *
+   * @return {@link TextPainter}
+   */
+  public TextPainter appendText(final String appendText) {
+    this.text = text + appendText;
     tokenizeText();
     return this;
   }
@@ -366,7 +443,7 @@ public class TextPainter {
     return this;
   }
 
-  void notifyNavigationListeners(Hyperlink hyperlink) {
+  void notifyNavigationListeners(final Hyperlink hyperlink) {
     NavigationEvent event = new NavigationEvent(hyperlink);
     for (int i = navigationListeners.size() - 1; i >= 0; i--) {
       navigationListeners.get(i).navigate(event);
@@ -383,7 +460,7 @@ public class TextPainter {
     navigationListeners.remove(listener);
   }
   
-  void addIfHyperlink(DrawData drawData, int x, int y) {
+  void addIfHyperlink(final DrawData drawData, final int x, final int y) {
     if (drawData.token.getType().equals(TextType.LINK_AND_NAMED_URL)
         || drawData.token.getType().equals(TextType.LINK_URL)
         || drawData.token.getType().equals(TextType.NAKED_URL)
@@ -394,8 +471,8 @@ public class TextPainter {
     }
   }
   
-  void configureForStyle(GC gc, TextToken token) {
-    gc.setForeground(foregroundColor);
+  void configureForStyle(final GC gc, final TextToken token) {
+    gc.setForeground(textColor);
     switch(token.getType()) {
     case BOLD:
       gc.setFont(boldFont);
@@ -417,7 +494,7 @@ public class TextPainter {
       gc.setFont(underlineFont);
       break;
     case TEXT:
-      gc.setForeground(foregroundColor);
+      gc.setForeground(textColor);
       gc.setFont(font);
       break;
     }
@@ -429,9 +506,44 @@ public class TextPainter {
    *
    * @return Rectangle representing the size required to paint the text as configured.
    */
-  public Rectangle computeSize(GC gc) {
+  public Rectangle computeSize(final GC gc) {
     Rectangle bounds = conditionallyPaintText(gc, false);
-    return new Rectangle(0, 0, bounds.width - bounds.x, bounds.height - bounds.y);
+    return new Rectangle(0, 0, bounds.width, bounds.height);
+  }
+
+  /**
+   * Calculates the bounds the text is attempting to occupy; it only takes the text, assigned styles, & padding into
+   * account.  Please take note this is subtly different than computeSize; computeSize takes the widget bounds and
+   * wrapping into account in addition to the text and the assigned styles.
+   *
+   * @return Rectangle representing the bounds the text represents
+   */
+  public Rectangle precomputeSize(final GC gc) {
+
+    List<List<DrawData>> lines = buildLines(gc);
+    int maxX = 0;
+    int maxY = 0;
+
+    for (List<DrawData> line: lines) {
+      int y = 0;
+      int x = 0;
+      int startIndex = getStartIndex(line);
+      int endIndex = getEndIndex(line);
+      for (int i = startIndex; i <= endIndex; i++) {
+        DrawData drawData = line.get(i);
+        x += drawData.extent.x;
+        if (y < drawData.extent.y && !TextType.NEWLINE.equals(drawData.token.getType())) {
+          y = drawData.extent.y;
+        }
+      }
+
+      if (x > maxX) {
+        maxX = x;
+      }
+      maxY += y;
+    }
+
+    return new Rectangle(0, 0, maxX + paddingLeft + paddingRight, maxY + paddingBottom + paddingTop);
   }
 
   class DrawData {
@@ -445,7 +557,7 @@ public class TextPainter {
     }
   }
 
-  List<DrawData> buildDrawDataList(GC gc) {
+  List<DrawData> buildDrawDataList(final GC gc) {
     List<DrawData> list = new ArrayList<DrawData>();
     for (int i = 0; i < tokens.size(); i++) {
       list.add(new DrawData(gc, tokens.get(i)));
@@ -453,7 +565,7 @@ public class TextPainter {
     return list;
   }
 
-  List<List<DrawData>> buildLines(GC gc) {
+  List<List<DrawData>> buildLines(final GC gc) {
     List<List<DrawData>> lines = new ArrayList<List<DrawData>>();
     List<DrawData> line = new ArrayList<DrawData>();
     lines.add(line);
@@ -463,17 +575,23 @@ public class TextPainter {
 
     for (DrawData drawData:data) {
       lineWidth += drawData.extent.x;
-      if (lineWidth > bounds.width && wrapping) {
+
+      if ((lineWidth > bounds.width - (paddingRight + paddingLeft) && wrapping)
+         || TextType.NEWLINE.equals(drawData.token.getType())) {
+
         List<DrawData> newline = new ArrayList<DrawData>();
         lines.add(newline);
 
-        // if there is only one token on the line and it is too
-        // wide to fit, force it onto the line
-        if (line.size() == 0) {
-          line.add(drawData);
-        } else {
-          newline.add(drawData);
+        if (!TextType.NEWLINE.equals(drawData.token.getType())){
+          // if there is only one token on the line and it is too
+          // wide to fit, force it onto the line
+          if (line.size() == 0) {
+            line.add(drawData);
+          } else {
+            newline.add(drawData);
+          }
         }
+
         line = newline;
         lineWidth = drawData.extent.x;
       } else {
@@ -504,6 +622,16 @@ public class TextPainter {
   }
 
   /**
+   * Paints the text using the GC you pass.
+   * Remember, if you create a GC you must always <code>dispose()</code> it.
+   *
+   * @param gc : {@link GC}
+   */
+  public void handlePaint(final GC gc) {
+    conditionallyPaintText(gc, true);
+  }
+
+  /**
    * Paints text and/or returns a Rectangle representing the computed bounds
    * of the text.  You may only want they rectangle if you are trying to lay the
    * text out.
@@ -512,7 +640,7 @@ public class TextPainter {
    * @param paint
    * @return Rectangle representing the computed bounds
    */
-  Rectangle conditionallyPaintText(GC gc, boolean paint) {
+  Rectangle conditionallyPaintText(final GC gc, final boolean paint) {
     final Rectangle clip = gc.getClipping();
     final Color bg = gc.getBackground();
 
@@ -521,16 +649,16 @@ public class TextPainter {
     }
 
     hyperlinks.clear();
-    int y = bounds.y;
+    int y = bounds.y + paddingTop;
     List<List<DrawData>> lines = buildLines(gc);
 
     for (int i = 0; i < lines.size(); i++) {
       if(justification == SWT.RIGHT) {
-        y += drawRightJustified(gc, lines.get(i), y);
+        y += drawRightJustified(gc, paint, lines.get(i), y);
       } else if (justification == SWT.LEFT) {
-        y += drawLeftJustified(gc, lines.get(i), y);
+        y += drawLeftJustified(gc, paint, lines.get(i), y);
       } else if (justification == SWT.CENTER) {
-        y += drawCenterJustified(gc, lines.get(i), y);
+        y += drawCenterJustified(gc, paint, lines.get(i), y);
       }
     }
 
@@ -551,8 +679,9 @@ public class TextPainter {
     return calculatedBounds;
   }
 
-  int drawRightJustified(GC gc, List<DrawData> line, int y) {
+  int drawRightJustified(GC gc, boolean paint, List<DrawData> line, int y) {
     int maxY = 0;
+
     if (line.size() > 0) {
       int startIndex = line.size() - 1;
       DrawData drawData = line.get(startIndex);
@@ -560,12 +689,15 @@ public class TextPainter {
         startIndex--;
       }
 
-      int x = bounds.width + bounds.x;
+      int x = bounds.width + bounds.x - paddingRight;
+
       for (int i = startIndex; i >= 0; i--) {
         drawData = line.get(i);
         configureForStyle(gc, drawData.token);
-        gc.drawText(drawData.token.getText(), x - drawData.extent.x, y, true);
-        addIfHyperlink(drawData, x - drawData.extent.x, y);
+        if (paint) {
+            gc.drawText(drawData.token.getText(), x - drawData.extent.x, y, true);
+            addIfHyperlink(drawData, x - drawData.extent.x, y);
+        }
         x -= drawData.extent.x;
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
@@ -575,26 +707,18 @@ public class TextPainter {
     return maxY;
   }
 
-  int drawCenterJustified(GC gc, List<DrawData> line, int y) {
+  int drawCenterJustified(GC gc, boolean paint, List<DrawData> line, int y) {
     int maxY = 0;
 
     if (line.size() > 0) {
-      int width = 0;
-
       int startIndex = getStartIndex(line);
       int endIndex = getEndIndex(line);
+      int width = computeLineWidth(line, startIndex, endIndex);
 
-      // determine width of line while dropping the leading and trailing whitespace
+      int x = bounds.x + ((bounds.width + paddingLeft - paddingRight - width) / 2);
       for (int i = startIndex; i <= endIndex; i++) {
         DrawData drawData = line.get(i);
-        width += drawData.extent.x;
-      }
-
-      int x = bounds.x + ((bounds.width - width) / 2);
-
-      for (int i = startIndex; i <= endIndex; i++) {
-        DrawData drawData = line.get(i);
-        x = drawTextToken(gc, y, x, drawData);
+        x = drawTextToken(gc, paint, y, x, drawData);
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
         }
@@ -604,15 +728,15 @@ public class TextPainter {
     return maxY;
   }
 
-  int drawLeftJustified(GC gc, List<DrawData> line, int y) {
+  int drawLeftJustified(GC gc, boolean paint, List<DrawData> line, int y) {
     int maxY = 0;
 
     if (line.size() > 0) {
       int startIndex = getStartIndex(line);
-      int x = bounds.x;
+      int x = bounds.x + paddingLeft;
       for (int i = startIndex; i < line.size(); i++) {
         DrawData drawData = line.get(i);
-        x = drawTextToken(gc, y, x, drawData);
+        x = drawTextToken(gc, paint, y, x, drawData);
         if (drawData.extent.y > maxY) {
           maxY = drawData.extent.y;
         }
@@ -622,15 +746,17 @@ public class TextPainter {
     return maxY;
   }
 
-  private int drawTextToken(GC gc, int y, int x, DrawData drawData) {
+  private int drawTextToken(GC gc, boolean paint, int y, int x, DrawData drawData) {
     configureForStyle(gc, drawData.token);
-    gc.drawText(drawData.token.getText(), x, y, true);
-    addIfHyperlink(drawData, x, y);
+    if (paint) {
+      gc.drawText(drawData.token.getText(), x, y, true);
+      addIfHyperlink(drawData, x, y);
+    }
     x += drawData.extent.x;
     return x;
   }
 
-  int getStartIndex(List<DrawData> line) {
+  int getStartIndex(final List<DrawData> line) {
     int startIndex = 0;
     for (int i = 0; i < line.size(); i++) {
       DrawData drawData = line.get(i);
@@ -642,7 +768,7 @@ public class TextPainter {
     return startIndex;
   }
 
-  int getEndIndex(List<DrawData> line) {
+  int getEndIndex(final List<DrawData> line) {
     int endIndex = 0;
     for (int i = line.size()-1; i >= 0; i--) {
       DrawData drawData = line.get(i);
@@ -652,5 +778,15 @@ public class TextPainter {
       }
     }
     return endIndex;
+  }
+
+  int computeLineWidth(final List<DrawData> line, final int startIndex, final int endIndex) {
+    int w = 0;
+    // determine width of line while dropping the leading and trailing whitespace
+    for (int i = startIndex; i <= endIndex; i++) {
+      DrawData drawData = line.get(i);
+      w += drawData.extent.x;
+    }
+    return w;
   }
 }

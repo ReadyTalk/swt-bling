@@ -14,9 +14,9 @@ import com.readytalk.swt.text.painter.TextType;
  * This parser will automatically build via the gradle build process.  If you want to 
  * rebuild this parser by hand, run the following command:
  * 
- *    ragel -J WikiTextTokenizer.java.rl -o WikiTextTokenizer.java
+ *    ragel -J FormattedTextTokenizer.java.rl -o FormattedTextTokenizer.java
  */
-public class WikiTextTokenizer implements TextTokenizer {
+public class FormattedTextTokenizer implements TextTokenizer {
 	
 	private Charset encoding = Charset.defaultCharset();
 	private List<TextToken> tokens = new ArrayList<TextToken>();
@@ -24,7 +24,7 @@ public class WikiTextTokenizer implements TextTokenizer {
 	private int styleState = 0x00;
 	
 	@Override  
-	public WikiTextTokenizer setEncoding(final Charset encoding) {
+	public FormattedTextTokenizer setEncoding(final Charset encoding) {
 		this.encoding = encoding;
 		return this;
 	}
@@ -35,13 +35,18 @@ public class WikiTextTokenizer implements TextTokenizer {
 	}
 	
 	@Override
-	public WikiTextTokenizer reset() {
+	public FormattedTextTokenizer reset() {
 	  tokens.clear();
 	  return this;
 	}
 	
-    void emit(final TextType type, final byte[] data, final int start, final int end) {
+    void emit(TextType type, final byte[] data, final int start, final int end) {
       String text = spliceToString(data, start, end);
+      if (TextType.WHITESPACE.equals(type)) {
+        if("\n".equals(text)) {
+          type = TextType.NEWLINE;
+        }
+      }
       tokens.add(new TextToken(type, text));
     }
     
@@ -70,14 +75,15 @@ public class WikiTextTokenizer implements TextTokenizer {
       int p = 0, pe = data.length, te, ts, cs, act;
        
       %%{ 
-      machine WikiTextScanner;
-      word              = (any - (space|'\''))+;
+      machine FormattedTextScanner;
+    	word              = (any - (space|'\''))+;
       apostrophe        = '\'';
     	url               = ('http'|'https'|'file') '://' (any - space)+;
     	link              = '[' url ((' '|'\t')+ word* )? ']';
     	boldAndItalicText = '\'\'\'\'\'';
     	boldText          = '\'\'\'';
     	italicText        = '\'\'';
+
 
     	main := |*
     	  link              => { scanLink(splice(data, ts, te)); };
@@ -90,20 +96,20 @@ public class WikiTextTokenizer implements TextTokenizer {
 			    }
     	  };
         apostrophe       => {emit(TextType.TEXT, data, ts, te);};
-    	  word              => { 
-    		switch(styleState) {
-    			case SWT.BOLD:
-    				emit(TextType.BOLD, data, ts, te);
-    				break;
-    			case SWT.ITALIC:
-    				emit(TextType.ITALIC, data, ts, te);
-    				break;
-    			case SWT.BOLD|SWT.ITALIC:
-    				emit(TextType.BOLD_AND_ITALIC, data, ts, te);
-    				break;
-    			default:
-    				emit(TextType.TEXT, data, ts, te);
-    		}
+    	  word             => {
+          switch(styleState) {
+            case SWT.BOLD:
+              emit(TextType.BOLD, data, ts, te);
+              break;
+            case SWT.ITALIC:
+              emit(TextType.ITALIC, data, ts, te);
+              break;
+            case SWT.BOLD|SWT.ITALIC:
+              emit(TextType.BOLD_AND_ITALIC, data, ts, te);
+              break;
+            default:
+              emit(TextType.TEXT, data, ts, te);
+          }
     	  };
     	  boldAndItalicText => { styleState ^= SWT.BOLD|SWT.ITALIC; };
     	  boldText          => { styleState ^= SWT.BOLD; };

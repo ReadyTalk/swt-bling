@@ -7,7 +7,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.5.1'
+    classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.6.1'
   }
 }
 
@@ -49,28 +49,26 @@ dependencies {
   examplesCompile "org.reflections:reflections:0.9.9-RC1"
 }
 
-task ragel(type:Exec) {
-  ext.sourcePath = 'generated-src/java/com/readytalk/swt/text/tokenizer'
-  ext.sourceName = 'WikiTextTokenizer.java'
-  ext.destDir = new File(buildDir, sourcePath)
-  workingDir = 'src/main/resources/ragel'
-  ext.runRagel = false
-    
+task ragel() {
+  inputs.dir 'src/main/resources/ragel'
+
+  ext.ragelOutputDir = file('build/generated-src/java/com/readytalk/swt/text/tokenizer')
+  outputs.dir ragelOutputDir
+
   doFirst {
-    def path = "ragel"
+    def ragelPath = "ragel"
     def command = "which ragel"
-    
+
     if (platform == 'windows') {
       command = "where ragel"
     }
-    
-    def proc = command.execute()   
-    proc.waitFor()                 
+
+    def proc = command.execute()
+    proc.waitFor()
     def rpath = "${proc.in.text}"
     if (rpath != null && rpath.length() > 0 && rpath.contains('ragel')) {
-      runRagel = true
-      destDir.mkdirs()
-      path = rpath.trim()
+      ragelPath = rpath.trim()
+      ragelOutputDir.mkdirs()
     } else {
       logger.warn('')
       logger.warn('The Ragel finite-state machine compiler could not be found on the path.')
@@ -80,18 +78,23 @@ task ragel(type:Exec) {
       logger.warn('  - OS X with Homebrew: brew install ragel')
       logger.warn('  - Windows: download from http://www.jgoettgens.de/Meine_Bilder_und_Dateien/ragel-vs2012.7z')
       logger.warn('For more installation information, please visit http://www.complang.org/ragel/')
-      logger.warn('') 
+      logger.warn('')
+
+      throw new GradleException('Please install ragel to continue.')
     }
-    
-    commandLine path, '-J', '-o', file(destDir.getPath() + '/' + sourceName), sourceName + '.rl'
+
+    // Run ragel on all input files
+    inputs.getFiles().each { File file ->
+      (ragelPath + ' -J -o ' + (ragelOutputDir.getPath() + '/' + file.name - '.rl' + ' ') + file).execute()
+    }
   }
 }
 
-compileJava { 
+compileJava {
   dependsOn ragel
-  source = ['src/main/java', 'build/generated-src/java'] 
+  source = ['src/main/java', 'build/generated-src/java']
   options.fork = true
-} 
+}
 
 findbugs {
   reportLevel = "high"
@@ -107,3 +110,5 @@ tasks.withType(FindBugs) {
 task getVersion << {
   println version
 }
+
+apply from: 'gradle/idea.gradle'

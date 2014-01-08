@@ -7,10 +7,7 @@ import java.util.TimerTask;
 
 import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
-import com.readytalk.swt.util.ColorFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Rectangle;
@@ -32,11 +29,9 @@ public class TextPainterExample implements SwtBlingExample {
 
     Timer timer;
 
-    public TextCanvas(Composite parent, int style)
-        throws InstantiationException, IllegalAccessException,
-        ClassNotFoundException {
-
+    public TextCanvas(Composite parent, int style){
       super(parent, style);
+      final TextCanvas textCanvasInstance = this;
       timer = new Timer();
       final List<TextPainter> painters = new ArrayList<TextPainter>();
 
@@ -53,8 +48,26 @@ public class TextPainterExample implements SwtBlingExample {
       painters.add( buildWikiTextPainter(new Rectangle(20, 320, 200, 250), true).setJustification(SWT.LEFT));
 
       addPaintListener(new PaintListener() {
+        TextPainter lazyPainter;
+
         @Override
         public void paintControl(PaintEvent e) {
+
+          if(lazyPainter==null) {
+            lazyPainter = new TextPainter(textCanvasInstance)
+                .setText("This is a really long description where no line breaks are \nprovided. We will automatically break these lines for you, so\n that users aren't overwhelmed by a long single line.")
+                .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
+                .setWrapping(false)
+                .setPadding(10, 10, 10, 10);
+
+            Rectangle bounds = lazyPainter.precomputeSize(e.gc);
+
+            // move the text into its final position
+            bounds.y += 600;
+            lazyPainter.setBounds(bounds).setDrawBounds(true);
+            painters.add(lazyPainter);
+          }
+
           for (TextPainter painter: painters){
             painter.handlePaint(e);
           }
@@ -62,7 +75,7 @@ public class TextPainterExample implements SwtBlingExample {
       });
     }
 
-    private TextPainter buildLabel(Rectangle bounds, String name) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
+    private TextPainter buildLabel(Rectangle bounds, String name) {
       final TextPainter label = new TextPainter(this)
           .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI))
           .setText("'''"+name+"'''")
@@ -70,7 +83,7 @@ public class TextPainterExample implements SwtBlingExample {
       return label;
     }
 
-    private TextPainter buildWikiTextPainter(final Rectangle bounds, final boolean modulateWidth) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    private TextPainter buildWikiTextPainter(final Rectangle bounds, final boolean modulateWidth) {
       final int width = bounds.width;
 
       final TextPainter painter = new TextPainter(this)
@@ -121,18 +134,8 @@ public class TextPainterExample implements SwtBlingExample {
   public TextPainterExample() { }
 
   public void run(Display display, Shell shell) {
-    shell.setSize(700, 500);
-
-    try {
-      new TextCanvas(shell, SWT.NONE);
-    } catch (InstantiationException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-
+    shell.setSize(700, 700);
+    new TextCanvas(shell, SWT.NONE);
     FillLayout fillLayout = new FillLayout();
     shell.setLayout(fillLayout);
     shell.open();

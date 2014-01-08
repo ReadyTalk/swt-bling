@@ -1,5 +1,6 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.text.painter.TextPainter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -37,14 +38,18 @@ public class BubbleIntegTest {
     @Mock
     Bubble bubble;
 
+    Shell shell;
+    TextPainter textPainter;
     GC gc;
 
     @Before
     public void setUp() {
       MockitoAnnotations.initMocks(this);
 
+      shell = new Shell(Display.getDefault(), SWT.NONE);
+      textPainter = new TextPainter(shell);
       gc = new GC(Display.getDefault());
-      when(bubble.maybeBreakLines(any(String.class))).thenCallRealMethod();
+      when(bubble.maybeBreakLines(any(TextPainter.class))).thenCallRealMethod();
       when(bubble.getDisplay()).thenReturn(Display.getDefault());
     }
 
@@ -56,16 +61,18 @@ public class BubbleIntegTest {
     @Test
     public void maybeBreakLines_stringIsLessThanMaxLength_returnsRawString() {
       String shorterThanMax = "Short";
+      textPainter.setText(shorterThanMax);
 
-      assertTrue(gc.textExtent(shorterThanMax).x < Bubble.MAX_STRING_LENGTH);
-      assertTrue(bubble.maybeBreakLines(shorterThanMax).equals(shorterThanMax));
+      assertTrue(textPainter.precomputeSize(gc).width < Bubble.MAX_STRING_LENGTH);
+      assertTrue(bubble.maybeBreakLines(textPainter).equals(shorterThanMax));
     }
 
     @Test
     public void maybeBreakLines_stringHasLineBreaksAndLessThanMax_returnsRawString() {
       String shortWithLineBreaks = "Short\nWith\nLines";
+      textPainter.setText(shortWithLineBreaks);
 
-      assertTrue(bubble.maybeBreakLines(shortWithLineBreaks).equals(shortWithLineBreaks));
+      assertTrue(bubble.maybeBreakLines(textPainter).equals(shortWithLineBreaks));
     }
 
     @Test
@@ -73,16 +80,18 @@ public class BubbleIntegTest {
       String longWithLineBreaks = "This is a very long string, but I've defined my own line\nbreaks, which you " +
               "should probably pay attention to.\nBecause I know better than you.\nThat is science. And I don\'t see " +
               "you trying to argue with science, right?";
+      textPainter.setText(longWithLineBreaks);
 
-      assertTrue(bubble.maybeBreakLines(longWithLineBreaks).equals(longWithLineBreaks));
+      assertTrue(bubble.maybeBreakLines(textPainter).equals(longWithLineBreaks));
     }
 
     @Test
     public void maybeBreakLines_stringIsLongerThanMax_returnsStringWithLineBreaks() {
       String longWithoutLineBreaks = "This is a very long string, but I have not defined lined breaks. My clients " +
               "would appreciate if this Bubble message wasn\'t extraoridinarily long, so please break this up for me.";
+      textPainter.setText(longWithoutLineBreaks);
 
-      assertTrue(bubble.maybeBreakLines(longWithoutLineBreaks).contains("\n"));
+      assertTrue(bubble.maybeBreakLines(textPainter).contains("\n"));
     }
   }
 

@@ -69,7 +69,11 @@ public class BubbleExample implements SwtBlingExample {
 
     Label boldLabel = new Label(composite, SWT.NONE);
     boldLabel.setText("This is a label with a bold Bubble");
-    Bubble.createBubble(boldLabel, "This is a bold Bubble tooltip text", true);
+    Bubble.createBubble(boldLabel, "'''This is a bold Bubble tooltip text'''");
+
+    Label wikiLabel = new Label(composite, SWT.NONE);
+    wikiLabel.setText("This Bubble is formatted using WIKI syntax");
+    Bubble.createBubble(wikiLabel, "'''Bold text''' is mixed with ''italic text''!");
 
     shell.pack();
     shell.open();

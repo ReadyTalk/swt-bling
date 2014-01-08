@@ -1,14 +1,14 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.text.painter.TextPainter;
+import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
+import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 import com.readytalk.swt.util.ColorFactory;
-import com.readytalk.swt.util.FontFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -25,7 +25,8 @@ import java.util.logging.Logger;
  * Bubble will attempt to always be visible on screen.<br/>
  * If the default Bubble would appear off-screen, we will calculate a suitable location to appear.<br/>
  * <br/>
- * Bubble utilizes the system font, and provides a constructor to indicate use of a bolded font.<br/>
+ * Bubble utilizes the system font, and allows {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#WIKI} style
+ * syntax to customize the appearance of the text in your Bubble.
  * <br/>
  * Bubble will also break up lines that would be longer than 400 pixels when drawn.<br/>
  * You can short-circuit this logic by providing your own line-breaks with <code>\n</code> characters in the text.<br/>
@@ -39,8 +40,8 @@ public class Bubble extends PopOverShell {
 
   static final int MAX_STRING_LENGTH = 400; //pixels
   private static final RGB TEXT_COLOR = new RGB(204, 204, 204);
-  private static final int TEXT_HEIGHT_PADDING = 5; //pixels
-  private static final int TEXT_WIDTH_PADDING = 10; //pixels
+  private static final int TEXT_TOP_AND_BOTTOM_PADDING = 2; //pixels
+  private static final int TEXT_LEFT_AND_RIGHT_PADDING = 5; //pixels
 
   private boolean disableAutoHide;
 
@@ -50,8 +51,8 @@ public class Bubble extends PopOverShell {
   private Point textSize;
 
   private Color borderColor;
-  private Color textColor;
-  private Font boldFont;
+
+  private TextPainter textPainter;
 
   /**
    * Creates and attaches a bubble to a component that implements <code>CustomElementDataProvider</code>.
@@ -74,7 +75,10 @@ public class Bubble extends PopOverShell {
    * @param text The text you want to appear in the Bubble
    * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
+   * @deprecated Please use {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#WIKI} or
+   *  {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#FORMATTED} syntax to specify a bold font.
    */
+  @Deprecated
   public static Bubble createBubbleForCustomWidget(CustomElementDataProvider customElementDataProvider, String text, boolean useBoldFont, BubbleTag ... tags)
           throws IllegalArgumentException {
     return new Bubble(customElementDataProvider.getPaintedElement(), customElementDataProvider, text, useBoldFont, tags);
@@ -100,7 +104,10 @@ public class Bubble extends PopOverShell {
    * @param text The text you want to appear in the Bubble
    * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
    * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
+   * @deprecated Please use {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#WIKI} or
+   *  {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#FORMATTED} syntax to specify a bold font.
    */
+  @Deprecated
   public static Bubble createBubble(Control parentControl, String text, boolean useBoldFont, BubbleTag ... tags)
           throws IllegalArgumentException {
     return new Bubble(parentControl, null, text, useBoldFont, tags);
@@ -118,16 +125,26 @@ public class Bubble extends PopOverShell {
       throw new IllegalArgumentException("Bubble text cannot be null.");
     }
 
-    this.tooltipText = maybeBreakLines(text);
+
+    // This can be removed once the deprecated constructors are pruned (in addition to the parameter useBoldFont)
+    if (useBoldFont) {
+      text = "\'\'\'" + text + "\'\'\'";
+    }
+
+    textPainter = new TextPainter(getPopOverShell())
+            .setText(text)
+            .setTextColor(TEXT_COLOR)
+            .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
+            .setPadding(TEXT_TOP_AND_BOTTOM_PADDING, TEXT_TOP_AND_BOTTOM_PADDING, TEXT_LEFT_AND_RIGHT_PADDING, TEXT_LEFT_AND_RIGHT_PADDING);
+
+    // TextPainter does the calculations to see if we need to break the lines, thus we set the raw string,
+    // do the calculations and then set the text again. If we don't break the String this is a no-op.
+    this.tooltipText = maybeBreakLines(textPainter);
+    textPainter.setText(tooltipText);
+
 
     // Remember to clean up after yourself onDispose.
     borderColor = ColorFactory.getColor(getDisplay(), BORDER_COLOR);
-    textColor = ColorFactory.getColor(getDisplay(), TEXT_COLOR);
-    if (useBoldFont) {
-      Font font = getDisplay().getSystemFont();
-      FontData fontData = font.getFontData()[0];
-      boldFont = FontFactory.getFont(getDisplay(), fontData.getHeight(), SWT.BOLD, fontData.getName());
-    }
 
     attachListeners();
     registerBubble(getPoppedOverItem(), tags);
@@ -135,7 +152,7 @@ public class Bubble extends PopOverShell {
 
   Point getAppropriatePopOverSize() {
     if (textSize == null) {
-      textSize = getTextSize(tooltipText);
+      textSize = getTextExtent(textPainter);
     }
 
     return textSize;
@@ -222,7 +239,7 @@ public class Bubble extends PopOverShell {
 
   void runBeforeShowPopOverShell() {
     if (textSize == null) {
-      textSize = getTextSize(tooltipText);
+      textSize = getTextExtent(textPainter);
     }
 
     borderRectangle = calculateBorderRectangle(textSize);
@@ -230,7 +247,6 @@ public class Bubble extends PopOverShell {
 
   void widgetDispose() {
     deactivateBubble();
-    boldFont = null;
   }
 
   private void onPaint(Event event) {
@@ -240,12 +256,7 @@ public class Bubble extends PopOverShell {
     gc.setLineWidth(BORDER_THICKNESS);
     gc.drawRectangle(borderRectangle);
 
-    if (boldFont != null) {
-      gc.setFont(boldFont);
-    }
-
-    gc.setForeground(textColor);
-    gc.drawText(tooltipText, TEXT_WIDTH_PADDING / 2, TEXT_HEIGHT_PADDING / 2);
+    textPainter.handlePaint(event.gc);
   }
 
   private void onMouseDown(Event event) {
@@ -268,15 +279,15 @@ public class Bubble extends PopOverShell {
             textSize.y - BORDER_THICKNESS);
   }
 
-  String maybeBreakLines(String rawString) {
+  String maybeBreakLines(TextPainter textPainter) {
     GC gc = new GC(getDisplay());
-    if (boldFont != null) {
-      gc.setFont(boldFont);
-    }
 
     String returnString;
-    Point textExtent = gc.textExtent(rawString, SWT.DRAW_DELIMITER);
-    if (textExtent.x > MAX_STRING_LENGTH && !rawString.contains("\n")) {
+    Rectangle size = textPainter.precomputeSize(gc);
+    String rawString = textPainter.getText();
+
+    if (size.width > MAX_STRING_LENGTH && !rawString.contains("\n")) {
+
       StringBuilder sb = new StringBuilder();
       String[] words = rawString.split(" ");
       int spaceInPixels = gc.textExtent(" ").x;
@@ -305,17 +316,11 @@ public class Bubble extends PopOverShell {
     return returnString;
   }
 
-  private Point getTextSize(String text) {
+  private Point getTextExtent(TextPainter textPainter) {
     GC gc = new GC(getDisplay());
-    if (boldFont != null) {
-      gc.setFont(boldFont);
-    }
-
-    Point textExtent = gc.textExtent(text, SWT.DRAW_DELIMITER);
-    textExtent.x = textExtent.x + TEXT_WIDTH_PADDING;
-    textExtent.y = textExtent.y + TEXT_HEIGHT_PADDING;
-
+    Rectangle textExtent = textPainter.precomputeSize(gc);
     gc.dispose();
-    return textExtent;
+
+    return new Point(textExtent.width, textExtent.height);
   }
 }

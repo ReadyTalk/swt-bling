@@ -37,8 +37,7 @@ public class TextPainterIntegTest {
   }
   
   @Test
-  public void setText_ConfiguredToTokenizeWikiText_SevenTokens () 
-      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+  public void setText_ConfiguredToTokenizeWikiText_SevenTokens ()  {
     
     TextTokenizer tokenizer = TextTokenizerFactory.createTextTokenizer(TextTokenizerType.WIKI);
     painter.setTokenizer(tokenizer).setText(WIKI_TEXT);
