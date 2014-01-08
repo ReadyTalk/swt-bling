@@ -25,8 +25,7 @@ public class SquareButtonExample implements SwtBlingExample {
     final Color lightestGray = new Color(display, 239, 239, 239);
     final Color white = new Color(display, 255, 255, 255);
 
-    /* SquareButton */
-    String buttonText = "SquareButton";
+    /* SquareButton Resources */
     Image buttonImage = display.getSystemImage(SWT.ICON_INFORMATION);
     SquareButton.ImagePosition BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
     int CORNER_RADIUS = 3;
@@ -52,7 +51,7 @@ public class SquareButtonExample implements SwtBlingExample {
 
     SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(topComposite)
-            .setText(buttonText)
+            .setText("Simple square button")
             .setImage(buttonImage)
             .setImagePosition(BUTTON_IMAGE_POSITION)
             .setCornerRadius(CORNER_RADIUS)
@@ -62,7 +61,7 @@ public class SquareButtonExample implements SwtBlingExample {
 
     builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(middleComposite)
-        .setText(buttonText)
+        .setText("Wide Button")
         .setImage(buttonImage)
         .setImagePosition(BUTTON_IMAGE_POSITION)
         .setCornerRadius(CORNER_RADIUS)
@@ -75,7 +74,7 @@ public class SquareButtonExample implements SwtBlingExample {
 
     builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(middleComposite)
-        .setText(buttonText)
+        .setText("Tall Button")
         .setImage(buttonImage)
         .setImagePosition(BUTTON_IMAGE_POSITION)
         .setCornerRadius(CORNER_RADIUS)

@@ -17,13 +17,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.TypedListener;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.SWT;
 
 import java.util.HashMap;
@@ -375,11 +370,6 @@ public class SquareButton extends Canvas {
     super.setLayoutData(layoutData);
   }
 
-  @Override
-  public Rectangle getClientArea() {
-    return super.getClientArea();
-  }
-
   protected void paintControl(PaintEvent paintEvent) {
     if (currentColor == null) {
       currentColor = backgroundColor;
@@ -452,7 +442,7 @@ public class SquareButton extends Canvas {
       arcWidth = arcHeight += 1;
     }
     if (roundedCorners) {
-      gc.drawRoundRectangle(buttonRectangle.x + (bw - 1), buttonRectangle.y + (bw - 1), buttonRectangle.width - bw, buttonRectangle.height - 2, arcWidth, arcHeight);
+      gc.drawRoundRectangle(buttonRectangle.x + (bw - 1), buttonRectangle.y + (bw - 1), buttonRectangle.width - bw, buttonRectangle.height - 4, arcWidth, arcHeight);
     } else {
       gc.drawRectangle(buttonRectangle.x, buttonRectangle.y, buttonRectangle.width - bw, buttonRectangle.height - 1);
     }
