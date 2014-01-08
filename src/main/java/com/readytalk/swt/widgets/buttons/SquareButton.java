@@ -364,8 +364,8 @@ public class SquareButton extends Canvas {
       fillVerticalSpace = gridData.grabExcessVerticalSpace;
       fillHorizontalSpace = gridData.grabExcessHorizontalSpace;
     } else {
-      fillVerticalSpace = true;
-      fillHorizontalSpace = true;
+      fillVerticalSpace = false;
+      fillHorizontalSpace = false;
     }
     super.setLayoutData(layoutData);
   }
