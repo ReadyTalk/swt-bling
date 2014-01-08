@@ -10,6 +10,9 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -28,8 +31,7 @@ public class SquareButtonExample implements SwtBlingExample {
     final Color lightestGray = ColorFactory.getColor(display, 239, 239, 239);
     final Color white = ColorFactory.getColor(display, 255, 255, 255);
 
-    /* SquareButton */
-    String buttonText = "SquareButton";
+    /* SquareButton Resources */
     Image buttonImage = display.getSystemImage(SWT.ICON_INFORMATION);
     SquareButton.ImagePosition BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
     int CORNER_RADIUS = 3;
@@ -40,11 +42,22 @@ public class SquareButtonExample implements SwtBlingExample {
 
     shell.setLayout(new FillLayout());
     Composite composite = new Composite(shell, SWT.NONE);
-    composite.setLayout(new GridLayout());
+    FillLayout fillLayout = new FillLayout();
+    fillLayout.type = SWT.VERTICAL;
+    composite.setLayout(fillLayout);
+
+    Composite topComposite = new Composite(composite, SWT.NONE);
+    topComposite.setLayout(new FillLayout());
+    Composite middleComposite = new Composite(composite, SWT.NONE);
+    GridLayout gridLayout = new GridLayout();
+    gridLayout.numColumns = 1;
+    middleComposite.setLayout(gridLayout);
+    Composite bottomComposite = new Composite(composite, SWT.NONE);
+    bottomComposite.setLayout(new FormLayout());
 
     SquareButton.SquareButtonBuilder builder = new SquareButton.SquareButtonBuilder();
-    builder .setParent(composite)
-            .setText(buttonText)
+    builder .setParent(topComposite)
+            .setText("Simple square button")
             .setImage(buttonImage)
             .setImagePosition(BUTTON_IMAGE_POSITION)
             .setCornerRadius(CORNER_RADIUS)
@@ -52,13 +65,70 @@ public class SquareButtonExample implements SwtBlingExample {
             .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
     SquareButton button = builder.build();
 
-    button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+    builder = new SquareButton.SquareButtonBuilder();
+    builder .setParent(middleComposite)
+        .setText("Wide Button")
+        .setImage(buttonImage)
+        .setImagePosition(BUTTON_IMAGE_POSITION)
+        .setCornerRadius(CORNER_RADIUS)
+        .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
+        .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
+    SquareButton horizontallyStretchingButton = builder.build();
+    GridData gridData = new GridData();
+    gridData.grabExcessHorizontalSpace = true;
+    horizontallyStretchingButton.setLayoutData(gridData);
 
-    shell.setSize(200, 200);
+    builder = new SquareButton.SquareButtonBuilder();
+    builder .setParent(middleComposite)
+        .setText("Tall Button")
+        .setImage(buttonImage)
+        .setImagePosition(BUTTON_IMAGE_POSITION)
+        .setCornerRadius(CORNER_RADIUS)
+        .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
+        .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
+    SquareButton verticallyStretchingButton = builder.build();
+    gridData = new GridData();
+    gridData.grabExcessVerticalSpace = true;
+    verticallyStretchingButton.setLayoutData(gridData);
+
+    String bigButtonText = "Big SquareButton";
+    Image bigButtonImage = display.getSystemImage(SWT.ICON_QUESTION);
+    SquareButton.ImagePosition BIG_BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
+    int BIG_CORNER_RADIUS = 3;
+    SquareButton.SquareButtonColorGroup BIG_BUTTON_HOVER_COLOR_GROUP =
+      new SquareButton.SquareButtonColorGroup(white, white, white, offBlack);
+    SquareButton.SquareButtonColorGroup BIG_BUTTON_DEFAULT_COLOR_GROUP =
+      new SquareButton.SquareButtonColorGroup(lighterGray, lightestGray, lightGray, offBlack);
+
+    builder = new SquareButton.SquareButtonBuilder();
+    builder.setParent(bottomComposite)
+      .setText(bigButtonText)
+      .setImage(bigButtonImage)
+      .setImagePosition(BIG_BUTTON_IMAGE_POSITION)
+      .setCornerRadius(BIG_CORNER_RADIUS)
+      .setHoverColors(BIG_BUTTON_HOVER_COLOR_GROUP)
+      .setDefaultColors(BIG_BUTTON_DEFAULT_COLOR_GROUP);
+    SquareButton bigButton = builder.build();
+
+    FormData formData = new FormData();
+    formData.left = new FormAttachment(10);
+    formData.top = new FormAttachment(10);
+    formData.right = new FormAttachment(90);
+    formData.bottom = new FormAttachment(90);
+    bigButton.setLayoutData(formData);
+
+
+    shell.setSize(200, 500);
     shell.open();
 
-    // This is needed remove focus from the Button by default.
-    Composite composite2 = new Composite(shell, SWT.NONE);
-    composite2.setFocus();
+    shell.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent e) {
+        offBlack.dispose();
+        lightGray.dispose();
+        lighterGray.dispose();
+        lightestGray.dispose();
+        white.dispose();
+      }
+    });
   }
 }
