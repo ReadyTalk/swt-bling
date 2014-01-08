@@ -6,3 +6,11 @@ idea {
     sourceDirs += file('build/generated-src/java')
   }
 }
+
+task deleteIdeaBuild() {
+  delete 'out'
+}
+
+clean {
+  it.dependsOn deleteIdeaBuild
+}
