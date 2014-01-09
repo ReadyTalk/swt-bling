@@ -111,6 +111,9 @@ public class SquareButton extends Canvas {
   protected boolean horizontallyCenterContents = true;
   protected boolean verticallyCenterContents = true;
 
+  protected boolean toggleable = false;
+  protected boolean toggled = false;
+
   protected SquareButton(Composite parent, int style) {
     super(parent, style | SWT.NO_BACKGROUND);
     this.setBackgroundMode(SWT.INHERIT_DEFAULT);
