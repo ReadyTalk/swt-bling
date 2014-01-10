@@ -141,25 +141,30 @@ public class SquareButton extends Canvas {
 
     // MOUSE EVENTS
     addMouseListener(new MouseAdapter() {
+
       @Override
       public void mouseDown(MouseEvent mouseEvent) {
-        if (mouseEvent.button == 1) {
-          doButtonClickedColor();
+        if(mouseEvent.count == 1) {
+          if (mouseEvent.button == 1) {
+            doButtonClickedColor();
+          }
+          super.mouseDown(mouseEvent);
         }
-        super.mouseDown(mouseEvent);
       }
 
       @Override
       public void mouseUp(MouseEvent mouseEvent) {
-        if (mouseEvent.button == 1) {
-          if(!toggleable || !toggled)  {
-            SquareButton.this.setHoverColor();
+        if(mouseEvent.count == 1) {
+          if (mouseEvent.button == 1) {
+            if(!toggleable || !toggled)  {
+              SquareButton.this.setHoverColor();
+            }
+            if ((mouseEvent.count == 1) && getEnabled() && (getClientArea().contains(mouseEvent.x, mouseEvent.y))) {
+              doButtonClicked();
+            }
           }
-          if ((mouseEvent.count == 1) && getEnabled() && (getClientArea().contains(mouseEvent.x, mouseEvent.y))) {
-            doButtonClicked();
-          }
+          super.mouseUp(mouseEvent);
         }
-        super.mouseUp(mouseEvent);
       }
     });
 
