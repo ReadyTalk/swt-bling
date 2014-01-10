@@ -7,6 +7,8 @@ import com.readytalk.swt.widgets.buttons.SquareButton;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -65,6 +67,7 @@ public class SquareButtonExample implements SwtBlingExample {
             .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP);
     SquareButton button = builder.build();
 
+
     builder = new SquareButton.SquareButtonBuilder();
     builder .setParent(middleComposite)
         .setText("Wide Button")
@@ -91,9 +94,10 @@ public class SquareButtonExample implements SwtBlingExample {
     gridData.grabExcessVerticalSpace = true;
     verticallyStretchingButton.setLayoutData(gridData);
 
-    String bigButtonText = "Big Toggleable SquareButton";
-    Image bigButtonImage = display.getSystemImage(SWT.ICON_QUESTION);
-    SquareButton.ImagePosition BIG_BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
+    String bigButtonTextOne = "Toggleable Radio-like Button One";
+    String bigButtonTextTwo = "Toggleable Radio-like Button Two";
+    Image bigButtonImage = display.getSystemImage(SWT.ICON_ERROR);
+    SquareButton.ImagePosition BIG_BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.LEFT_OF_TEXT;
     int BIG_CORNER_RADIUS = 3;
     SquareButton.SquareButtonColorGroup BIG_BUTTON_HOVER_COLOR_GROUP =
       new SquareButton.SquareButtonColorGroup(white, white, white, offBlack);
@@ -102,24 +106,60 @@ public class SquareButtonExample implements SwtBlingExample {
 
     builder = new SquareButton.SquareButtonBuilder();
     builder.setParent(bottomComposite)
-      .setText(bigButtonText)
+      .setText(bigButtonTextOne)
       .setImage(bigButtonImage)
       .setImagePosition(BIG_BUTTON_IMAGE_POSITION)
       .setCornerRadius(BIG_CORNER_RADIUS)
       .setHoverColors(BIG_BUTTON_HOVER_COLOR_GROUP)
       .setToggleable(true)
       .setDefaultColors(BIG_BUTTON_DEFAULT_COLOR_GROUP);
-    SquareButton bigButton = builder.build();
+    final SquareButton bigButtonOne = builder.build();
 
     FormData formData = new FormData();
     formData.left = new FormAttachment(10);
     formData.top = new FormAttachment(10);
     formData.right = new FormAttachment(90);
-    formData.bottom = new FormAttachment(90);
-    bigButton.setLayoutData(formData);
+    bigButtonOne.setLayoutData(formData);
+
+    builder = new SquareButton.SquareButtonBuilder();
+    builder.setParent(bottomComposite)
+      .setText(bigButtonTextTwo)
+      .setImage(bigButtonImage)
+      .setImagePosition(BIG_BUTTON_IMAGE_POSITION)
+      .setCornerRadius(BIG_CORNER_RADIUS)
+      .setHoverColors(BIG_BUTTON_HOVER_COLOR_GROUP)
+      .setToggleable(true)
+      .setDefaultColors(BIG_BUTTON_DEFAULT_COLOR_GROUP);
+    final SquareButton bigButtonTwo = builder.build();
+
+    formData = new FormData();
+    formData.left = new FormAttachment(10);
+    formData.top = new FormAttachment(bigButtonOne, 10);
+    formData.right = new FormAttachment(90);
+    bigButtonTwo.setLayoutData(formData);
+
+    bigButtonOne.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseUp(MouseEvent e) {
+        if(bigButtonTwo.isToggled()) {
+          bigButtonTwo.setToggled(false);
+        }
+      }
+    });
+
+    bigButtonTwo.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseUp(MouseEvent e) {
+        if(bigButtonOne.isToggled()) {
+          bigButtonOne.setToggled(false);
+        }
+      }
+    });
+
+    bigButtonOne.setToggled(true);
 
 
-    shell.setSize(300, 500);
+    shell.setSize(400, 800);
     shell.open();
 
     shell.addDisposeListener(new DisposeListener() {

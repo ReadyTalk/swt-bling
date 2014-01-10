@@ -1222,6 +1222,14 @@ public class SquareButton extends Canvas {
 
   public void setToggled(boolean toggled) {
     this.toggled = toggled;
+    if(toggleable) {
+      if(toggled) {
+        SquareButton.this.setClickedColor();
+      } else {
+        SquareButton.this.setNormalColor();
+      }
+    }
+    redraw();
   }
 
   public static class SquareButtonColorGroup {
