@@ -473,7 +473,7 @@ public class SquareButton extends Canvas {
     if (roundedCorners) {
       gc.drawRoundRectangle(buttonRectangle.x + (bw - 1), buttonRectangle.y + (bw - 1), buttonRectangle.width - bw, buttonRectangle.height - 4, arcWidth, arcHeight);
     } else {
-      gc.drawRectangle(buttonRectangle.x, buttonRectangle.y, buttonRectangle.width - bw, buttonRectangle.height - 1);
+      gc.drawRectangle(buttonRectangle.x, buttonRectangle.y, buttonRectangle.width - bw, buttonRectangle.height - 3);
     }
 
     // dotted line selection border around the text, if any
@@ -716,7 +716,7 @@ public class SquareButton extends Canvas {
          *  |_________________________|
          */
         imageY = (verticallyCenterContents) ? rectangle.height/2 - heightOfContents/2 : innerMarginHeight;
-        textY = imageY + imageSize.y + imagePadding;
+        textY = imageY + imageSize.y + ((image != null) ? imagePadding : 0);
 
         // anchor width based on the image only if the image is wider, probably not likely but possible
         if(imageWider) {
