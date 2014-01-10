@@ -6,6 +6,8 @@ import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
@@ -530,7 +532,7 @@ public class SquareButton extends Canvas {
     switch(imagePosition) {
       case LEFT_OF_TEXT:
       case RIGHT_OF_TEXT:
-        widthOfContents = imageWidth + imagePadding + textWidth;
+        widthOfContents = imageWidth + textWidth + ((image != null) ? imagePadding : 0);
         break;
       case ABOVE_TEXT:
         widthOfContents = Math.max(textWidth, imageWidth);
@@ -561,7 +563,7 @@ public class SquareButton extends Canvas {
         heightOfContents = Math.max(textHeight, imageHeight);
         break;
       case ABOVE_TEXT:
-        heightOfContents = imageHeight + imagePadding + textHeight;
+        heightOfContents = imageHeight + textHeight + ((image != null) ? imagePadding : 0);
         break;
     }
     return heightOfContents;
@@ -629,7 +631,7 @@ public class SquareButton extends Canvas {
          */
 
         imageX = (horizontallyCenterContents) ? rectangle.width/2 - widthOfContents/2 : innerMarginWidth;
-        textX = imageX + imageSize.x + imagePadding;
+        textX = imageX + imageSize.x + ((image != null) ? imagePadding : 0);
 
         // anchor height based on the image, if the image is the taller of the two... BUT that might not always be the case
         if(imageTaller) {
@@ -667,7 +669,7 @@ public class SquareButton extends Canvas {
          *  |_______________________________________|
          */
         textX = (horizontallyCenterContents) ? rectangle.width/2 - widthOfContents/2 : innerMarginWidth;
-        imageX = textX + textSize.x + imagePadding;
+        imageX = textX + textSize.x + ((image != null) ? imagePadding : 0);
 
         // anchor height based on the image, if the image is the taller of the two... BUT that might not always be the case
         if(imageTaller) {
@@ -1121,9 +1123,9 @@ public class SquareButton extends Canvas {
 
   public void setClickedColors(SquareButtonColorGroup squareButtonColorGroup) {
     setClickedColors(squareButtonColorGroup.getTopBackgroundColor(),
-      squareButtonColorGroup.getBottomBackgroundColor(),
-      squareButtonColorGroup.getBorderColor(),
-      squareButtonColorGroup.getFontColor());
+        squareButtonColorGroup.getBottomBackgroundColor(),
+        squareButtonColorGroup.getBorderColor(),
+        squareButtonColorGroup.getFontColor());
   }
 
   /**
@@ -1148,9 +1150,9 @@ public class SquareButton extends Canvas {
    */
   public void setSelectedColors(SquareButtonColorGroup squareButtonColorGroup) {
     setSelectedColors(squareButtonColorGroup.getTopBackgroundColor(),
-      squareButtonColorGroup.getBottomBackgroundColor(),
-      squareButtonColorGroup.getBorderColor(),
-      squareButtonColorGroup.getFontColor());
+        squareButtonColorGroup.getBottomBackgroundColor(),
+        squareButtonColorGroup.getBorderColor(),
+        squareButtonColorGroup.getFontColor());
   }
 
   /**
@@ -1175,9 +1177,9 @@ public class SquareButton extends Canvas {
    */
   public void setInactiveColors(SquareButtonColorGroup squareButtonColorGroup) {
     setInactiveColors(squareButtonColorGroup.getTopBackgroundColor(),
-      squareButtonColorGroup.getBottomBackgroundColor(),
-      squareButtonColorGroup.getBorderColor(),
-      squareButtonColorGroup.getFontColor());
+        squareButtonColorGroup.getBottomBackgroundColor(),
+        squareButtonColorGroup.getBorderColor(),
+        squareButtonColorGroup.getFontColor());
   }
 
   public int getCornerRadius() {
@@ -1288,6 +1290,10 @@ public class SquareButton extends Canvas {
     }
   }
 
+  public static interface DefaultButtonClickHandler {
+    void clicked();
+  }
+
   /**
    * Not totally necessary, but it's lovely to chain a bunch of calls together for efficiency and brevity of code.  Looks bulky here,
    * but so much faster in implementation.
@@ -1314,6 +1320,7 @@ public class SquareButton extends Canvas {
     protected SquareButtonColorGroup inactiveColors;
     protected String accessibilityName;
     protected boolean toggleable;
+    protected DefaultButtonClickHandler defaultMouseClickAndReturnKeyHandler;
 
     public SquareButtonBuilder setParent(Composite parent) {
       this.parent = parent;
@@ -1416,6 +1423,11 @@ public class SquareButton extends Canvas {
       return this;
     }
 
+    public SquareButtonBuilder setDefaultMouseClickAndReturnKeyHandler(DefaultButtonClickHandler defaultMouseClickAndReturnKeyHandler) {
+      this.defaultMouseClickAndReturnKeyHandler = defaultMouseClickAndReturnKeyHandler;
+      return this;
+    }
+
     public SquareButton build() throws IllegalArgumentException {
       SquareButton button = null;
 
@@ -1496,6 +1508,29 @@ public class SquareButton extends Canvas {
 
       if(accessibilityName != null) {
         button.setAccessibilityName(accessibilityName);
+      }
+
+      if(defaultMouseClickAndReturnKeyHandler != null) {
+        button.addMouseListener(new MouseAdapter() {
+          @Override
+          public void mouseUp(MouseEvent e) {
+            defaultMouseClickAndReturnKeyHandler.clicked();
+          }
+        });
+        button.addKeyListener(new KeyAdapter() {
+          @Override
+          public void keyPressed(KeyEvent keyEvent) {
+            switch (keyEvent.character) {
+              case ' ':
+              case '\r':
+              case '\n':
+                defaultMouseClickAndReturnKeyHandler.clicked();
+                break;
+              default:
+                break;
+            }
+          }
+        });
       }
 
       return button;
