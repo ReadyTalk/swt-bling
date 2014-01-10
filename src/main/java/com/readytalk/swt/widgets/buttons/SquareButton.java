@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TypedListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -264,15 +266,7 @@ public class SquareButton extends Canvas {
   }
 
   void doButtonClickedColor() {
-    if(toggleable) {
-      if(toggled) {
-        SquareButton.this.setNormalColor();
-        toggled = false;
-      } else {
-        SquareButton.this.setClickedColor();
-        toggled = true;
-      }
-    } else {
+    if(!toggleable){
       SquareButton.this.setClickedColor();
     }
   }
@@ -473,7 +467,7 @@ public class SquareButton extends Canvas {
     if (roundedCorners) {
       gc.drawRoundRectangle(buttonRectangle.x + (bw - 1), buttonRectangle.y + (bw - 1), buttonRectangle.width - bw, buttonRectangle.height - 4, arcWidth, arcHeight);
     } else {
-      gc.drawRectangle(buttonRectangle.x, buttonRectangle.y, buttonRectangle.width - bw, buttonRectangle.height - 1);
+      gc.drawRectangle(buttonRectangle.x, buttonRectangle.y, buttonRectangle.width - bw, buttonRectangle.height - 3);
     }
 
     // dotted line selection border around the text, if any
@@ -716,7 +710,7 @@ public class SquareButton extends Canvas {
          *  |_________________________|
          */
         imageY = (verticallyCenterContents) ? rectangle.height/2 - heightOfContents/2 : innerMarginHeight;
-        textY = imageY + imageSize.y + imagePadding;
+        textY = imageY + imageSize.y + ((image != null) ? imagePadding : 0);
 
         // anchor width based on the image only if the image is wider, probably not likely but possible
         if(imageWider) {
@@ -1290,7 +1284,98 @@ public class SquareButton extends Canvas {
     }
   }
 
-  public static interface DefaultButtonClickHandler {
+  private List<ButtonClickStrategy> strategies = new ArrayList<ButtonClickStrategy>();
+  private DefaultButtonClickHandler strategyHandler;
+
+  private DefaultButtonClickHandler defaultToggleClickHandler = new DefaultButtonClickHandler(this) {
+    @Override
+    void clicked() {
+      if(!disableDefaultToggleClickHandler && isToggleable()) {
+        if(toggled) {
+          setNormalColor();
+          toggled = false;
+        } else {
+          setClickedColor();
+          toggled = true;
+        }
+      }
+    }
+  };
+
+  private boolean disableDefaultToggleClickHandler;
+
+  void setDisableDefaultToggleClickHandler(boolean disableDefaultToggleClickHandler) {
+    this.disableDefaultToggleClickHandler = disableDefaultToggleClickHandler;
+  }
+
+  public void addStrategy(ButtonClickStrategy strategy) {
+    strategies.add(strategy);
+    addStrategyHandler();
+  }
+
+  public void clearStrategies() {
+    strategies.clear();
+  }
+
+  public void removeStrategy(ButtonClickStrategy strategy) {
+    strategies.remove(strategy);
+  }
+
+  void addStrategyHandler() {
+    if(strategyHandler == null) {
+      strategyHandler = new DefaultButtonClickHandler(this) {
+        @Override
+        void clicked() {
+          for(ButtonClickStrategy strategy : strategies) {
+            boolean validStrategy = strategy.isStrategyValid();
+            if(validStrategy) {
+              strategy.executeStrategy();
+            }
+          }
+        }
+      };
+    }
+  }
+
+  static interface ButtonClickStrategy {
+
+    /**
+     * Do whatever button logic you want to do here.
+     *
+     * @return whether or not this button click should be allowed
+     */
+    boolean isStrategyValid();
+    void executeStrategy();
+  }
+
+  public static abstract class DefaultButtonClickHandler {
+
+    public DefaultButtonClickHandler(final SquareButton button) {
+      button.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseUp(MouseEvent e) {
+          clicked();
+        }
+      });
+      button.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent keyEvent) {
+          switch (keyEvent.character) {
+            case ' ':
+            case '\r':
+            case '\n':
+              clicked();
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    }
+    abstract void clicked();
+  }
+
+  public static interface ButtonClickHandler {
     void clicked();
   }
 
@@ -1320,7 +1405,7 @@ public class SquareButton extends Canvas {
     protected SquareButtonColorGroup inactiveColors;
     protected String accessibilityName;
     protected boolean toggleable;
-    protected DefaultButtonClickHandler defaultMouseClickAndReturnKeyHandler;
+    protected ButtonClickHandler defaultMouseClickAndReturnKeyHandler;
 
     public SquareButtonBuilder setParent(Composite parent) {
       this.parent = parent;
@@ -1423,7 +1508,7 @@ public class SquareButton extends Canvas {
       return this;
     }
 
-    public SquareButtonBuilder setDefaultMouseClickAndReturnKeyHandler(DefaultButtonClickHandler defaultMouseClickAndReturnKeyHandler) {
+    public SquareButtonBuilder setDefaultMouseClickAndReturnKeyHandler(ButtonClickHandler defaultMouseClickAndReturnKeyHandler) {
       this.defaultMouseClickAndReturnKeyHandler = defaultMouseClickAndReturnKeyHandler;
       return this;
     }
@@ -1511,26 +1596,12 @@ public class SquareButton extends Canvas {
       }
 
       if(defaultMouseClickAndReturnKeyHandler != null) {
-        button.addMouseListener(new MouseAdapter() {
+        DefaultButtonClickHandler handler = new DefaultButtonClickHandler(button) {
           @Override
-          public void mouseUp(MouseEvent e) {
+          void clicked() {
             defaultMouseClickAndReturnKeyHandler.clicked();
           }
-        });
-        button.addKeyListener(new KeyAdapter() {
-          @Override
-          public void keyPressed(KeyEvent keyEvent) {
-            switch (keyEvent.character) {
-              case ' ':
-              case '\r':
-              case '\n':
-                defaultMouseClickAndReturnKeyHandler.clicked();
-                break;
-              default:
-                break;
-            }
-          }
-        });
+        };
       }
 
       return button;

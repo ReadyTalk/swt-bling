@@ -4,6 +4,7 @@ import com.readytalk.examples.swt.RunnableExample;
 import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.util.ColorFactory;
 import com.readytalk.swt.widgets.buttons.SquareButton;
+import com.readytalk.swt.widgets.buttons.SquareButtonGroup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -134,7 +135,7 @@ public class SquareButtonExample implements SwtBlingExample {
             .setHoverColors(BUTTON_HOVER_COLOR_GROUP)
             .setDefaultColors(BUTTON_DEFAULT_COLOR_GROUP)
             .setClickedColors(FUN_BUTTON_CLICK_COLOR_GROUP)
-            .setDefaultMouseClickAndReturnKeyHandler(new SquareButton.DefaultButtonClickHandler() {
+            .setDefaultMouseClickAndReturnKeyHandler(new SquareButton.ButtonClickHandler() {
               @Override
               public void clicked() {
                 openTestDialog(shell);
@@ -168,7 +169,7 @@ public class SquareButtonExample implements SwtBlingExample {
         .setDefaultColors(FUN_BUTTON_DEFAULT_COLOR_GROUP)
         .setSelectedColors(FUN_BUTTON_SELECTED_COLOR_GROUP)
         .setClickedColors(FUN_BUTTON_CLICK_COLOR_GROUP)
-        .setDefaultMouseClickAndReturnKeyHandler(new SquareButton.DefaultButtonClickHandler() {
+        .setDefaultMouseClickAndReturnKeyHandler(new SquareButton.ButtonClickHandler() {
           @Override
           public void clicked() {
             openTestDialog(shell);
@@ -190,7 +191,7 @@ public class SquareButtonExample implements SwtBlingExample {
         .setDefaultColors(MORE_FUN_BUTTON_DEFAULT_COLOR_GROUP)
         .setClickedColors(FUN_BUTTON_CLICK_COLOR_GROUP)
         .setSelectedColors(MORE_FUN_BUTTON_SELECTED_COLOR_GROUP)
-        .setDefaultMouseClickAndReturnKeyHandler(new SquareButton.DefaultButtonClickHandler() {
+        .setDefaultMouseClickAndReturnKeyHandler(new SquareButton.ButtonClickHandler() {
           @Override
           public void clicked() {
             openTestDialog(shell);
@@ -260,59 +261,61 @@ public class SquareButtonExample implements SwtBlingExample {
     formData.right = new FormAttachment(90);
     bigButtonTwo.setLayoutData(formData);
 
-    bigButtonOne.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseUp(MouseEvent e) {
-        if(bigButtonTwo.isToggled()) {
-          bigButtonTwo.setToggled(false);
-        }
-      }
-    });
+    SquareButtonGroup group = new SquareButtonGroup(bigButtonOne, bigButtonTwo);
 
-    bigButtonOne.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyPressed(KeyEvent keyEvent) {
-        switch (keyEvent.character) {
-          case ' ':
-          case '\r':
-          case '\n':
-            if(bigButtonTwo.isToggled()) {
-              bigButtonTwo.setToggled(false);
-            }
-            break;
-          default:
-            break;
-        }
-      }
-    });
+//    bigButtonOne.addMouseListener(new MouseAdapter() {
+//      @Override
+//      public void mouseUp(MouseEvent e) {
+//        if(bigButtonTwo.isToggled()) {
+//          bigButtonTwo.setToggled(false);
+//        }
+//      }
+//    });
+//
+//    bigButtonOne.addKeyListener(new KeyAdapter() {
+//      @Override
+//      public void keyPressed(KeyEvent keyEvent) {
+//        switch (keyEvent.character) {
+//          case ' ':
+//          case '\r':
+//          case '\n':
+//            if(bigButtonTwo.isToggled()) {
+//              bigButtonTwo.setToggled(false);
+//            }
+//            break;
+//          default:
+//            break;
+//        }
+//      }
+//    });
+//
+//    bigButtonTwo.addMouseListener(new MouseAdapter() {
+//      @Override
+//      public void mouseUp(MouseEvent e) {
+//        if(bigButtonOne.isToggled()) {
+//          bigButtonOne.setToggled(false);
+//        }
+//      }
+//    });
+//
+//    bigButtonTwo.addKeyListener(new KeyAdapter() {
+//      @Override
+//      public void keyPressed(KeyEvent keyEvent) {
+//        switch (keyEvent.character) {
+//          case ' ':
+//          case '\r':
+//          case '\n':
+//            if(bigButtonOne.isToggled()) {
+//              bigButtonOne.setToggled(false);
+//            }
+//            break;
+//          default:
+//            break;
+//        }
+//      }
+//    });
 
-    bigButtonTwo.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseUp(MouseEvent e) {
-        if(bigButtonOne.isToggled()) {
-          bigButtonOne.setToggled(false);
-        }
-      }
-    });
-
-    bigButtonTwo.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyPressed(KeyEvent keyEvent) {
-        switch (keyEvent.character) {
-          case ' ':
-          case '\r':
-          case '\n':
-            if(bigButtonOne.isToggled()) {
-              bigButtonOne.setToggled(false);
-            }
-            break;
-          default:
-            break;
-        }
-      }
-    });
-
-    bigButtonOne.setToggled(true);
+//    bigButtonOne.setToggled(true);
 //    shell.setSize(1200, 200);
 
     topGroup.pack();
