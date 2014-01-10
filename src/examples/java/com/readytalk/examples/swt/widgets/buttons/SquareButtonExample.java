@@ -91,7 +91,7 @@ public class SquareButtonExample implements SwtBlingExample {
     gridData.grabExcessVerticalSpace = true;
     verticallyStretchingButton.setLayoutData(gridData);
 
-    String bigButtonText = "Big SquareButton";
+    String bigButtonText = "Big Toggleable SquareButton";
     Image bigButtonImage = display.getSystemImage(SWT.ICON_QUESTION);
     SquareButton.ImagePosition BIG_BUTTON_IMAGE_POSITION = SquareButton.ImagePosition.ABOVE_TEXT;
     int BIG_CORNER_RADIUS = 3;
@@ -107,6 +107,7 @@ public class SquareButtonExample implements SwtBlingExample {
       .setImagePosition(BIG_BUTTON_IMAGE_POSITION)
       .setCornerRadius(BIG_CORNER_RADIUS)
       .setHoverColors(BIG_BUTTON_HOVER_COLOR_GROUP)
+      .setToggleable(true)
       .setDefaultColors(BIG_BUTTON_DEFAULT_COLOR_GROUP);
     SquareButton bigButton = builder.build();
 
@@ -118,7 +119,7 @@ public class SquareButtonExample implements SwtBlingExample {
     bigButton.setLayoutData(formData);
 
 
-    shell.setSize(200, 500);
+    shell.setSize(300, 500);
     shell.open();
 
     shell.addDisposeListener(new DisposeListener() {

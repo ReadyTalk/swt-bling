@@ -27,8 +27,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TypedListener;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -111,6 +109,9 @@ public class SquareButton extends Canvas {
   protected boolean horizontallyCenterContents = true;
   protected boolean verticallyCenterContents = true;
 
+  protected boolean toggleable = false;
+  protected boolean toggled = false;
+
   protected SquareButton(Composite parent, int style) {
     super(parent, style | SWT.NO_BACKGROUND);
     this.setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -143,7 +144,7 @@ public class SquareButton extends Canvas {
       @Override
       public void mouseDown(MouseEvent mouseEvent) {
         if (mouseEvent.button == 1) {
-          SquareButton.this.setClickedColor();
+          doButtonClickedColor();
         }
         super.mouseDown(mouseEvent);
       }
@@ -151,7 +152,9 @@ public class SquareButton extends Canvas {
       @Override
       public void mouseUp(MouseEvent mouseEvent) {
         if (mouseEvent.button == 1) {
-          SquareButton.this.setHoverColor();
+          if(!toggleable || !toggled)  {
+            SquareButton.this.setHoverColor();
+          }
           if ((mouseEvent.count == 1) && getEnabled() && (getClientArea().contains(mouseEvent.x, mouseEvent.y))) {
             doButtonClicked();
           }
@@ -163,22 +166,28 @@ public class SquareButton extends Canvas {
     addMouseTrackListener(new MouseTrackAdapter() {
       @Override
       public void mouseEnter(MouseEvent mouseEvent) {
-        SquareButton.this.setHoverColor();
+        if(!toggleable || !toggled) {
+          SquareButton.this.setHoverColor();
+        }
         super.mouseEnter(mouseEvent);
       }
 
       @Override
       public void mouseExit(MouseEvent mouseEvent) {
-        if (isFocused)
-          SquareButton.this.setSelectedColor();
-        else
-          SquareButton.this.setNormalColor();
+        if(!toggleable || !toggled) {
+          if (isFocused)
+            SquareButton.this.setSelectedColor();
+          else
+            SquareButton.this.setNormalColor();
+        }
         super.mouseExit(mouseEvent);
       }
 
       @Override
       public void mouseHover(MouseEvent mouseEvent) {
-        SquareButton.this.setHoverColor();
+        if(!toggleable || !toggled) {
+          SquareButton.this.setHoverColor();
+        }
         super.mouseHover(mouseEvent);
       }
     });
@@ -203,14 +212,18 @@ public class SquareButton extends Canvas {
     addListener(SWT.FocusIn, new Listener () {
       public void handleEvent (Event e) {
         isFocused = true;
-        SquareButton.this.setSelectedColor();
+        if(!toggleable || !toggled) {
+          SquareButton.this.setSelectedColor();
+        }
         redraw();
       }
     });
     addListener(SWT.FocusOut, new Listener () {
       public void handleEvent (Event e) {
         isFocused = false;
-        SquareButton.this.setNormalColor();
+        if(!toggleable || !toggled) {
+          SquareButton.this.setNormalColor();
+        }
         redraw();
       }
     });
@@ -218,7 +231,9 @@ public class SquareButton extends Canvas {
     addListener(SWT.KeyUp, new Listener () {
       public void handleEvent (Event e) {
         isFocused = true;
-        SquareButton.this.setSelectedColor();
+        if(!toggleable || !toggled) {
+          SquareButton.this.setSelectedColor();
+        }
         redraw();
       }
     });
@@ -229,7 +244,7 @@ public class SquareButton extends Canvas {
           case ' ':
           case '\r':
           case '\n':
-            SquareButton.this.setClickedColor();
+            doButtonClickedColor();
             redraw();
             doButtonClicked();
             break;
@@ -239,6 +254,20 @@ public class SquareButton extends Canvas {
       }
     };
     setTraversable(true);
+  }
+
+  void doButtonClickedColor() {
+    if(toggleable) {
+      if(toggled) {
+        SquareButton.this.setNormalColor();
+        toggled = false;
+      } else {
+        SquareButton.this.setClickedColor();
+        toggled = true;
+      }
+    } else {
+      SquareButton.this.setClickedColor();
+    }
   }
 
 
@@ -1087,9 +1116,9 @@ public class SquareButton extends Canvas {
 
   public void setClickedColors(SquareButtonColorGroup squareButtonColorGroup) {
     setClickedColors(squareButtonColorGroup.getTopBackgroundColor(),
-        squareButtonColorGroup.getBottomBackgroundColor(),
-        squareButtonColorGroup.getBorderColor(),
-        squareButtonColorGroup.getFontColor());
+      squareButtonColorGroup.getBottomBackgroundColor(),
+      squareButtonColorGroup.getBorderColor(),
+      squareButtonColorGroup.getFontColor());
   }
 
   /**
@@ -1114,9 +1143,9 @@ public class SquareButton extends Canvas {
    */
   public void setSelectedColors(SquareButtonColorGroup squareButtonColorGroup) {
     setSelectedColors(squareButtonColorGroup.getTopBackgroundColor(),
-        squareButtonColorGroup.getBottomBackgroundColor(),
-        squareButtonColorGroup.getBorderColor(),
-        squareButtonColorGroup.getFontColor());
+      squareButtonColorGroup.getBottomBackgroundColor(),
+      squareButtonColorGroup.getBorderColor(),
+      squareButtonColorGroup.getFontColor());
   }
 
   /**
@@ -1141,9 +1170,9 @@ public class SquareButton extends Canvas {
    */
   public void setInactiveColors(SquareButtonColorGroup squareButtonColorGroup) {
     setInactiveColors(squareButtonColorGroup.getTopBackgroundColor(),
-        squareButtonColorGroup.getBottomBackgroundColor(),
-        squareButtonColorGroup.getBorderColor(),
-        squareButtonColorGroup.getFontColor());
+      squareButtonColorGroup.getBottomBackgroundColor(),
+      squareButtonColorGroup.getBorderColor(),
+      squareButtonColorGroup.getFontColor());
   }
 
   public int getCornerRadius() {
@@ -1177,6 +1206,22 @@ public class SquareButton extends Canvas {
 
   public void setFillHorizontalSpace(boolean fillHorizontalSpace) {
     this.fillHorizontalSpace = fillHorizontalSpace;
+  }
+
+  public boolean isToggleable() {
+    return toggleable;
+  }
+
+  public void setToggleable(boolean toggleable) {
+    this.toggleable = toggleable;
+  }
+
+  public boolean isToggled() {
+    return toggled;
+  }
+
+  public void setToggled(boolean toggled) {
+    this.toggled = toggled;
   }
 
   public static class SquareButtonColorGroup {
@@ -1255,6 +1300,7 @@ public class SquareButton extends Canvas {
     protected SquareButtonColorGroup clickedColors;
     protected SquareButtonColorGroup inactiveColors;
     protected String accessibilityName;
+    protected boolean toggleable;
 
     public SquareButtonBuilder setParent(Composite parent) {
       this.parent = parent;
@@ -1352,6 +1398,11 @@ public class SquareButton extends Canvas {
       return this;
     }
 
+    public SquareButtonBuilder setToggleable(boolean toggleable) {
+      this.toggleable = toggleable;
+      return this;
+    }
+
     public SquareButton build() throws IllegalArgumentException {
       SquareButton button = null;
 
@@ -1378,6 +1429,7 @@ public class SquareButton extends Canvas {
       button.setVerticallyCenterContents(verticallyCenterContents);
       button.setFillVerticalSpace(fillVerticalSpace);
       button.setFillHorizontalSpace(fillHorizontalSpace);
+      button.setToggleable(toggleable);
 
       if(imagePadding != 0) {
         button.setImagePadding(imagePadding);
