@@ -80,19 +80,19 @@ public class PopOverShellIntegTest {
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
     public static List<Object[]> data() {
       return Arrays.asList(new Object[][]{
-              {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_POINT_CENTERED},
-              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, PopOverShell.PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER},
-              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), PopOverShell.PopOverAboveOrBelowParent.ABOVE_PARENT, Bubble.DEFAULT_POINT_CENTERED},
-              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), PopOverShell.PopOverAboveOrBelowParent.ABOVE_PARENT, PopOverShell.PopOverCornerCenteredOnParent.TOP_RIGHT_CORNER}
+              {false, false, getShellLocationNotCutOff(), Bubble.DEFAULT_DISPLAY_LOCATION, Bubble.DEFAULT_EDGE_CENTERED},
+              {false, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.RIGHT), Bubble.DEFAULT_DISPLAY_LOCATION, CenteringEdge.RIGHT},
+              {true, false, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM), VerticalLocation.ABOVE, Bubble.DEFAULT_EDGE_CENTERED},
+              {true, true, getShellLocationForPopOverCutoff(PopOverShellCutoffPosition.BOTTOM_RIGHT), VerticalLocation.ABOVE, CenteringEdge.RIGHT}
       });
     }
 
     Point shellPoint;
-    PopOverShell.PopOverAboveOrBelowParent expectedDisplayLocation;
-    PopOverShell.PopOverCornerCenteredOnParent expectedCenteredOnParent;
+    VerticalLocation expectedDisplayLocation;
+    CenteringEdge expectedCenteredOnParent;
 
     public PopOverShellPlacementTests(boolean bottomIsCutOff, boolean rightIsCutOff, Point shellPoint,
-                                      PopOverShell.PopOverAboveOrBelowParent expectedDisplayLocation, PopOverShell.PopOverCornerCenteredOnParent expectedCenteredOnParent) {
+                                      VerticalLocation expectedDisplayLocation, CenteringEdge expectedCenteredOnParent) {
       this.shellPoint = shellPoint;
       this.expectedDisplayLocation = expectedDisplayLocation;
       this.expectedCenteredOnParent = expectedCenteredOnParent;
@@ -105,7 +105,7 @@ public class PopOverShellIntegTest {
       popOverShell.show();
 
       assertEquals(popOverShell.popOverAboveOrBelowParent, expectedDisplayLocation);
-      assertEquals(popOverShell.popOverCornerCenteredOnParent, expectedCenteredOnParent);
+      assertEquals(popOverShell.popOverEdgeCenteredOnParent, expectedCenteredOnParent);
     }
 
 
