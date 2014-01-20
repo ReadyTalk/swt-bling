@@ -221,7 +221,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
                 popOverEdgeCenteredOnParent);
       }
     } else {
-      if (isLeftCutOff(displayBounds, location, popOverBounds)) {
+      if (isLeftCutOff(location)) {
         popOverEdgeCenteredOnParent = CenteringEdge.LEFT;
         location.x = getPopOverXLocation(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
             popOverEdgeCenteredOnParent);
@@ -249,7 +249,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   }
 
   boolean isTopCutOff(Point locationRelativeToDisplay) {
-    return locationRelativeToDisplay.y > 0 ? false : true;
+    return locationRelativeToDisplay.y >= 0 ? false : true;
   }
 
   boolean isRightCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
@@ -265,9 +265,8 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     return isRightCutOff;
   }
 
-  boolean isLeftCutOff(Rectangle displayBounds, Point locationRelativeToDisplay,
-                        Rectangle popOverBounds) {
-    return locationRelativeToDisplay.x > 0 ? false : true;
+  boolean isLeftCutOff(Point locationRelativeToDisplay) {
+    return locationRelativeToDisplay.x >= 0 ? false : true;
   }
 
   boolean isStillOffScreen(Rectangle displayBounds, Point locationRelativeToDisplay,
