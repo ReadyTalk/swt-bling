@@ -261,62 +261,7 @@ public class SquareButtonExample implements SwtBlingExample {
     formData.right = new FormAttachment(90);
     bigButtonTwo.setLayoutData(formData);
 
-    SquareButtonGroup group = new SquareButtonGroup(bigButtonOne, bigButtonTwo);
-
-//    bigButtonOne.addMouseListener(new MouseAdapter() {
-//      @Override
-//      public void mouseUp(MouseEvent e) {
-//        if(bigButtonTwo.isToggled()) {
-//          bigButtonTwo.setToggled(false);
-//        }
-//      }
-//    });
-//
-//    bigButtonOne.addKeyListener(new KeyAdapter() {
-//      @Override
-//      public void keyPressed(KeyEvent keyEvent) {
-//        switch (keyEvent.character) {
-//          case ' ':
-//          case '\r':
-//          case '\n':
-//            if(bigButtonTwo.isToggled()) {
-//              bigButtonTwo.setToggled(false);
-//            }
-//            break;
-//          default:
-//            break;
-//        }
-//      }
-//    });
-//
-//    bigButtonTwo.addMouseListener(new MouseAdapter() {
-//      @Override
-//      public void mouseUp(MouseEvent e) {
-//        if(bigButtonOne.isToggled()) {
-//          bigButtonOne.setToggled(false);
-//        }
-//      }
-//    });
-//
-//    bigButtonTwo.addKeyListener(new KeyAdapter() {
-//      @Override
-//      public void keyPressed(KeyEvent keyEvent) {
-//        switch (keyEvent.character) {
-//          case ' ':
-//          case '\r':
-//          case '\n':
-//            if(bigButtonOne.isToggled()) {
-//              bigButtonOne.setToggled(false);
-//            }
-//            break;
-//          default:
-//            break;
-//        }
-//      }
-//    });
-
-//    bigButtonOne.setToggled(true);
-//    shell.setSize(1200, 200);
+    new SquareButtonGroup(bigButtonOne, bigButtonTwo);
 
     topGroup.pack();
     leftComposite.pack();
