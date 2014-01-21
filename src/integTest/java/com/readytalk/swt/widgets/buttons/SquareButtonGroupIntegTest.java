@@ -1,6 +1,7 @@
 package com.readytalk.swt.widgets.buttons;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -62,7 +63,22 @@ public class SquareButtonGroupIntegTest {
 
   @Test
   public void testBasicToggle() {
-    toggleTwo.notifyListeners(SWT.MouseDown, new Event());
+    toggleTwo.notifyListeners(SWT.MouseUp, new Event());
+    Assert.assertFalse(toggleOne.isToggled());
+    Assert.assertTrue(toggleTwo.isToggled());
+    Assert.assertFalse(toggleThree.isToggled());
+    Assert.assertFalse(nonToggled.isToggled());
+  }
+
+  @Test
+  public void testDoubleToggle() {
+    toggleTwo.notifyListeners(SWT.MouseUp, new Event());
+    Assert.assertFalse(toggleOne.isToggled());
+    Assert.assertTrue(toggleTwo.isToggled());
+    Assert.assertFalse(toggleThree.isToggled());
+    Assert.assertFalse(nonToggled.isToggled());
+
+    toggleTwo.notifyListeners(SWT.MouseUp, new Event());
     Assert.assertFalse(toggleOne.isToggled());
     Assert.assertTrue(toggleTwo.isToggled());
     Assert.assertFalse(toggleThree.isToggled());
