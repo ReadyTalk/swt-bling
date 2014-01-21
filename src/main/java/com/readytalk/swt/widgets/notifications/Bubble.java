@@ -43,6 +43,9 @@ public class Bubble extends PopOverShell {
   private static final int TEXT_TOP_AND_BOTTOM_PADDING = 2; //pixels
   private static final int TEXT_LEFT_AND_RIGHT_PADDING = 5; //pixels
 
+  private VerticalLocation verticalLocation;
+  private CenteringEdge centeringEdge;
+
   private boolean disableAutoHide;
 
   private Listener listener;
@@ -117,7 +120,9 @@ public class Bubble extends PopOverShell {
     this(parentControl, customElementDataProvider, text, false, tags);
   }
 
-  private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text, boolean useBoldFont, BubbleTag ... tags)
+  private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text,
+                 boolean useBoldFont,
+                 BubbleTag ... tags)
           throws IllegalArgumentException {
     super(parentControl, customElementDataProvider);
 
@@ -146,6 +151,9 @@ public class Bubble extends PopOverShell {
     // Remember to clean up after yourself onDispose.
     borderColor = ColorFactory.getColor(getDisplay(), BORDER_COLOR);
 
+    this.verticalLocation = VerticalLocation.BELOW;
+    this.centeringEdge = CenteringEdge.LEFT;
+
     attachListeners();
     registerBubble(getPoppedOverItem(), tags);
   }
@@ -166,6 +174,54 @@ public class Bubble extends PopOverShell {
     } else {
       bubbleRegistry.register(poppedOverItem.getControl(), this, tags);
     }
+  }
+
+  /**
+   * Sets the VerticalLocation.  VerticalLocation represents the relative visual location
+   * between this bubble and its parent.  The default is set to VerticalLocation.BELOW.
+   *
+   * @param verticalLocation
+   */
+  public Bubble setVerticalLocation(VerticalLocation verticalLocation) {
+    this.verticalLocation = verticalLocation;
+    return this;
+  }
+
+  /**
+   * Get the default vertical location used for positioning the Bubble relative to the parent;
+   * @return VerticalLocation
+   */
+  public VerticalLocation getVerticalLocation() {
+    return this.verticalLocation;
+  }
+
+  /**
+   * Sets the CenteringEdge.  CenteringEdge represents the relative visual location
+   * between this bubble and its parent.  By default, Bubble is set to center its
+   * left edge on the parent.
+   *
+   * @param centeringEdge
+   */
+  public Bubble setCenteringEdge(CenteringEdge centeringEdge) {
+    this.centeringEdge = centeringEdge;
+    return this;
+  }
+
+  /**
+   * Get the default edge used for positioning the Bubble relative to the parent;
+   * @return CenteringEdge
+   */
+  public CenteringEdge getCenteringEdge() {
+    return this.centeringEdge;
+  }
+
+  /**
+   * @see PopOverShell#show()
+   */
+  public void show() {
+    popOverEdgeCenteredOnParent = centeringEdge;
+    popOverAboveOrBelowParent = verticalLocation;
+    super.show();
   }
 
   /**

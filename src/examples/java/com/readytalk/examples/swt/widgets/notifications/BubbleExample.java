@@ -5,6 +5,8 @@ import com.readytalk.examples.swt.SwtBlingExample;
 import com.readytalk.swt.widgets.notifications.Bubble;
 import com.readytalk.swt.widgets.notifications.BubbleRegistry;
 import com.readytalk.swt.widgets.notifications.BubbleTag;
+import com.readytalk.swt.widgets.notifications.CenteringEdge;
+import com.readytalk.swt.widgets.notifications.VerticalLocation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,7 +41,10 @@ public class BubbleExample implements SwtBlingExample {
 
     Button displayAllBubbles = new Button(composite, SWT.PUSH);
     displayAllBubbles.setText("Display All Bubbles");
-    Bubble.createBubble(displayAllBubbles, "Click here to display all Bubbles");
+    Bubble.createBubble(displayAllBubbles, "Click here to display all Bubbles")
+        .setVerticalLocation(VerticalLocation.ABOVE)
+        .setCenteringEdge(CenteringEdge.RIGHT);
+
     displayAllBubbles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         bubbleRegistry.showAllBubbles();
@@ -57,7 +62,8 @@ public class BubbleExample implements SwtBlingExample {
 
     Button newFeatureButton = new Button(composite, SWT.PUSH);
     newFeatureButton.setText("A New Feature");
-    Bubble.createBubble(newFeatureButton, "This text explains a new, exciting feature!", BubbleTag.NEW);
+    Bubble.createBubble(newFeatureButton, "This text explains a new, exciting feature!", BubbleTag.NEW)
+        .setCenteringEdge(CenteringEdge.RIGHT);
 
     Label labelExample = new Label(composite, SWT.NONE);
     labelExample.setText("A Short Label");
