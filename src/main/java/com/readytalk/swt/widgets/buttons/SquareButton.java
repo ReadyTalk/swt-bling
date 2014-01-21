@@ -1596,7 +1596,7 @@ public class SquareButton extends Canvas {
       }
 
       if(defaultMouseClickAndReturnKeyHandler != null) {
-        DefaultButtonClickHandler handler = new DefaultButtonClickHandler(button) {
+        new DefaultButtonClickHandler(button) {
           @Override
           void clicked() {
             defaultMouseClickAndReturnKeyHandler.clicked();
