@@ -37,8 +37,10 @@ public class PopOverShellTest {
     public void setUp() {
       MockitoAnnotations.initMocks(this);
 
+      when(popOverShell.isTopCutOff(any(Point.class))).thenCallRealMethod();
       when(popOverShell.isBottomCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
       when(popOverShell.isRightCutOff(any(Rectangle.class), any(Point.class), any(Rectangle.class))).thenCallRealMethod();
+      when(popOverShell.isLeftCutOff(any(Point.class))).thenCallRealMethod();
     }
 
     @Parameterized.Parameters(name="{index}: BottomIsCutOff? {0}, RightIsCutOff? {1}")
@@ -62,6 +64,21 @@ public class PopOverShellTest {
     }
 
     @Test
+    public void isTopCutOff_NegativeYCoord_returnsTrue() {
+      assertTrue(popOverShell.isTopCutOff(new Point(0, -1)));
+    }
+
+    @Test
+    public void isTopCutOff_ZeroYCoord_returnsFalse() {
+      assertFalse(popOverShell.isLeftCutOff(new Point(0, 0)));
+    }
+
+    @Test
+    public void isTopCutOff_PositiveYCoord_returnsFalse() {
+      assertFalse(popOverShell.isLeftCutOff(new Point(1, 0)));
+    }
+
+    @Test
     public void isBottomCutOff_differingParameters_returnsCorrectBoolean() {
       assertEquals(popOverShell.isBottomCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY, popOverBounds),
               bottomCutOff);
@@ -71,6 +88,21 @@ public class PopOverShellTest {
     public void isRightCutOff_differingParameters_returnsCorrectBoolean() {
       assertEquals(popOverShell.isRightCutOff(DISPLAY_BOUNDS, LOCATION_RELATIVE_TO_DISPLAY, popOverBounds),
               rightCutOff);
+    }
+
+    @Test
+    public void isLeftCutOff_NegativeXCoord_returnsTrue() {
+      assertTrue(popOverShell.isLeftCutOff(new Point(-1, 0)));
+    }
+
+    @Test
+    public void isLeftCutOff_ZeroXCoord_returnsFalse() {
+      assertFalse(popOverShell.isLeftCutOff(new Point(0, 0)));
+    }
+
+    @Test
+    public void isLeftCutOff_PositiveXCoord_returnsFalse() {
+      assertFalse(popOverShell.isLeftCutOff(new Point(1, 0)));
     }
 
     private enum PopOverShellCutOffPosition { BOTTOM, RIGHT, BOTTOM_AND_RIGHT }
