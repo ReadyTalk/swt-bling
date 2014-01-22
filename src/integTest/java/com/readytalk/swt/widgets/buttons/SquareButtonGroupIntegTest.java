@@ -18,6 +18,8 @@ public class SquareButtonGroupIntegTest {
 
   private SquareButton toggleOne, toggleTwo, toggleThree, nonToggled;
 
+  private SquareButtonGroup group;
+
   @Before
   public void setUp() {
     display = Display.getDefault();
@@ -48,7 +50,7 @@ public class SquareButtonGroupIntegTest {
       .setText("non toggle");
     nonToggled = builder.build();
 
-    new SquareButtonGroup(toggleOne, toggleTwo, toggleThree, nonToggled);
+    group = new SquareButtonGroup(toggleOne, toggleTwo, toggleThree, nonToggled);
 
     shell.open();
   }
@@ -82,6 +84,15 @@ public class SquareButtonGroupIntegTest {
     Assert.assertFalse(toggleOne.isToggled());
     Assert.assertTrue(toggleTwo.isToggled());
     Assert.assertFalse(toggleThree.isToggled());
+    Assert.assertFalse(nonToggled.isToggled());
+  }
+
+  @Test
+  public void testForcedSelection() {
+    group.setCurrentlyToggledButton(toggleThree);
+    Assert.assertFalse(toggleOne.isToggled());
+    Assert.assertFalse(toggleTwo.isToggled());
+    Assert.assertTrue(toggleThree.isToggled());
     Assert.assertFalse(nonToggled.isToggled());
   }
 

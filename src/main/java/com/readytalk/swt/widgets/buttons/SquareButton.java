@@ -1221,6 +1221,12 @@ public class SquareButton extends Canvas {
     return toggled;
   }
 
+  /**
+   * Setting toggle states explicitly may work against what you might be trying to do, if using a SquareButtonGroup.  If not
+   * it will work as expected.
+   *
+   * @param toggled
+   */
   public void setToggled(boolean toggled) {
     this.toggled = toggled;
     if(toggleable) {
@@ -1308,6 +1314,12 @@ public class SquareButton extends Canvas {
     this.disableDefaultToggleClickHandler = disableDefaultToggleClickHandler;
   }
 
+  /**
+   * Strategies are more likely to be used in SquareButtonGroup implementations, but you can feel free to add
+   * any and they will all be evaluated and applied individually.
+   *
+   * @param strategy
+   */
   public void addStrategy(ButtonClickStrategy strategy) {
     strategies.add(strategy);
     addStrategyHandler();
@@ -1321,17 +1333,21 @@ public class SquareButton extends Canvas {
     strategies.remove(strategy);
   }
 
+  void executeStrategies() {
+    for(ButtonClickStrategy strategy : strategies) {
+      boolean validStrategy = strategy.isStrategyValid();
+      if(validStrategy) {
+        strategy.executeStrategy();
+      }
+    }
+  }
+
   void addStrategyHandler() {
     if(strategyHandler == null) {
       strategyHandler = new DefaultButtonClickHandler(this) {
         @Override
         void clicked() {
-          for(ButtonClickStrategy strategy : strategies) {
-            boolean validStrategy = strategy.isStrategyValid();
-            if(validStrategy) {
-              strategy.executeStrategy();
-            }
-          }
+         executeStrategies();
         }
       };
     }
@@ -1348,6 +1364,9 @@ public class SquareButton extends Canvas {
     void executeStrategy();
   }
 
+  /**
+   * Use this instead of using an explicit mouse adapter, unless you have other reason to.
+   */
   public static abstract class DefaultButtonClickHandler {
 
     public DefaultButtonClickHandler(final SquareButton button) {

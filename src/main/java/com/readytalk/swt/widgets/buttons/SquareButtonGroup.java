@@ -11,12 +11,42 @@ public class SquareButtonGroup {
   private List<SquareButton> toggleableButtons;
   private SquareButton currentlyToggledButton;
 
+  /**
+   * You can add any SquareButtons to a SquareButtonGroup.  If they are toggleable then the group will
+   * link them together so they can act like radio buttons.  The first button in the list will be set on by default.
+   *
+   * @param buttons
+   */
   public SquareButtonGroup(SquareButton ... buttons) {
     this.buttons = new ArrayList<SquareButton>();
     this.toggleableButtons = new ArrayList<SquareButton>();
     for(SquareButton button : buttons) {
        addButton(button);
     }
+  }
+
+  /**
+   * Call this to explicitly pick which button is toggled in the group.
+   *
+   * @param button
+   */
+  public void setCurrentlyToggledButton(SquareButton button) {
+    setCurrentlyToggledButton(button, true);
+  }
+
+  private void setCurrentlyToggledButton(SquareButton button, boolean simulateClick) {
+    if(simulateClick) {
+      if(isStrategyValid(button)) {
+        executeStrategy(button);
+      }
+    } else {
+      currentlyToggledButton = button;
+      button.setToggled(true);
+    }
+  }
+
+  public SquareButton getCurrentlyToggledButton() {
+    return currentlyToggledButton;
   }
 
   /**
@@ -33,8 +63,7 @@ public class SquareButtonGroup {
       toggleableButtons.add(button);
       injectStrategy(button);
       if(currentlyToggledButton == null) {
-        currentlyToggledButton = button;
-        button.setToggled(true);
+        setCurrentlyToggledButton(button, false);
       }
       toggleable = true;
     }
@@ -42,27 +71,35 @@ public class SquareButtonGroup {
   }
 
   void injectStrategy(final SquareButton button) {
-      button.addStrategy(new SquareButton.ButtonClickStrategy() {
-        @Override
-        public boolean isStrategyValid() {
-          boolean test = (currentlyToggledButton != button);
-          return test;
-        }
+    button.addStrategy(new SquareButton.ButtonClickStrategy() {
+      @Override
+      public boolean isStrategyValid() {
+        return SquareButtonGroup.this.isStrategyValid(button);
+      }
 
-        @Override
-        public void executeStrategy() {
-          button.setToggled(true);
-          currentlyToggledButton = button;
-          for(SquareButton otherButton : toggleableButtons) {
-            if(currentlyToggledButton == otherButton) {
-              continue;
-            }
-            if(otherButton.isToggleable()) {
-              otherButton.setToggled(false);
-            }
-          }
-        }
-      });
+      @Override
+      public void executeStrategy() {
+        SquareButtonGroup.this.executeStrategy(button);
+      }
+    });
+  }
+
+  boolean isStrategyValid(SquareButton button) {
+    return (currentlyToggledButton != button);
+  }
+
+
+  void executeStrategy(SquareButton button) {
+    button.setToggled(true);
+    currentlyToggledButton = button;
+    for(SquareButton otherButton : toggleableButtons) {
+      if(currentlyToggledButton == otherButton) {
+        continue;
+      }
+      if(otherButton.isToggleable()) {
+        otherButton.setToggled(false);
+      }
+    }
   }
 
 }
