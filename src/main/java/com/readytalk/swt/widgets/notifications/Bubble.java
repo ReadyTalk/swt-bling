@@ -72,22 +72,6 @@ public class Bubble extends PopOverShell {
   }
 
   /**
-   * Creates and attaches a Bubble to a component that implements <code>CustomElementDataProvider</code>
-   *
-   * @param customElementDataProvider The CustomElementDataProvider element that the Bubble provides contextual help about
-   * @param text The text you want to appear in the Bubble
-   * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
-   * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
-   * @deprecated Please use {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#WIKI} or
-   *  {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#FORMATTED} syntax to specify a bold font.
-   */
-  @Deprecated
-  public static Bubble createBubbleForCustomWidget(CustomElementDataProvider customElementDataProvider, String text, boolean useBoldFont, BubbleTag ... tags)
-          throws IllegalArgumentException {
-    return new Bubble(customElementDataProvider.getPaintedElement(), customElementDataProvider, text, useBoldFont, tags);
-  }
-
-  /**
    * Creates and attaches a Bubble to any SWT Control (or descendant).
    * This is a convenience constructor which assumes you do not want the Bubble text to appear
    * in a Bold font.
@@ -98,22 +82,6 @@ public class Bubble extends PopOverShell {
    */
   public static Bubble createBubble(Control parentControl, String text, BubbleTag ... tags) {
     return new Bubble(parentControl, null, text, false, tags);
-  }
-
-  /**
-   * Creates and attaches a Bubble to any SWT Control (or descendant).
-   *
-   * @param parentControl The parent element that the Bubble provides contextual help about
-   * @param text The text you want to appear in the Bubble
-   * @param useBoldFont Whether or not we should draw the Bubble's text in a bold version of the system font
-   * @throws IllegalArgumentException Thrown if the parentControl or text is <code>null</code>
-   * @deprecated Please use {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#WIKI} or
-   *  {@link com.readytalk.swt.text.tokenizer.TextTokenizerType#FORMATTED} syntax to specify a bold font.
-   */
-  @Deprecated
-  public static Bubble createBubble(Control parentControl, String text, boolean useBoldFont, BubbleTag ... tags)
-          throws IllegalArgumentException {
-    return new Bubble(parentControl, null, text, useBoldFont, tags);
   }
 
   private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text, BubbleTag ... tags) {

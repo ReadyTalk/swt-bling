@@ -255,23 +255,6 @@ public class TextPainter {
   }
 
   /**
-   * @deprecated
-   * Sets the text color.  By default, it clones the parent Composite's
-   * foreground color upon construction.
-   *
-   * @param r : an int representing the red component
-   * @param g : an int representing the green component
-   * @param b : an int representing the blue component
-   * @return {@link TextPainter}
-   */
-  @Deprecated
-  public TextPainter setForegroundColor(final int r, final int g, final int b) {
-    textColor.dispose();
-    textColor = ColorFactory.getColor(r, g, b);
-    return this;
-  }
-  
-  /**
    * Sets the hyperlink text color.  By default, it is set to (100, 50, 200).
    * Colors are managed by the color factory.
    * 
