@@ -1,10 +1,8 @@
 #!/bin/bash
-# This script was originally written by maxiaohao in the aws-mock GitHub project.
-# https://github.com/treelogic-swe/aws-mock/
 
 if [ "$TRAVIS_REPO_SLUG" == "ReadyTalk/swt-bling" ] && [ "$TRAVIS_JDK_VERSION" == "oraclejdk7" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
 
-  echo -e "Start to publish lastest Javadoc to gh-pages...\n"
+  echo -e "Publishing javadoc...\n"
 
   cp -R build/docs/javadoc $HOME/javadoc-latest
 
@@ -20,6 +18,6 @@ if [ "$TRAVIS_REPO_SLUG" == "ReadyTalk/swt-bling" ] && [ "$TRAVIS_JDK_VERSION" =
   git commit -m "Lastest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
   git push -fq origin gh-pages > /dev/null
 
-  echo -e "Done magic with auto publishment to gh-pages.\n"
+  echo -e "Published Javadoc to gh-pages.\n"
   
 fi
