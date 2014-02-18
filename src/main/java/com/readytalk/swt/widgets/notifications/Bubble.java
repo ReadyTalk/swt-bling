@@ -198,6 +198,11 @@ public class Bubble extends PopOverShell {
     return this;
   }
 
+  public Bubble setPositionRelativeParent(boolean positionRelativeParent) {
+    super.setPositionRelativeParent(positionRelativeParent);
+    return this;
+  }
+
   /**
    * @see PopOverShell#show()
    */
