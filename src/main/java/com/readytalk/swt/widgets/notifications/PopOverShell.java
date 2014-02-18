@@ -38,9 +38,11 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
   VerticalLocation popOverAboveOrBelowParent = DEFAULT_DISPLAY_LOCATION;
   CenteringEdge popOverEdgeCenteredOnParent = DEFAULT_EDGE_CENTERED;
+  Point offset;
 
   private Object fadeLock = new Object();
 
+  protected boolean positionRelativeToCustomElemeentDataProvider;
   protected Control parentControl;
   protected Shell popOverShell;
 
@@ -67,6 +69,8 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    */
   public PopOverShell(Control parentControl, CustomElementDataProvider customElementDataProvider) {
     super(parentControl, SWT.NONE);
+
+    offset = new Point(0, 0);
 
     if (customElementDataProvider != null) {
       poppedOverItem = new PoppedOverItem(customElementDataProvider);
@@ -117,6 +121,26 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     } else {
       show();
     }
+  }
+
+  /**
+   * Set the PopOverShell's offset which controls the bubble is rendered position.
+   */
+  public PopOverShell setOffset(Point offset) {
+    this.offset = offset;
+    return this;
+  }
+
+  /**
+   * Get the PopOverShell's offset; the offset controls where the bubble is rendered.
+   */
+  public Point getOffset() {
+    return offset;
+  }
+
+  public PopOverShell isPositionRelativeToCustomElemeentDataProvider(boolean positionRelativeToCustomElemeentDataProvider) {
+    this.positionRelativeToCustomElemeentDataProvider = positionRelativeToCustomElemeentDataProvider;
+    return this;
   }
 
   /**
@@ -193,7 +217,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     Rectangle displayBounds = parentShell.getDisplay().getBounds();
     Rectangle popOverBounds = popOverRegion.getBounds();
     Point poppedOverItemLocationRelativeToDisplay =
-            getPoppedOverItemLocationRelativeToDisplay(parentShell, poppedOverItem);
+            getPoppedOverItemRelativeLocation(poppedOverItem);
 
     // Guess on the location first
     Point location = getPopOverDisplayPoint(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
@@ -281,8 +305,16 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     return isStillOffScreen;
   }
 
-  private Point getPoppedOverItemLocationRelativeToDisplay(Shell parentShell, PoppedOverItem poppedOverItem) {
-    return parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
+  private Point getPoppedOverItemRelativeLocation(PoppedOverItem poppedOverItem) {
+    Point location = null;
+    if (positionRelativeToCustomElemeentDataProvider == false) {
+      location = parentControl.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
+    } else {
+      location = parentControl.toDisplay(poppedOverItem.getLocation());
+//      location.x += poppedOverItem.getSize().x;
+//      location.y -= (poppedOverItem.getSize().y;
+    }
+    return location;
   }
 
   private Point getPopOverDisplayPoint(Rectangle popOverBounds,
@@ -305,10 +337,10 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     int popOverX = 0;
     switch(popOverCornerCenteredOnParent) {
       case LEFT:
-        popOverX = poppedOverItemLocationRelativeToDisplay.x + (poppedOverItem.getSize().x / 2);
+        popOverX = poppedOverItemLocationRelativeToDisplay.x + offset.x + (poppedOverItem.getSize().x / 2);
         break;
       case RIGHT:
-        popOverX = poppedOverItemLocationRelativeToDisplay.x - popOverBounds.width + (poppedOverItem.getSize().x / 2);
+        popOverX = poppedOverItemLocationRelativeToDisplay.x - offset.x - popOverBounds.width + (poppedOverItem.getSize().x / 2);
         break;
     }
 
@@ -322,10 +354,10 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     int popOverY = 0;
     switch (aboveOrBelow) {
       case ABOVE:
-        popOverY = poppedOverItemLocationRelativeToDisplay.y - popOverBounds.height;
+        popOverY = poppedOverItemLocationRelativeToDisplay.y - offset.y - popOverBounds.height;
         break;
       case BELOW:
-        popOverY = poppedOverItemLocationRelativeToDisplay.y + poppedOverItem.getSize().y;
+        popOverY = poppedOverItemLocationRelativeToDisplay.y + offset.y + poppedOverItem.getSize().y;
         break;
     }
 
