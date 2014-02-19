@@ -62,27 +62,8 @@ public class BubbleExample implements SwtBlingExample {
 
     Button newFeatureButton = new Button(composite, SWT.PUSH);
     newFeatureButton.setText("A New Feature");
-
-    final Bubble transientTextBubble = Bubble.createBubble(newFeatureButton, "This text explains a new, exciting feature!", BubbleTag.NEW)
+    Bubble.createBubble(newFeatureButton, "This text explains a new, exciting feature!", BubbleTag.NEW)
         .setCenteringEdge(CenteringEdge.RIGHT);
-
-    new Thread(new Runnable () {
-      @Override
-      public void run() {
-        String a = "This is a short tooltip.";
-        String b = "This is a really long tooltip that would like to explain that text is settable on this Bubble class.";
-        boolean showA = true;
-        while(true) {
-          transientTextBubble.setText(showA?a:b);
-          showA = !showA;
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
 
     Label labelExample = new Label(composite, SWT.NONE);
     labelExample.setText("A Short Label");
