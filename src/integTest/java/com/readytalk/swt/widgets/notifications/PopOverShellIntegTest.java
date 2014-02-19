@@ -190,9 +190,8 @@ public class PopOverShellIntegTest {
 
 
     @Test
-    public void setPositionRelativeParent_parentCustomDrawn_NotDefault25x80() {
-      popOverShell.setPositionRelativeParent(true);
-
+    public void setPositionRelativeParent_parentCustomDrawn_NotDefault() {
+      popOverShell.setPositionRelativeParent(false);
       PoppedOverItem item = popOverShell.new PoppedOverItem(new CustomElementDataProvider() {
         @Override
         public Control getPaintedElement() {
@@ -209,9 +208,10 @@ public class PopOverShellIntegTest {
           return new Point(25, 25);
         }
       });
-
-      Point poppedOverItemRelativeLocation = popOverShell.getPoppedOverItemRelativeLocation(item);
-      assertTrue(poppedOverItemRelativeLocation.x == 25 && poppedOverItemRelativeLocation.y == 85);
+      Point positionA = popOverShell.getPoppedOverItemRelativeLocation(item);
+      popOverShell.setPositionRelativeParent(true);
+      Point positionB = popOverShell.getPoppedOverItemRelativeLocation(item);
+      assertTrue(positionA.x != positionB.x && positionA.y != positionB.y);
     }
   }
 }
