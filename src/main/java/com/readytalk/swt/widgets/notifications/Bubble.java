@@ -185,18 +185,6 @@ public class Bubble extends PopOverShell {
     return this.centeringEdge;
   }
 
-  /**
-   * Set the text to be rendered in the Bubble.
-   * @param text
-   */
-  public Bubble setText(String text) {
-    textPainter = new TextPainter(getPopOverShell())
-        .setText(text)
-        .setTextColor(TEXT_COLOR)
-        .setTokenizer(TextTokenizerFactory.createTextTokenizer(TextTokenizerType.FORMATTED))
-        .setPadding(TEXT_TOP_AND_BOTTOM_PADDING, TEXT_TOP_AND_BOTTOM_PADDING, TEXT_LEFT_AND_RIGHT_PADDING, TEXT_LEFT_AND_RIGHT_PADDING);
-    return this;
-  }
 
   public Bubble setPositionRelativeParent(boolean positionRelativeParent) {
     super.setPositionRelativeParent(positionRelativeParent);
