@@ -1,5 +1,7 @@
 package com.readytalk.swt.widgets.notifications;
 
+import com.readytalk.swt.widgets.CustomElementDataProvider;
+import com.readytalk.swt.widgets.notifications.PopOverShell.PoppedOverItem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -8,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
@@ -183,6 +186,32 @@ public class PopOverShellIntegTest {
       popOverShell.toggle();
       popOverShell.toggle();
       assertTrue(popOverShell.getIsFadeEffectInProgress());
+    }
+
+
+    @Test
+    public void setPositionRelativeParent_parentCustomDrawn_NotDefault25x80() {
+      popOverShell.setPositionRelativeParent(true);
+
+      PoppedOverItem item = popOverShell.new PoppedOverItem(new CustomElementDataProvider() {
+        @Override
+        public Control getPaintedElement() {
+          return popOverShell.getPopOverShell();
+        }
+
+        @Override
+        public Point getLocation() {
+          return new Point(25, 25);
+        }
+
+        @Override
+        public Point getSize() {
+          return new Point(25, 25);
+        }
+      });
+
+      Point poppedOverItemRelativeLocation = popOverShell.getPoppedOverItemRelativeLocation(item);
+      assertTrue(poppedOverItemRelativeLocation.x == 25 && poppedOverItemRelativeLocation.y == 85);
     }
   }
 }

@@ -287,7 +287,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     return isStillOffScreen;
   }
 
-  private Point getPoppedOverItemRelativeLocation(PoppedOverItem poppedOverItem) {
+  Point getPoppedOverItemRelativeLocation(PoppedOverItem poppedOverItem) {
     Point location = null;
     if (positionRelativeParent == false) {
       location = parentControl.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
