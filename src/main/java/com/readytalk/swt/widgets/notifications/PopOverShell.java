@@ -53,6 +53,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
 
   private Region popOverRegion;
 
+  private boolean positionRelativeParent = false;
   private boolean fadeEffectInProgress = false;
 
   /**
@@ -117,6 +118,11 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     } else {
       show();
     }
+  }
+
+  public PopOverShell setPositionRelativeParent(boolean positionRelativeParent) {
+    this.positionRelativeParent = positionRelativeParent;
+    return this;
   }
 
   /**
@@ -193,7 +199,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     Rectangle displayBounds = parentShell.getDisplay().getBounds();
     Rectangle popOverBounds = popOverRegion.getBounds();
     Point poppedOverItemLocationRelativeToDisplay =
-            getPoppedOverItemLocationRelativeToDisplay(parentShell, poppedOverItem);
+            getPoppedOverItemRelativeLocation(poppedOverItem);
 
     // Guess on the location first
     Point location = getPopOverDisplayPoint(popOverBounds, poppedOverItem, poppedOverItemLocationRelativeToDisplay,
@@ -281,8 +287,14 @@ public abstract class PopOverShell extends Widget implements Fadeable {
     return isStillOffScreen;
   }
 
-  private Point getPoppedOverItemLocationRelativeToDisplay(Shell parentShell, PoppedOverItem poppedOverItem) {
-    return parentShell.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
+  Point getPoppedOverItemRelativeLocation(PoppedOverItem poppedOverItem) {
+    Point location = null;
+    if (positionRelativeParent == false) {
+      location = parentControl.getDisplay().map(parentShell, null, poppedOverItem.getLocation());
+    } else {
+      location = parentControl.toDisplay(poppedOverItem.getLocation());
+    }
+    return location;
   }
 
   private Point getPopOverDisplayPoint(Rectangle popOverBounds,

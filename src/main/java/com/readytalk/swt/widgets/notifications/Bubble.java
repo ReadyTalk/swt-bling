@@ -88,6 +88,8 @@ public class Bubble extends PopOverShell {
     this(parentControl, customElementDataProvider, text, false, tags);
   }
 
+
+
   private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text,
                  boolean useBoldFont,
                  BubbleTag ... tags)
@@ -181,6 +183,12 @@ public class Bubble extends PopOverShell {
    */
   public CenteringEdge getCenteringEdge() {
     return this.centeringEdge;
+  }
+
+
+  public Bubble setPositionRelativeParent(boolean positionRelativeParent) {
+    super.setPositionRelativeParent(positionRelativeParent);
+    return this;
   }
 
   /**
