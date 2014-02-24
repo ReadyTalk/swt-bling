@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.nio.charset.Charset;
 
 import org.eclipse.swt.SWT;
 
@@ -17,22 +16,10 @@ import com.readytalk.swt.text.painter.TextType;
  *    ragel -J FormattedTextTokenizer.java.rl -o FormattedTextTokenizer.java
  */
 public class FormattedTextTokenizer implements TextTokenizer {
-	
-	private Charset encoding = Charset.defaultCharset();
+
 	private List<TextToken> tokens = new ArrayList<TextToken>();
 	
 	private int styleState = 0x00;
-	
-	@Override  
-	public FormattedTextTokenizer setEncoding(final Charset encoding) {
-		this.encoding = encoding;
-		return this;
-	}
-	
-	@Override
-	public Charset getEncoding() {
-		return encoding;
-	}
 	
 	@Override
 	public FormattedTextTokenizer reset() {
@@ -56,9 +43,10 @@ public class FormattedTextTokenizer implements TextTokenizer {
       System.arraycopy(data, start, splicedData, 0, length);
       return splicedData;
     }
-    
+
+    @SuppressWarnings("unchecked")
     String spliceToString(final byte[] data, final int start, final int end) {
-      return new String(splice(data, start, end), encoding);
+      return new String(splice(data, start, end));
     }
     
     @Override
@@ -68,7 +56,7 @@ public class FormattedTextTokenizer implements TextTokenizer {
         return tokens;
       }
 	  
-      byte[] data = text.getBytes(encoding);
+      byte[] data = text.getBytes();
       int eof = data.length;
       
       // the names of these variables are specified by the ragel parser generator

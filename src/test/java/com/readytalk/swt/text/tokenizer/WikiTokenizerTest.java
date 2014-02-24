@@ -27,17 +27,6 @@ public class WikiTokenizerTest {
   }
 
   @Test
-  public void setEncoding_PassValidEncoding_getEncodingReturnsSameValue() {
-    textTokenizer.setEncoding(Charset.defaultCharset());
-    assertSame(Charset.defaultCharset(), textTokenizer.getEncoding());
-  }
-
-  @Test
-  public void getEncoding_UponConstructionDefaultEncodingSet_returnDefaultEncoding() {
-    assertSame(Charset.defaultCharset(), textTokenizer.getEncoding());
-  }
-
-  @Test
   public void tokenize_MultipleTokenizeCalls_TokenListContainsMoreElements() {
     textTokenizer.tokenize(WIKI_NAKED_URL);
     textTokenizer.tokenize(WIKI_NAKED_URL);

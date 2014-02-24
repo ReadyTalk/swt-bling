@@ -1,6 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'findbugs'
 
 buildscript {
   repositories {
@@ -94,17 +93,6 @@ compileJava {
   dependsOn ragel
   source = ['src/main/java', 'build/generated-src/java']
   options.fork = true
-}
-
-findbugs {
-  reportLevel = "high"
-}
-
-tasks.withType(FindBugs) {
-  reports {
-    xml.enabled = false
-    html.enabled = true
-  }
 }
 
 task getVersion << {

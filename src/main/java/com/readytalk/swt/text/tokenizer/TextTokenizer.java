@@ -1,23 +1,12 @@
 package com.readytalk.swt.text.tokenizer;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**
  * TextTokenizer is an interface to be implemented by text tokenizers wanting
  * to be constructed by the TextTokenizerFactory.
  */
-public interface TextTokenizer { 
-  
-  /**
-   * Set the character encoding for the text tokenizer.  
-   */
-  TextTokenizer setEncoding(Charset encoding);
-
-  /**
-   * Get the character encoding of the text tokenizer.
-   */
-  Charset getEncoding();
+public interface TextTokenizer {
 
   /**
    * Reset the tokenizer to its deafult state.

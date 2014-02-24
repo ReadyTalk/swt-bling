@@ -17,17 +17,6 @@ public class TextTokenizerTest {
 	}
 	
 	@Test
-	public void setEncoding_PassValidEncoding_getEncodingReturnsSameValue() {
-		textTokenizer.setEncoding(Charset.defaultCharset());
-		Assert.assertSame(Charset.defaultCharset(), textTokenizer.getEncoding());
-	}
-	
-	@Test
-	public void getEncoding_UponConstructionDefaultEncodingSet_returnDefaultEncoding() {
-		Assert.assertSame(Charset.defaultCharset(), textTokenizer.getEncoding());
-	}
-	
-	@Test
 	public void tokenize_MultipleTokenizeCalls_TokenListContainsMoreElements() {
 		textTokenizer.tokenize(PLAIN_TEXT);
 		textTokenizer.tokenize(PLAIN_TEXT);
