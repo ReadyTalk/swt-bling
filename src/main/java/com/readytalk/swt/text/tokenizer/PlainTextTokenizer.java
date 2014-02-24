@@ -15,6 +15,15 @@ class PlainTextTokenizer implements TextTokenizer {
     return this;
   }
 
+  /**
+   * Tokenize will accept a string and return a list of TextTokens.
+   * The algorithm used by PlaintextTokenizer#tokenize will convert all
+   * whitespace to a ' ' character.  Furthermore, subsequent whitespace
+   * characters will be collapsed into a single ' ' character.
+   *
+   * @param text
+   * @return List
+   */
   public List<TextToken> tokenize(String text) {
 
     if (text == null || "".equals(text)) {
