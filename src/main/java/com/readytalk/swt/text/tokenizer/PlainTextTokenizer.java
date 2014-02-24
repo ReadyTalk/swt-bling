@@ -1,6 +1,5 @@
 package com.readytalk.swt.text.tokenizer;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +14,6 @@ class PlainTextTokenizer implements TextTokenizer {
   private static final String WHITESPACE_REGEX = "\\s+";
 
   private List<TextToken> tokens = new ArrayList<TextToken>();
-  private Charset encoding = Charset.defaultCharset();
-
-  @Override
-  public TextTokenizer setEncoding(Charset encoding) {
-    this.encoding = encoding;
-    return this;
-  }
-
-  @Override
-  public Charset getEncoding() {
-    return encoding;
-  }
 
   @Override
   public TextTokenizer reset() {

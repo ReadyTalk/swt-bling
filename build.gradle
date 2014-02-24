@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'findbugs'
+//apply plugin: 'findbugs'
 
 buildscript {
   repositories {
@@ -96,16 +96,16 @@ compileJava {
   options.fork = true
 }
 
-findbugs {
-  reportLevel = "high"
-}
+//findbugs {
+//  reportLevel = "high"
+//}
 
-tasks.withType(FindBugs) {
-  reports {
-    xml.enabled = false
-    html.enabled = true
-  }
-}
+//tasks.withType(FindBugs) {
+//  reports {
+//    xml.enabled = false
+//    html.enabled = true
+//  }
+//}
 
 task getVersion << {
   println version
