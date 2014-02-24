@@ -31,9 +31,9 @@ public class TextPainterIntegTest {
   }
   
   @Test
-  public void setText_ConfiguredToTokenizePlainText_SeventyOneTokens () {
+  public void setText_ConfiguredToTokenizePlainText_SixtyNineTokens () {
     painter.setText(PLAIN_TEXT);
-    assertEquals(71, painter.getTokens().size());
+    assertEquals(69, painter.getTokens().size());
   }
   
   @Test
