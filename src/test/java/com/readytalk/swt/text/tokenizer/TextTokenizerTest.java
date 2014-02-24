@@ -21,7 +21,7 @@ public class TextTokenizerTest {
 		textTokenizer.tokenize(PLAIN_TEXT);
 		textTokenizer.tokenize(PLAIN_TEXT);
 		textTokenizer.tokenize(PLAIN_TEXT);
-		Assert.assertEquals(284, textTokenizer.tokenize(PLAIN_TEXT).size());
+		Assert.assertEquals(276, textTokenizer.tokenize(PLAIN_TEXT).size());
 	}
 	
 	@Test
@@ -30,6 +30,6 @@ public class TextTokenizerTest {
 		textTokenizer.tokenize(PLAIN_TEXT);
 		textTokenizer.tokenize(PLAIN_TEXT);
 		textTokenizer.reset();
-		Assert.assertEquals(71, textTokenizer.tokenize(PLAIN_TEXT).size());
+		Assert.assertEquals(69, textTokenizer.tokenize(PLAIN_TEXT).size());
 	}
 }
