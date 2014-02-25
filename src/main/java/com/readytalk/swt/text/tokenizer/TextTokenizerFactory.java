@@ -21,11 +21,11 @@ public class TextTokenizerFactory {
     try {
       textTokenizer = (TextTokenizer) Class.forName(type.classname).newInstance();
     } catch (InstantiationException e) {
-      throw new RuntimeException("InstantiationException caught creating TextTokenizerType " + type + e.getStackTrace());
+      throw new RuntimeException("InstantiationException caught creating TextTokenizerType " + type);
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("IllegalAccessException caught creating TextTokenizerType " + type + e.getStackTrace());
+      throw new RuntimeException("IllegalAccessException caught creating TextTokenizerType " + type);
     } catch (ClassNotFoundException e) {
-      throw new RuntimeException("ClassNotFoundException caught creating TextTokenizerType " + type + e.getStackTrace());
+      throw new RuntimeException("ClassNotFoundException caught creating TextTokenizerType " + type);
     }
 
     return textTokenizer;
