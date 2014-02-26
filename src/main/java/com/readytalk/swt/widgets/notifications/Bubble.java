@@ -5,6 +5,7 @@ import com.readytalk.swt.text.tokenizer.TextTokenizerFactory;
 import com.readytalk.swt.text.tokenizer.TextTokenizerType;
 import com.readytalk.swt.util.ColorFactory;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
+import com.readytalk.swt.widgets.notifications.BubbleRegistry.BubbleRegistrant;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -264,6 +265,11 @@ public class Bubble extends PopOverShell {
           case SWT.MouseDown:
             onMouseDown(event);
             break;
+          case SWT.MouseEnter:
+            BubbleRegistrant registrant = BubbleRegistry.getInstance().findRegistrant(getPoppedOverItem().getControlOrCustomElement());
+            registrant.dismissBubble();
+            registrant.bubble.setDisableAutoHide(false);
+            break;
           default:
             break;
         }
@@ -271,6 +277,7 @@ public class Bubble extends PopOverShell {
     };
     popOverShell.addListener(SWT.Paint, listener);
     popOverShell.addListener(SWT.MouseDown, listener);
+    popOverShell.addListener(SWT.MouseEnter, listener);
 
     addAccessibilityHooks(parentControl);
   }
