@@ -367,6 +367,9 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    * @return Visibility state of the PopOverShell
    */
   public boolean isVisible() {
+    if (popOverShell == null){
+      return false;
+    }
     return popOverShell.isVisible();
   }
 

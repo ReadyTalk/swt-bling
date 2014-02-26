@@ -289,7 +289,7 @@ public class BubbleRegistry {
         };
       }
 
-      customElementDataProvider.getPaintedElement().addListener(SWT.MouseHover, mouseTrackListener);
+      customElementDataProvider.getPaintedElement().addListener(SWT.MouseMove, mouseTrackListener);
     }
 
     void removeMouseListener() {
