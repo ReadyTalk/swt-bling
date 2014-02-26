@@ -212,6 +212,21 @@ public class TextPainter {
   }
   
   /**
+   * Sets the font height (in px) of the default fonts painted by this painter.  This includes
+   * normal, bold, italics and their combination.
+   * @param height : an int representing the height of the font in pixels
+   * @return {@link TextPainter}
+   */
+  public TextPainter setDefaultFontHeight(final int height) {
+	font = FontFactory.getFont(this.parent.getDisplay(), height, SWT.NORMAL, font.getFontData()[0].name);
+    boldFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.BOLD, boldFont.getFontData()[0].name);
+    italicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC, italicFont.getFontData()[0].name);
+    underlineFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.UNDERLINE_LINK, underlineFont.getFontData()[0].name);
+    boldAndItalicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC|SWT.BOLD, boldAndItalicFont.getFontData()[0].name);
+    return this;
+  }
+  
+  /**
    * Sets the boundary color.  By default, it is set to (255, 30, 30).
    * Colors are managed by the color factory.
    * 

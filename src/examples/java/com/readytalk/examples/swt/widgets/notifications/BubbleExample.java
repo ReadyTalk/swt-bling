@@ -63,7 +63,8 @@ public class BubbleExample implements SwtBlingExample {
     Button newFeatureButton = new Button(composite, SWT.PUSH);
     newFeatureButton.setText("A New Feature");
     Bubble.createBubble(newFeatureButton, "This text explains a new, exciting feature!", BubbleTag.NEW)
-        .setCenteringEdge(CenteringEdge.RIGHT);
+        .setCenteringEdge(CenteringEdge.RIGHT)
+        .setFontHeight(10);
 
     Label labelExample = new Label(composite, SWT.NONE);
     labelExample.setText("A Short Label");
