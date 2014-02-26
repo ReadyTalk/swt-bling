@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -91,7 +92,7 @@ public class Bubble extends PopOverShell {
 
 
   private Bubble(Control parentControl, CustomElementDataProvider customElementDataProvider, String text,
-                 boolean useBoldFont,
+                 boolean useBoldFont, 
                  BubbleTag ... tags)
           throws IllegalArgumentException {
     super(parentControl, customElementDataProvider);
@@ -144,6 +145,16 @@ public class Bubble extends PopOverShell {
     } else {
       bubbleRegistry.register(poppedOverItem.getControl(), this, tags);
     }
+  }
+  
+  /**
+   * Sets the font height (in px) of the font painted by this Bubble.
+   * @param height
+   * @return {@link Bubble}
+   */
+  public Bubble setFontHeight(int height) {
+	  textPainter.setDefaultFontHeight(height);
+	  return this;
   }
 
   /**
