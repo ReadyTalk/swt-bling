@@ -218,7 +218,7 @@ public class TextPainter {
    * @return {@link TextPainter}
    */
   public TextPainter setDefaultFontHeight(final int height) {
-	font = FontFactory.getFont(this.parent.getDisplay(), height, SWT.NORMAL, font.getFontData()[0].name);
+    font = FontFactory.getFont(this.parent.getDisplay(), height, SWT.NORMAL, font.getFontData()[0].name);
     boldFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.BOLD, boldFont.getFontData()[0].name);
     italicFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.ITALIC, italicFont.getFontData()[0].name);
     underlineFont = FontFactory.getFont(this.parent.getDisplay(), height, SWT.UNDERLINE_LINK, underlineFont.getFontData()[0].name);
