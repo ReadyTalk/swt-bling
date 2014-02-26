@@ -412,7 +412,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   public boolean fadeComplete(int targetAlpha) {
     synchronized (fadeLock) {
       boolean isFadeComplete = false;
-      if (popOverShell.getAlpha() == targetAlpha) {
+      if (popOverShell == null || popOverShell.getAlpha() == targetAlpha) {
         isFadeComplete =  true;
       }
 
