@@ -367,10 +367,11 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    * @return Visibility state of the PopOverShell
    */
   public boolean isVisible() {
-    if (popOverShell == null){
-      return false;
+    boolean isVisible = false;
+    if (popOverShell != null && popOverShell.isDisposed()){
+      isVisible = popOverShell.isVisible();
     }
-    return popOverShell.isVisible();
+    return isVisible;
   }
 
   /**
@@ -412,7 +413,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   public boolean fadeComplete(int targetAlpha) {
     synchronized (fadeLock) {
       boolean isFadeComplete = false;
-      if (popOverShell == null || popOverShell.getAlpha() == targetAlpha) {
+      if (popOverShell == null || popOverShell.isDisposed() || popOverShell.getAlpha() == targetAlpha) {
         isFadeComplete =  true;
       }
 
