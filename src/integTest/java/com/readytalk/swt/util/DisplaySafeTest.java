@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -22,19 +21,12 @@ public class DisplaySafeTest {
     new Shell();
   }
 
-  @Test
-  public void getLatestDisplay_CurrentIsNull_DisplayUnchanged() {
+  @Test(expected = DisplaySafe.NullDisplayException.class)
+  public void getLatestDisplay_CurrentIsNull_DisplayUnchanged() throws DisplaySafe.NullDisplayException {
     DisplaySafe safe = new DisplaySafe(null);
     DisplaySafe safeSpy = spy(safe);
     when(safeSpy.getCurrent()).thenReturn(null);
-    boolean nullDisplayExceptionThrown = false;
-    try {
-      safeSpy.getLatestDisplay();
-    } catch (DisplaySafe.NullDisplayException nde) {
-      nullDisplayExceptionThrown = true;
-    }
-
-    assertTrue(nullDisplayExceptionThrown);
+    safeSpy.getLatestDisplay();
   }
 
   @Test
