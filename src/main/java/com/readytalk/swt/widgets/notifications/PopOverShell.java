@@ -4,6 +4,7 @@ import com.readytalk.swt.effects.FadeEffect;
 import com.readytalk.swt.effects.FadeEffect.Fadeable;
 import com.readytalk.swt.effects.InvalidEffectArgumentException;
 import com.readytalk.swt.helpers.AncestryHelper;
+import com.readytalk.swt.helpers.WidgetHelper;
 import com.readytalk.swt.util.ColorFactory;
 import com.readytalk.swt.util.DisplaySafe;
 import com.readytalk.swt.widgets.CustomElementDataProvider;
@@ -393,7 +394,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
    */
   public boolean isVisible() {
     boolean isVisible = false;
-    if (popOverShell != null && !popOverShell.isDisposed()){
+    if (WidgetHelper.isWidgetSafe(popOverShell)){
       isVisible = popOverShell.isVisible();
     }
     return isVisible;
