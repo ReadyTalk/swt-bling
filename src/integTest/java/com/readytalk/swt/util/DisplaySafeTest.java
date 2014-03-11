@@ -62,7 +62,7 @@ public class DisplaySafeTest {
   }
 
   @Test
-  public void getLatestDisplay_CurrentNotNull_DisplayNowNull() {
+  public void getLatestDisplay_CurrentNull_DisplayNotNull() {
     DisplaySafe safe = new DisplaySafe(Display.getCurrent());
     DisplaySafe safeSpy = spy(safe);
     when(safeSpy.getCurrent()).thenReturn(null);
