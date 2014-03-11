@@ -7,8 +7,8 @@ import org.eclipse.swt.widgets.Widget;
 public class DisplaySafe {
   private Display display;
 
-  private DisplaySafe(Display display) {
-    this.display = display;
+  DisplaySafe(Display display) {
+    setDisplay(display);
   }
 
   public Display getDisplay() {
@@ -16,13 +16,21 @@ public class DisplaySafe {
   }
 
   public Display getLatestDisplay() throws NullDisplayException {
-    Display display = Display.getCurrent();
-    if(display != this.display) {
-      this.display = display;
+    Display display = getCurrent();
+    if(display != null && display != this.display) {
+      setDisplay(display);
     } else if(this.display == null) {
       throw new NullDisplayException();
     }
     return this.display;
+  }
+
+  void setDisplay(Display display) {
+    this.display = display;
+  }
+
+  Display getCurrent() {
+    return Display.getCurrent();
   }
 
   public static class Builder {
