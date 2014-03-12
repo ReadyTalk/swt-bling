@@ -74,7 +74,7 @@ public abstract class PopOverShell extends Widget implements Fadeable {
   public PopOverShell(Control parentControl, CustomElementDataProvider customElementDataProvider) {
     super(parentControl, SWT.NONE);
 
-    displaySafe = new DisplaySafe.Builder().build();
+    displaySafe = new DisplaySafe();
 
     if (customElementDataProvider != null) {
       poppedOverItem = new PoppedOverItem(customElementDataProvider);
