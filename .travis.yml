@@ -4,9 +4,9 @@ jdk:
 - openjdk6
 env:
   global:
-  - secure: cJg3YFHZqmcstozwtO0heN92ADmtdaKlEqNY8lnUAf4KhT4aIO9uFFsXVER0Up/bPQC89q9XZQvNIchxXyrJ0xABgoxD9c6Emn9fupXgpyAKCAiGTVYmf0bIIrfiV3/L5g0n6pXXL/DK8Mvsfd7hlyILsgHhwrdrcjUc7kjUTIw=
-  - secure: WfPSGgEgEdT7LOCSJDVgoOI8rUX3BrE1t5KfL4J62KxFHI7i1LANB/nvRJHw8Q7bQeJhQZ5xOtkrttRYd5n0YfuQTXed0k0KUqmbhi3H9ZPn8dWzoY0/dOLF2KQ9HcNmeYwrSKF8hFOhS22AD0Gk/0F1i+JOT4ycPYj8XJ/i1Os=
-  - secure: OPG6/iyLfvqvLGWu5RCKWdQC20pJzC3PEwQD/4oufbbSppd8okjDMpOheA1y1l4Quyk3MGgOdiUq7qkNUUjhrbhx1gljNzOBAtZqlkUJksKJuf8ZVbxAdAj/Gt/ge8hsVHT+8jlox9DSN6702hQFzquYZDsPGj3TqCGI/C4E7MA=
+  - secure: TO3oA+i1BRv1eTyHlf2oD9v7Mlh+ZRI2qcy6+vbKvWwKhE97eIl24TBrRnivrAYvDSCb7LQbKfYdlylIAz1j2/sm69A3mwjAxRZetekLesRszy/cgc5FDmMh9x9KgOwDfJlVm8Z1uT2UwZ/AfEGFbLFPjHAcp4jbPgdJcUr2SuY=
+  - secure: DTW8kDZ42rWcsBXigza0xgTq/O+rPsAKW5u4qGKIvVQKCc73Zj8mMpIHzKRYx68lvB4XY3rFmK4PrKpa/BExjGTH47GIw1MiReFMt6Y2aKL1SYQLnz+mxH923MXu3iMySVShCbJCXuatqJLnl0vHmf+kSLux6PwM79w06Sxrz7Y=
+  - secure: O9d1Y7YwS0RaHLaQHkghuxOenTMb6yvHNibZ2YWHAbCJ97A9AI4IykaI9RTRy+p2r0C04XFsH7xV2s/j8zQakXvdjlSPmC8CtK6qmyULZ+YYPnKwlLuQCZ6BwXwBimJC0HbIizzk12nIhQgYRqhQ/YzAhCWwM59iHHpfAiBxf/s=
 before_install:
 - export TERM=dumb
 - export DISPLAY=:99.0
