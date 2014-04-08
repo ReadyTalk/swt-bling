@@ -2,7 +2,7 @@
 
 if [ "$TRAVIS_REPO_SLUG" == "ReadyTalk/swt-bling" ] && [ "$TRAVIS_JDK_VERSION" == "oraclejdk7" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
 
-  echo -e "Publishing javadoc...\n"
+  echo "Publishing javadoc..."
 
   cp -R build/docs/javadoc $HOME/javadoc-latest
 
@@ -16,8 +16,9 @@ if [ "$TRAVIS_REPO_SLUG" == "ReadyTalk/swt-bling" ] && [ "$TRAVIS_JDK_VERSION" =
   cp -Rf $HOME/javadoc-latest ./javadoc
   git add -f .
   git commit -m "Lastest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
-  git push -fq origin gh-pages > /dev/null
-
-  echo -e "Published Javadoc to gh-pages.\n"
-  
+  if ! git push -fq origin gh-pages &> /dev/null; then
+    echo "Error pushing gh-pages to origin. Bad GH_TOKEN? GitHub down?"
+  else
+    echo "Published Javadoc to gh-pages."
+  fi
 fi
