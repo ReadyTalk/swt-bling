@@ -15,7 +15,7 @@ if [ "$TRAVIS_REPO_SLUG" == "ReadyTalk/swt-bling" ] && [ "$TRAVIS_JDK_VERSION" =
   git rm -rf ./javadoc
   cp -Rf $HOME/javadoc-latest ./javadoc
   git add -f .
-  git commit -m "Lastest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
+  git commit -m "Latest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to gh-pages"
   git push -fq origin gh-pages > /dev/null
 
   echo -e "Published Javadoc to gh-pages.\n"
