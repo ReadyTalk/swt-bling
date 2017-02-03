@@ -17,6 +17,7 @@ public class ColorFactoryTest {
 
   @Before
   public void setup() throws Exception {
+    if (Display.getCurrent() != null) Display.getCurrent().dispose();
     DeviceData data = new DeviceData();
     data.tracking = true;
     display = new Display(data);

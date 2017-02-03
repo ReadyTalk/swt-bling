@@ -2,12 +2,15 @@ package com.readytalk.swt.color;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -20,6 +23,12 @@ public class ColorPaletteTest {
   @Before
   public void setup() {
     colorPalette = new ColorPalette();
+  }
+
+  @After
+  public void tearDown() {
+    colorPalette.clear();
+    disposeDisplay();
   }
 
   @Test
@@ -45,9 +54,19 @@ public class ColorPaletteTest {
   public void loadColorsFromProperties_loadTestBundle_colorsMatch() {
     colorPalette.loadColorsFromProperties(getFakeColorBundle());
 
-    assertEquals(new Color(Display.getCurrent(), 218, 187, 30), colorPalette.getColor("background"));
-    assertEquals(new Color(Display.getCurrent(), 190, 167, 213), colorPalette.getColor("foreground"));
-    assertEquals(new Color(Display.getCurrent(), 122, 177, 229), colorPalette.getColor("border"));
+    Display display = Display.getCurrent();
+    List<Color> colors = new ArrayList<Color>();
+    colors.add(new Color(display, 218, 187, 30));
+    colors.add(new Color(display, 190, 167, 213));
+    colors.add(new Color(display, 122, 177, 229));
+
+    assertEquals(colors.get(0), colorPalette.getColor("background"));
+    assertEquals(colors.get(1), colorPalette.getColor("foreground"));
+    assertEquals(colors.get(2), colorPalette.getColor("border"));
+
+    for (Color color : colors) {
+      disposeColor(color);
+    }
   }
 
   @Test
@@ -66,6 +85,14 @@ public class ColorPaletteTest {
   private void disposeColor(Color color) {
     if (color != null && !color.isDisposed()) {
       color.dispose();
+    }
+  }
+
+  private void disposeDisplay() {
+    Display display = Display.getCurrent();
+
+    if (display != null && !display.isDisposed()) {
+      display.dispose();
     }
   }
 
