@@ -110,6 +110,15 @@ public enum FontFactory {;
   }
 
   /**
+   * Returns an SWT Font with bold style and default size and font name
+   *
+   * @return
+   */
+  public static Font getBold() {
+    return getFont(defaultSize, SWT.BOLD);
+  }
+
+  /**
    * Returns an SWT Font with the specified size, bold style, and default font name
    *
    * @param size
@@ -117,6 +126,15 @@ public enum FontFactory {;
    */
   public static Font getBold(int size) {
     return getFont(size, SWT.BOLD);
+  }
+
+  /**
+   * Returns an SWT Font with italic style and default size and font name
+   *
+   * @return
+   */
+  public static Font getItalic() {
+    return getFont(defaultSize, SWT.ITALIC);
   }
 
   /**
