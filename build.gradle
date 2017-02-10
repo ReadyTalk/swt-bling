@@ -43,6 +43,8 @@ ext {
 
 dependencies {
   compile "org.eclipse.swt:${swtArtifactName}:${swtVersion}"
+  compile "org.projectlombok:lombok:1.16.12"
+  compile "com.google.guava:guava:20.0"
   testCompile "junit:junit:4.11"
   testCompile "org.mockito:mockito-all:1.9.5"
   examplesCompile "org.reflections:reflections:0.9.9-RC1"
@@ -97,6 +99,14 @@ compileJava {
 
 task getVersion << {
   println version
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+  allprojects {
+    tasks.withType(Javadoc) {
+      options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
 }
 
 apply from: 'gradle/idea.gradle'
