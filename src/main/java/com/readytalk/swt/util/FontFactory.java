@@ -25,6 +25,7 @@ public enum FontFactory {;
   private static final String VERA = "Vera";
   private static final String OS_NAME = "os.name";
   private static final int DEFAULT_STYLE = SWT.NORMAL;
+  private static final int FONT_DPI = 72;
 
   private static String defaultName;
   private static String defaultIconName;
@@ -219,6 +220,14 @@ public enum FontFactory {;
     return getFont(Display.getCurrent(), size, style);
   }
 
+  // converts a "size" metric to the nearest system-dependent
+  // "point" metric - based on DPIs
+  private static int fontPoint(final Device dev, final int size) {
+    int systemDPI = dev.getDPI().y;
+    double ratio = (double) FONT_DPI / systemDPI;
+    return (int) (ratio * size);
+  }
+
   /**
    * Gives you a font with the specified size, specified style, and specified font. Clients
    * should not dispose the font returned by this function call, as the owner is
@@ -229,7 +238,8 @@ public enum FontFactory {;
    */
   public static Font getFont(final Device dev, final int size, final int style, final String name) {
     Font font = null;
-    final FontData data = new FontData(name, size, style);
+    int renderSize = fontPoint(dev, size);
+    final FontData data = new FontData(name, renderSize, style);
 
     if (fontMap.containsKey(data)) {
       font = fontMap.get(data);
@@ -243,7 +253,7 @@ public enum FontFactory {;
         try {
           // There was a problem creating the requested font, so attempt to fall back to the default name and style
           log.log(Level.WARNING, "Unable to create requested font", e);
-          font = new Font(dev, defaultName, size, DEFAULT_STYLE);
+          font = new Font(dev, defaultName, renderSize, DEFAULT_STYLE);
         } catch (Exception f) {
           // There was still a problem so fall back to the default name, style, and size
           log.log(Level.WARNING, "Still unable to create requested font", e);
