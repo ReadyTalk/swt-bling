@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.eclipse.swt.graphics.Font;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ public class ButtonStyle {
   private final int spacing;
   private final int borderWidth;
   private final ButtonColorEffect buttonColorEffect;
-  private final Set<ButtonEffect> buttonEffects;
+  private final HashSet<ButtonEffect> buttonEffects;
 
   private ButtonStyle(Font font, Font iconFont, String backgroundColor, String borderColor, String fontColor,
       String iconFontColor, int radius, int margin, int spacing, int borderWidth, ButtonColorEffect buttonColorEffect,
@@ -47,7 +46,7 @@ public class ButtonStyle {
     this.spacing = spacing;
     this.borderWidth = borderWidth;
     this.buttonColorEffect = buttonColorEffect;
-    this.buttonEffects = EnumSet.copyOf(buttonEffects);
+    this.buttonEffects = new HashSet<ButtonEffect>(buttonEffects);
   }
 
   /**
