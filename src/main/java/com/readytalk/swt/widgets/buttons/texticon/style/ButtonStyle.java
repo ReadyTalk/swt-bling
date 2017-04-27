@@ -65,7 +65,7 @@ public class ButtonStyle {
     private int spacing = SPACING;
     private int borderWidth = BORDER_WIDTH;
     private ButtonColorEffect buttonColorEffect = ButtonColorEffect.NONE;
-    private Set<ButtonEffect> buttonEffects = new HashSet<>();
+    private Set<ButtonEffect> buttonEffects = new HashSet<ButtonEffect>();
 
     /**
      * Set a style upon which to base a new build for a style in order to easily tweak only a few parameters
