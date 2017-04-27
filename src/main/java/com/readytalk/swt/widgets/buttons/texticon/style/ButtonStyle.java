@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.eclipse.swt.graphics.Font;
 
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -45,7 +47,7 @@ public class ButtonStyle {
     this.spacing = spacing;
     this.borderWidth = borderWidth;
     this.buttonColorEffect = buttonColorEffect;
-    this.buttonEffects = Sets.immutableEnumSet(buttonEffects);
+    this.buttonEffects = EnumSet.copyOf(buttonEffects);
   }
 
   /**
@@ -63,7 +65,7 @@ public class ButtonStyle {
     private int spacing = SPACING;
     private int borderWidth = BORDER_WIDTH;
     private ButtonColorEffect buttonColorEffect = ButtonColorEffect.NONE;
-    private Set<ButtonEffect> buttonEffects = Sets.newHashSet();
+    private Set<ButtonEffect> buttonEffects = new HashSet<>();
 
     /**
      * Set a style upon which to base a new build for a style in order to easily tweak only a few parameters
