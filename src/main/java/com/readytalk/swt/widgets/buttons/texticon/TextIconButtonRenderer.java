@@ -112,6 +112,8 @@ public class TextIconButtonRenderer implements ButtonRenderer {
   }
 
   protected void drawBackground() {
+    gc.setBackground(button.getBackground());
+    gc.fillRectangle(0, 0, size.x, size.y);
     gc.setBackground(getBackgroundColor(style.getBackgroundColor(), style.getButtonColorEffect()));
     gc.fillRoundRectangle(0, 0, size.x, size.y, style.getRadius(), style.getRadius());
   }
