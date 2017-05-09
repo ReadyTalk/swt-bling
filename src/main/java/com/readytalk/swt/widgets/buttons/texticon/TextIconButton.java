@@ -6,12 +6,16 @@ import com.readytalk.swt.widgets.buttons.texticon.style.ButtonStyles;
 import lombok.extern.java.Log;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.accessibility.ACC;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlAdapter;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -93,6 +97,20 @@ public class TextIconButton extends Canvas {
       }
     });
 
+    addMouseMoveListener(new MouseMoveListener() {
+      @Override
+      public void mouseMove(MouseEvent mouseEvent) {
+        //This should technically not be required, but in some scenarios the enter
+        //does not fire on windows when moving between buttons.  In that case,
+        //the hover provides a fallback opportunity to set hovered and redraw.
+        if(!hovered) {
+          hovered = true;
+          redraw();
+          update();
+        }
+      }
+    });
+
     addMouseTrackListener(new MouseTrackAdapter() {
       @Override
       public void mouseEnter(MouseEvent mouseEvent) {
@@ -114,16 +132,20 @@ public class TextIconButton extends Canvas {
     getParent().addMouseTrackListener(new MouseTrackAdapter() {
       @Override
       public void mouseEnter(MouseEvent mouseEvent) {
-        hovered = false;
-        redraw();
-        update();
+        if(hovered) {
+          hovered = false;
+          redraw();
+          update();
+        }
       }
 
       @Override
       public void mouseExit(MouseEvent mouseEvent) {
-        hovered = false;
-        redraw();
-        update();
+        if(hovered) {
+          hovered = false;
+          redraw();
+          update();
+        }
       }
     });
 
@@ -146,6 +168,17 @@ public class TextIconButton extends Canvas {
           default:
             break;
           }
+        }
+      }
+    });
+
+    getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+      @Override
+      public void getRole(AccessibleControlEvent accessibleControlEvent) {
+        if(isToggleButton()) {
+          accessibleControlEvent.detail = ACC.ROLE_CHECKBUTTON;
+        } else {
+          accessibleControlEvent.detail = ACC.ROLE_PUSHBUTTON;
         }
       }
     });
