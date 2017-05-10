@@ -130,6 +130,21 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     }
   }
 
+  private boolean isWindows7() {
+    boolean windows7 = false;
+    String swtPlatform = SWT.getPlatform();
+    if(swtPlatform.equals("win32")) {
+      double version;
+      try {
+        version = Float.parseFloat(System.getProperty("os.version"));
+        windows7 = version <= 7.0;
+      } catch (NumberFormatException ex) {
+        windows7 = true;
+      }
+    }
+    return windows7;
+  }
+
   /**
    * Draw text icons at a location based on the style of the button
    */
@@ -138,6 +153,11 @@ public class TextIconButtonRenderer implements ButtonRenderer {
 
     Font font;
     Rectangle bounds;
+
+    //Windows 7/under will not render FontAwesome in advanced mode, so disable advanced.
+    if(isWindows7()) {
+      gc.setAdvanced(false);
+    }
 
     // First we draw the drop shadows for each TextIcon layer, if necessary
     if (isIconDropShadowStyle(style.getButtonEffects())) {
@@ -157,6 +177,9 @@ public class TextIconButtonRenderer implements ButtonRenderer {
 
       drawTextAtLocation(gc, icon.getText(), font,
           getForegroundColor(icon.getColorLabel(), style.getButtonColorEffect()), bounds.x, bounds.y);
+    }
+    if(isWindows7()) {
+      gc.setAdvanced(true);
     }
   }
 
