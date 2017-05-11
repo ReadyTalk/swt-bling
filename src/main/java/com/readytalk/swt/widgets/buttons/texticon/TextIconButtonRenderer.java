@@ -80,7 +80,7 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     draw();
   }
 
-  protected void draw() {
+  private void setAdvanced() {
     try {
       gc.setAdvanced(true);
       gc.setAntialias(SWT.ON);
@@ -90,6 +90,10 @@ public class TextIconButtonRenderer implements ButtonRenderer {
       // TODO: log this once
       log.log(Level.WARNING, "Unable to set advanced drawing", e);
     }
+  }
+
+  protected void draw() {
+    setAdvanced();
 
     updateSizes();
 
@@ -154,8 +158,9 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     Font font;
     Rectangle bounds;
 
+    boolean wasAdvanced = gc.getAdvanced();
     //Windows 7/under will not render FontAwesome in advanced mode, so disable advanced.
-    if(isWindows7()) {
+    if (wasAdvanced && isWindows7()) {
       gc.setAdvanced(false);
     }
 
@@ -178,8 +183,9 @@ public class TextIconButtonRenderer implements ButtonRenderer {
       drawTextAtLocation(gc, icon.getText(), font,
           getForegroundColor(icon.getColorLabel(), style.getButtonColorEffect()), bounds.x, bounds.y);
     }
-    if(isWindows7()) {
-      gc.setAdvanced(true);
+
+    if (wasAdvanced && isWindows7()) {
+      setAdvanced();
     }
   }
 
