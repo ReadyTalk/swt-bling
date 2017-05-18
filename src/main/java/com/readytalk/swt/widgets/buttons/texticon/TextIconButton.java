@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.TypedListener;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -35,7 +36,6 @@ import java.util.List;
  */
 @Log
 public class TextIconButton extends Canvas {
-  private final List<SelectionListener> selectionListeners = new LinkedList<SelectionListener>();
   private final ColorPalette colorPalette;
   private final ButtonRenderer buttonRenderer;
 
@@ -60,7 +60,6 @@ public class TextIconButton extends Canvas {
     this.buttonRenderer = buttonRenderer;
     this.buttonStyles = buttonStyles;
     this.currentStyle = buttonStyles.getNormal();
-
     initializeBackground();
     addListeners();
   }
@@ -203,10 +202,7 @@ public class TextIconButton extends Canvas {
     event.widget = this;
     event.display = getDisplay();
     event.type = SWT.Selection;
-
-    for (final SelectionListener selectionListener : selectionListeners) {
-      selectionListener.widgetSelected(new SelectionEvent(event));
-    }
+    notifyListeners(SWT.Selection, event);
   }
 
   protected void handlePaintEvent(PaintEvent event) {
@@ -289,7 +285,9 @@ public class TextIconButton extends Canvas {
       SWT.error(SWT.ERROR_NULL_ARGUMENT);
     }
 
-    selectionListeners.add(listener);
+    TypedListener typedListener = new TypedListener(listener);
+    addListener (SWT.Selection,typedListener);
+    addListener (SWT.DefaultSelection,typedListener);
   }
 
   /**
@@ -435,7 +433,8 @@ public class TextIconButton extends Canvas {
       SWT.error(SWT.ERROR_NULL_ARGUMENT);
     }
 
-    this.selectionListeners.remove(listener);
+    removeListener(SWT.Selection, listener);
+    removeListener(SWT.DefaultSelection, listener);
   }
 
   /**
