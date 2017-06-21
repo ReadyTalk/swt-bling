@@ -1,7 +1,10 @@
 package com.readytalk.swt.widgets.buttons;
 
+import com.readytalk.swt.util.AdvancedGC;
+import com.readytalk.swt.util.AdvancedScope;
+import com.readytalk.swt.util.ClientOS;
 import com.readytalk.swt.util.ColorFactory;
-import org.eclipse.swt.SWTException;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.events.DisposeEvent;
@@ -20,7 +23,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Canvas;
@@ -32,6 +34,8 @@ import org.eclipse.swt.widgets.TypedListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static com.readytalk.swt.util.AdvancedGC.setAdvanced;
 
 /**
  * The SquareButton class is a simple SWT widget that can be used in place of
@@ -412,15 +416,7 @@ public class SquareButton extends Canvas {
 
     GC gc = paintEvent.gc;
 
-    //try and enable nice looking fonts on windows
-    try {
-      gc.setAdvanced(true);
-      gc.setAntialias(SWT.ON);
-      gc.setTextAntialias(SWT.ON);
-      gc.setInterpolation(SWT.HIGH);
-    } catch (SWTException exception) {
-      log.warning("Couldn't get nice fonts: " + exception.getMessage());
-    }
+    setAdvanced(gc, true);
 
     // add transparency by making the canvas background the same as
     // the parent background (only needed for rounded corners)
@@ -730,7 +726,11 @@ public class SquareButton extends Canvas {
   protected void drawText(GC gc, int x, int y) {
     gc.setFont(font);
     gc.setForeground(currentFontColor);
+    //Advanced font rendering causes errors with some versions of Lato on
+    //Windows, so set advanced to false while drawing test if windows.
+    AdvancedScope scope = AdvancedGC.advancedScope(gc, !ClientOS.isWindows());
     gc.drawText(text, x, y, SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER);
+    scope.complete();
   }
 
 

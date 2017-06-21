@@ -1,13 +1,15 @@
 package com.readytalk.swt.widgets.buttons.texticon;
 
 import com.readytalk.swt.color.ColorEffect;
+import com.readytalk.swt.util.AdvancedGC;
+import com.readytalk.swt.util.AdvancedScope;
+import com.readytalk.swt.util.ClientOS;
 import com.readytalk.swt.util.FontFactory;
 import com.readytalk.swt.widgets.buttons.texticon.style.ButtonColorEffect;
 import com.readytalk.swt.widgets.buttons.texticon.style.ButtonEffect;
 import com.readytalk.swt.widgets.buttons.texticon.style.ButtonStyle;
 import lombok.extern.java.Log;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -15,7 +17,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 import java.util.Set;
-import java.util.logging.Level;
+
+import static com.readytalk.swt.util.AdvancedGC.setAdvanced;
+import static com.readytalk.swt.util.ClientOS.isWindows7;
 
 /**
  * An implementation of ButtonRenderer responsible for drawing the contents of a TextIconButton in various states
@@ -80,20 +84,8 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     draw();
   }
 
-  private void setAdvanced() {
-    try {
-      gc.setAdvanced(true);
-      gc.setAntialias(SWT.ON);
-      gc.setTextAntialias(SWT.ON);
-      gc.setInterpolation(SWT.HIGH);
-    } catch (SWTException e) {
-      // TODO: log this once
-      log.log(Level.WARNING, "Unable to set advanced drawing", e);
-    }
-  }
-
   protected void draw() {
-    setAdvanced();
+    setAdvanced(gc, true);
 
     updateSizes();
 
@@ -134,20 +126,7 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     }
   }
 
-  private boolean isWindows7() {
-    boolean windows7 = false;
-    String swtPlatform = SWT.getPlatform();
-    if(swtPlatform.equals("win32")) {
-      double version;
-      try {
-        version = Float.parseFloat(System.getProperty("os.version"));
-        windows7 = version <= 7.0;
-      } catch (NumberFormatException ex) {
-        windows7 = true;
-      }
-    }
-    return windows7;
-  }
+
 
   /**
    * Draw text icons at a location based on the style of the button
@@ -158,11 +137,8 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     Font font;
     Rectangle bounds;
 
-    boolean wasAdvanced = gc.getAdvanced();
     //Windows 7/under will not render FontAwesome in advanced mode, so disable advanced.
-    if (wasAdvanced && isWindows7()) {
-      gc.setAdvanced(false);
-    }
+    AdvancedScope scope = AdvancedGC.advancedScope(gc, !isWindows7());
 
     // First we draw the drop shadows for each TextIcon layer, if necessary
     if (isIconDropShadowStyle(style.getButtonEffects())) {
@@ -184,9 +160,7 @@ public class TextIconButtonRenderer implements ButtonRenderer {
           getForegroundColor(icon.getColorLabel(), style.getButtonColorEffect()), bounds.x, bounds.y);
     }
 
-    if (wasAdvanced && isWindows7()) {
-      setAdvanced();
-    }
+    scope.complete();
   }
 
   private Rectangle getIconTextBounds(TextIcon icon, int width, int height, Point textSize, int spacing) {
@@ -216,6 +190,9 @@ public class TextIconButtonRenderer implements ButtonRenderer {
    */
   protected void drawText() {
     if (button.getText() != null) {
+      //Advanced font rendering causes errors with some versions of Lato on
+      //Windows, so set advanced to false while drawing test if windows.
+      AdvancedScope scope = AdvancedGC.advancedScope(gc, !ClientOS.isWindows());
       final int spacing = textIconSize.y > 0 ? style.getSpacing() : 0;
       final Point contentSize = new Point(textSize.x + textIconSize.x + spacing, textSize.y + textIconSize.y + spacing);
 
@@ -230,6 +207,7 @@ public class TextIconButtonRenderer implements ButtonRenderer {
 
       drawTextAtLocation(gc, button.getText(), style.getFont(),
           getForegroundColor(style.getFontColor(), style.getButtonColorEffect()), bounds.x, bounds.y);
+      scope.complete();
     }
   }
 
