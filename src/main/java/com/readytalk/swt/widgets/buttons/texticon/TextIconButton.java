@@ -185,7 +185,6 @@ public class TextIconButton extends Canvas {
       @Override
       public void doAction(AccessibleActionEvent e) {
         if (e.index == 0) {
-          log.warning("Doing default action.");
           fireSelectionEvent();
           e.result = ACC.OK;
         }
