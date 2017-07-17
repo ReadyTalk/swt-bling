@@ -7,6 +7,8 @@ import lombok.extern.java.Log;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.ACC;
+import org.eclipse.swt.accessibility.AccessibleActionAdapter;
+import org.eclipse.swt.accessibility.AccessibleActionEvent;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleControlAdapter;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
@@ -167,6 +169,25 @@ public class TextIconButton extends Canvas {
           default:
             break;
           }
+        }
+      }
+    });
+
+    getAccessible().addAccessibleActionListener(new AccessibleActionAdapter() {
+      //UI Automation on Windows has special behavior around controls with
+      //only one action, so we need to provide 1 action.
+      @Override
+      public void getActionCount(AccessibleActionEvent e) {
+        e.result = "1";
+      }
+
+      //In order for Windows Automation to perform the default action
+      @Override
+      public void doAction(AccessibleActionEvent e) {
+        if (e.index == 0) {
+          log.warning("Doing default action.");
+          fireSelectionEvent();
+          e.result = ACC.OK;
         }
       }
     });
