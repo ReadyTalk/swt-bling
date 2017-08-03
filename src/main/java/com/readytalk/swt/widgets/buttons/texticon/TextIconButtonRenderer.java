@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 
 import java.util.Set;
 
@@ -126,41 +127,49 @@ public class TextIconButtonRenderer implements ButtonRenderer {
     }
   }
 
-
+  /**
+   * Draw text icons at a location based on the style of the button.
+   */
+  protected void drawIconText() {
+    final String allegedIconFontName = FontFactory.getIconFont().getFontData()[0].getName();
+    // If FontLoader couldn't load FontAwesome, it falls back to setting the icon font to the system default.
+    if(Display.getDefault().getFontList(allegedIconFontName, true).length > 0){
+      renderIconText();
+    } else {
+      log.warning("Problem loading icon font. Fallback font may not contain matching glyphs.");
+    }
+  }
 
   /**
    * Draw text icons at a location based on the style of the button
    */
-  protected void drawIconText() {
-    final int spacing = textSize.y > 0 ? style.getSpacing() : 0;
+  protected void renderIconText() {
+      final int spacing = textSize.y > 0 ? style.getSpacing() : 0;
 
-    Font font;
-    Rectangle bounds;
+      Font font;
+      Rectangle bounds;
 
-    //Windows 7/under will not render FontAwesome in advanced mode, so disable advanced.
-    AdvancedScope scope = AdvancedGC.advancedScope(gc, !isWindows7());
+      //Windows 7/under will not render FontAwesome in advanced mode, so disable advanced.
+      AdvancedScope scope = AdvancedGC.advancedScope(gc, !isWindows7());
+      // First we draw the drop shadows for each TextIcon layer, if necessary
+      if (isIconDropShadowStyle(style.getButtonEffects())) {
+        for (TextIcon icon : button.getTextIcons()) {
+          font = FontFactory.getIconFont(icon.getFontSize());
+          bounds = getIconTextBounds(icon, size.x, size.y, textSize, spacing);
+          drawTextAtLocation(gc, icon.getText(), font, getForegroundColor(icon.getColorLabel(), ButtonColorEffect.DARKEN),
+                  bounds.x + SHADOW_OFFSET, bounds.y + SHADOW_OFFSET);
+        }
+      }
 
-    // First we draw the drop shadows for each TextIcon layer, if necessary
-    if (isIconDropShadowStyle(style.getButtonEffects())) {
+      // TextIcons can be layered so we loop over them and draw them in place
       for (TextIcon icon : button.getTextIcons()) {
         font = FontFactory.getIconFont(icon.getFontSize());
         bounds = getIconTextBounds(icon, size.x, size.y, textSize, spacing);
-
-        drawTextAtLocation(gc, icon.getText(), font, getForegroundColor(icon.getColorLabel(), ButtonColorEffect.DARKEN),
-            bounds.x + SHADOW_OFFSET, bounds.y + SHADOW_OFFSET);
+        drawTextAtLocation(gc, icon.getText(), font,
+                getForegroundColor(icon.getColorLabel(), style.getButtonColorEffect()), bounds.x, bounds.y);
       }
-    }
 
-    // TextIcons can be layered so we loop over them and draw them in place
-    for (TextIcon icon : button.getTextIcons()) {
-      font = FontFactory.getIconFont(icon.getFontSize());
-      bounds = getIconTextBounds(icon, size.x, size.y, textSize, spacing);
-
-      drawTextAtLocation(gc, icon.getText(), font,
-          getForegroundColor(icon.getColorLabel(), style.getButtonColorEffect()), bounds.x, bounds.y);
-    }
-
-    scope.complete();
+      scope.complete();
   }
 
   private Rectangle getIconTextBounds(TextIcon icon, int width, int height, Point textSize, int spacing) {
