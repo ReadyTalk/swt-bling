@@ -268,6 +268,20 @@ public enum FontFactory {;
   }
 
   /**
+   * Draw text icons at a location based on the style of the button.
+   */
+  public static boolean checkIfFontLoaded(Font font) {
+    final String allegedIconFontName = font.getFontData()[0].getName();
+    // If FontLoader couldn't load FontAwesome, it falls back to setting the icon font to the system default.
+    if (Display.getDefault().getFontList(allegedIconFontName, true).length > 0) {
+      return true;
+    } else {
+      log.warning("Problem loading icon font. Fallback font may not contain matching glyphs.");
+      return false;
+    }
+  }
+
+  /**
    * Disposes all the fonts and clears the internal storage of fonts. Does not do ref counting,
    * so use this with care.
    */

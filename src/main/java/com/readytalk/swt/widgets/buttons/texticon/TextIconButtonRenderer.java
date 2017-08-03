@@ -128,22 +128,9 @@ public class TextIconButtonRenderer implements ButtonRenderer {
   }
 
   /**
-   * Draw text icons at a location based on the style of the button.
-   */
-  protected void drawIconText() {
-    final String allegedIconFontName = FontFactory.getIconFont().getFontData()[0].getName();
-    // If FontLoader couldn't load FontAwesome, it falls back to setting the icon font to the system default.
-    if(Display.getDefault().getFontList(allegedIconFontName, true).length > 0){
-      renderIconText();
-    } else {
-      log.warning("Problem loading icon font. Fallback font may not contain matching glyphs.");
-    }
-  }
-
-  /**
    * Draw text icons at a location based on the style of the button
    */
-  protected void renderIconText() {
+  protected void drawIconText() {
       final int spacing = textSize.y > 0 ? style.getSpacing() : 0;
 
       Font font;
@@ -153,11 +140,13 @@ public class TextIconButtonRenderer implements ButtonRenderer {
       AdvancedScope scope = AdvancedGC.advancedScope(gc, !isWindows7());
       // First we draw the drop shadows for each TextIcon layer, if necessary
       if (isIconDropShadowStyle(style.getButtonEffects())) {
-        for (TextIcon icon : button.getTextIcons()) {
-          font = FontFactory.getIconFont(icon.getFontSize());
-          bounds = getIconTextBounds(icon, size.x, size.y, textSize, spacing);
-          drawTextAtLocation(gc, icon.getText(), font, getForegroundColor(icon.getColorLabel(), ButtonColorEffect.DARKEN),
-                  bounds.x + SHADOW_OFFSET, bounds.y + SHADOW_OFFSET);
+        if (FontFactory.checkIfFontLoaded(FontFactory.getIconFont())) {
+          for (TextIcon icon : button.getTextIcons()) {
+            font = FontFactory.getIconFont(icon.getFontSize());
+            bounds = getIconTextBounds(icon, size.x, size.y, textSize, spacing);
+            drawTextAtLocation(gc, icon.getText(), font, getForegroundColor(icon.getColorLabel(),
+                    ButtonColorEffect.DARKEN), bounds.x + SHADOW_OFFSET, bounds.y + SHADOW_OFFSET);
+          }
         }
       }
 
