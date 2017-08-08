@@ -267,8 +267,6 @@ public enum FontFactory {
         return font;
     }
 
-    public static String getGlyphs(String)
-
     /**
      * Draw text icons at a location based on the style of the button.
      */
