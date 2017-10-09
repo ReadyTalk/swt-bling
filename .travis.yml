@@ -1,7 +1,6 @@
 language: java
 jdk:
 - oraclejdk8
-- oraclejdk7
 - openjdk6
 # Workaround for buffer overflow with openjdk6
 # https://github.com/travis-ci/travis-ci/issues/5227
@@ -17,6 +16,7 @@ env:
 before_install:
 - export TERM=dumb
 - export DISPLAY=:99.0
+- export JAVA6_HOME=/usr/lib/jvm/java-6-openjdk-amd64
 - sh -e /etc/init.d/xvfb start
 script: ./gradlew integTest check Javadoc --info --stacktrace
 after_success:
