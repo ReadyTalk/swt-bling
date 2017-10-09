@@ -1,13 +1,15 @@
 language: java
 jdk:
-- oraclejdk8
-- openjdk6
-# Workaround for buffer overflow with openjdk6
-# https://github.com/travis-ci/travis-ci/issues/5227
+- openjdk8
 addons:
+  # Workaround for buffer overflow with openjdk6
+  # https://github.com/travis-ci/travis-ci/issues/5227
   hosts:
     - myshorthost
   hostname: myshorthost
+  apt:
+    packages:
+      - openjdk-6-jdk
 env:
   global:
   - secure: TO3oA+i1BRv1eTyHlf2oD9v7Mlh+ZRI2qcy6+vbKvWwKhE97eIl24TBrRnivrAYvDSCb7LQbKfYdlylIAz1j2/sm69A3mwjAxRZetekLesRszy/cgc5FDmMh9x9KgOwDfJlVm8Z1uT2UwZ/AfEGFbLFPjHAcp4jbPgdJcUr2SuY=
