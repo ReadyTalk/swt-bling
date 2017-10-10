@@ -97,16 +97,19 @@ compileJava {
   options.fork = true
 }
 
-task getVersion << {
-  println version
+tasks.withType(JavaCompile) {
+  sourceCompatibility = 1.6
+  targetCompatibility = 1.6
+  options.bootClasspath = "${System.env.JAVA6_HOME}/jre/lib/rt.jar"
+  options.bootClasspath += "${File.pathSeparator}${System.env.JAVA6_HOME}/jre/lib/jsse.jar"
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
-    }
-  }
+tasks.withType(Javadoc) {
+  options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+task getVersion << {
+  println version
 }
 
 apply from: 'gradle/idea.gradle'
