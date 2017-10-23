@@ -223,9 +223,15 @@ public enum FontFactory {
     // converts a "size" metric to the nearest system-dependent
     // "point" metric - based on DPIs
     private static int fontPoint(final Device dev, final int size) {
-        int systemDPI = dev.getDPI().y;
-        double ratio = (double) FONT_DPI / systemDPI;
-        return (int) (ratio * size);
+        //Do not apply DPI on mac, it displays best at 1:1 and reports
+        //DPI inconsistently.
+        String osName = System.getProperty(OS_NAME);
+        if (osName == null || osName.length() == 0 || !osName.startsWith(MAC)) {
+            int systemDPI = dev.getDPI().y;
+            double ratio = (double) FONT_DPI / systemDPI;
+            return (int) (ratio * size);
+        }
+        return size;
     }
 
     /**
