@@ -10,7 +10,8 @@ public class ClientOS {
             double version;
             try {
                 version = Float.parseFloat(System.getProperty("os.version"));
-                windows7 = version <= 7.0;
+                //Windows 7 is internally identified as 6.1
+                windows7 = version <= 6.1;
             } catch (NumberFormatException ex) {
                 windows7 = true;
             }
