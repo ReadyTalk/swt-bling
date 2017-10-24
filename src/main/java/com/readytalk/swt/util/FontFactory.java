@@ -34,6 +34,7 @@ public enum FontFactory {
     private static int defaultIconSize;
 
     static final Map<FontData, Font> fontMap = new HashMap<FontData, Font>();
+    static final Map<String, Boolean> loadedFonts = new HashMap<String, Boolean>();
 
     static {
         setDefaults();
@@ -273,18 +274,22 @@ public enum FontFactory {
         return font;
     }
 
+
     /**
      * Draw text icons at a location based on the style of the button.
      */
     public static boolean checkIfFontLoaded(Font font) {
-        final String allegedIconFontName = font.getFontData()[0].getName();
-        // If FontLoader couldn't load FontAwesome, it falls back to setting the icon font to the system default.
-        if (Display.getDefault().getFontList(allegedIconFontName, true).length > 0) {
-            return true;
-        } else {
-            log.warning("Problem loading icon font. Fallback font may not contain matching glyphs.");
-            return false;
+        String fontName = font.getFontData()[0].getName();
+        if(!loadedFonts.containsKey(font.getFontData()[0].getName())) {
+            // If FontLoader couldn't load FontAwesome, it falls back to setting the icon font to the system default.
+            if (Display.getDefault().getFontList(fontName, true).length > 0) {
+                loadedFonts.put(fontName, true);
+            } else {
+                log.warning("Problem loading icon font. Fallback font may not contain matching glyphs.");
+                loadedFonts.put(fontName, false);
+            }
         }
+        return loadedFonts.get(fontName);
     }
 
     /**
