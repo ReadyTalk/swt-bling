@@ -276,7 +276,7 @@ public enum FontFactory {
 
 
     /**
-     * Draw text icons at a location based on the style of the button.
+     * Checks if a font was successfully loaded by a call to getFont.
      */
     public static boolean checkIfFontLoaded(Font font) {
         String fontName = font.getFontData()[0].getName();
