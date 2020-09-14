@@ -304,6 +304,11 @@ public class Bubble extends PopOverShell {
 
     gc.setForeground(borderColor);
     gc.setLineWidth(BORDER_THICKNESS);
+
+    if (borderRectangle == null) {
+      runBeforeShowPopOverShell();
+    }
+
     gc.drawRectangle(borderRectangle);
 
     textPainter.handlePaint(event.gc);

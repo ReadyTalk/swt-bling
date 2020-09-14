@@ -47,7 +47,6 @@ dependencies {
   compile "com.google.guava:guava:20.0"
   testCompile "junit:junit:4.11"
   testCompile "org.mockito:mockito-all:1.9.5"
-  examplesCompile "org.reflections:reflections:0.9.9-RC1"
 }
 
 task ragel() {
@@ -100,16 +99,17 @@ compileJava {
 tasks.withType(JavaCompile) {
   sourceCompatibility = 1.6
   targetCompatibility = 1.6
-  options.bootClasspath = "${System.env.JAVA6_HOME}/jre/lib/rt.jar"
-  options.bootClasspath += "${File.pathSeparator}${System.env.JAVA6_HOME}/jre/lib/jsse.jar"
+  options.bootstrapClasspath = files("${System.env.JAVA6_HOME}/jre/lib/rt.jar", "${File.pathSeparator}${System.env.JAVA6_HOME}/jre/lib/jsse.jar")
 }
 
 tasks.withType(Javadoc) {
   options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-task getVersion << {
-  println version
+task getVersion {
+  doLast {
+    println version
+  }
 }
 
 apply from: 'gradle/idea.gradle'
