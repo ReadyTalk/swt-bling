@@ -99,7 +99,10 @@ compileJava {
 tasks.withType(JavaCompile) {
   sourceCompatibility = 1.6
   targetCompatibility = 1.6
-  options.bootstrapClasspath = files("${System.env.JAVA6_HOME}/jre/lib/rt.jar", "${System.env.JAVA6_HOME}/jre/lib/jsse.jar")
+  if (System.env.JAVA6_HOME != null) {
+      options.bootClasspath = "${System.env.JAVA6_HOME}/jre/lib/rt.jar"
+      options.bootClasspath += "${File.pathSeparator}${System.env.JAVA6_HOME}/jre/lib/jsse.jar"
+  }
 }
 
 tasks.withType(Javadoc) {
