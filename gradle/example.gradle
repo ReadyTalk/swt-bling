@@ -5,6 +5,10 @@ sourceSets {
   }
 }
 
+dependencies {
+  compile "org.reflections:reflections:0.9.9-RC1"
+}
+
 idea {
   module {
     sourceDirs += file('src/examples/java')
@@ -12,9 +16,13 @@ idea {
   }
 }
 
-configurations {
-    examplesCompile.extendsFrom compile
-    examplesRuntime.extendsFrom runtime
+tasks.withType(JavaCompile) {
+  sourceCompatibility = 1.6
+  targetCompatibility = 1.6
+}
+
+tasks.withType(Javadoc) {
+  options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 tasks.addRule("Pattern: runExample<WidgetName>") { String taskName ->
