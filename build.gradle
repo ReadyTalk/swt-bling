@@ -93,7 +93,7 @@ task ragel() {
 compileJava {
   dependsOn ragel
   source = ['src/main/java', 'build/generated-src/java']
-  options.fork = true
+  // options.fork = true
 }
 
 tasks.withType(JavaCompile) {
@@ -106,7 +106,7 @@ tasks.withType(JavaCompile) {
 }
 
 tasks.withType(Javadoc) {
-  options.addStringOption('Xdoclint:none', '-quiet')
+   title = ""
 }
 
 task getVersion {
