@@ -28,7 +28,7 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Javadoc) {
    title = ""
-   classpath = sourceSets.main.compileClasspath
+   options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 tasks.addRule("Pattern: runExample<WidgetName>") { String taskName ->
