@@ -107,7 +107,7 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Javadoc) {
    title = "swt-bling"
-   options.addStringOption('Xdoclint:none', '-quiet')
+   classpath = sourceSets.main.compileClasspath
 }
 
 task getVersion {
